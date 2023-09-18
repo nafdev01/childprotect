@@ -10,6 +10,14 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
+    class ParentManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(user_type=User.UserType.PARENT)
+
+    class ChildManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(user_type=User.UserType.CHILD)
+
     """Model definition for Users."""
 
     # choices for user type
