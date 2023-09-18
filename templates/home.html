@@ -20,7 +20,7 @@
             font-size: 60px;
         }
 
-        button {
+        a {
             background-color: #008080;
             color: #ffffff;
             border: none;
@@ -33,7 +33,7 @@
             transition: all 0.2s ease-in-out;
         }
 
-        button:hover {
+        a:hover {
             background-color: #4CAF50;
             transform: scale(1.1);
             box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
@@ -55,9 +55,9 @@
     <main>
         <img src="{% static 'img/fam.jpeg' %}" alt="Family Logo" class="logo">
         <p>Lets keep our children safe online!.</p>
-        <button onclick="location.href='\{% url 'accounts:register_parent' %}'">Sign Up</button>
-        <button onclick="location.href='\{% url 'accounts:login_parent' %}'">Login</button>
-        <button onclick="location.href='\{% url 'about' %}'">About</button>
+        <a href="{% url 'accounts:register_parent' %}">Sign Up</a>
+        <a href="{% url 'accounts:login_parent' %}">Login</a>
+        <a href="{% url 'about' %}">About</a>
     </main>
 </body>
 
