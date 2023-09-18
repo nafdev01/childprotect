@@ -1,13 +1,15 @@
 from django.db import models
 from django.utils.text import slugify
 from accounts.models import ChildProfile, ParentProfile
-
+from django.utils import timezone
 
 class SearchPhrase(models.Model):
     searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
     phrase = models.CharField(max_length=256)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     allowed = models.BooleanField(default=False)
+    no_of_results = models.IntegerField(default=4)
+    searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.phrase)

@@ -1,0 +1,49 @@
+<!-- safesearch/search.html -->
+{% extends 'base.html' %}
+
+{% block title %}Search Engine{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h1>Search Engine</h1>
+
+    {% if searched %}
+    <div class="alert alert-info">
+        <p>Displaying search results:</p>
+    </div>
+
+    <div class="search-results">
+        {% if search_results %}
+        <ul>
+            {% for result in search_results %}
+            <li>
+                <h3><a href="{{ result.link }}" target="_blank">{{ result.title }}</a></h3>
+                <p>{{ result.snippet }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No search results found.</p>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning">
+        <p>You haven't performed a search yet.</p>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="search-query">Search Query:</label>
+            <input type="text" name="search-query" id="search-query" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="no-of-results">Number of Results:</label>
+            <input type="number" name="no-of-results" id="no-of-results" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+{% endblock %}

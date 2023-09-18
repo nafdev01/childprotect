@@ -33,10 +33,10 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     # my apps
     "accounts",
+    "safesearch",
     # 3rd party
     "django_bootstrap5",
     # default apps
-    "safesearch",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -134,3 +134,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Google Search Settings
+GOOGLE_API_KEY = "AIzaSyDRpojxZNjaQm_vi0-6ZK04aE6N0uMqZpE"
+
+# Define the search query and custom search engine ID.
+CUSTOM_SEARCH_ENGINE_ID = "54d9a04ccf98c4dcb"
