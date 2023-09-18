@@ -76,3 +76,17 @@ class FlaggedWord(models.Model):
     class Meta:
         verbose_name = "Flagged Word"
         verbose_name_plural = "Flagged Words"
+
+
+class FlaggedAlert(models.Model):
+    flagged_search = models.ForeignKey(FlaggedSearch, on_delete=models.CASCADE)
+    been_reviewed = models.BooleanField(default=False)
+    reviewed_on = models.DateTimeField(null=True)
+    reviewed_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.flagged_search} flagged for {self.reviewed_by}"
+
+    class Meta:
+        verbose_name = "Flagged Alert"
+        verbose_name_plural = "Flagged Alerts"
