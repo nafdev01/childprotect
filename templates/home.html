@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Child Protection Website{% endblock %}
+
+{% block header %}<h1 class="text-center">Welcome to Child Protection Online Website</h1>{% endblock header%}
+
+{% block content %}<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        text-align: center;
+    }
+
+    h1 {
+        color: #008080;
+        margin-top: 50px;
+        font-size: 60px;
+    }
+</style>
+
+<img src="{% static 'img/fam.jpeg' %}" alt="Family Logo"
+    style="width: 200px; height: auto; margin-top: 50px; border-radius: 50px;">
+<p>Lets keep our children safe online!.</p>
+<a style="background-color: #008080; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; font-size: 24px; cursor: pointer; margin: 20px; box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;"
+    href="{% url 'accounts:register_parent' %}">
+    Sign Up
+</a>
+<a style="background-color: #008080; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; font-size: 24px; cursor: pointer; margin: 20px; box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;"
+    href="{% url 'accounts:login_parent' %}">
+    Login
+</a>
+<a style="background-color: #008080; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; font-size: 24px; cursor: pointer; margin: 20px; box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;"
+    href="{% url 'about' %}">
+    About
+</a>
+
+{% endblock content %}

@@ -1,22 +1,23 @@
-from django.db import models
-
-# Create your models here.
 # accounts/models.py
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.conf import settings
 from datetime import date
 from django.utils import timezone
+from django.db import models
+
+
+class ParentManager(UserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(user_type=User.UserType.PARENT)
+
+
+class ChildManager(UserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(user_type=User.UserType.CHILD)
 
 
 class User(AbstractUser):
-    class ParentManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(user_type=User.UserType.PARENT)
-
-    class ChildManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(user_type=User.UserType.CHILD)
 
     """Model definition for Users."""
 
@@ -26,10 +27,26 @@ class User(AbstractUser):
         CHILD = "CH", "Child"
 
     # Add other fields common to both parent and child users
-    user_type = models.CharField(
-        max_length=2,
-        choices=UserType.choices,
-    )
+    user_type = models.CharField(max_length=2, choices=UserType.choices, editable=False)
+
+    # The default manager.
+    objects = UserManager()
+    # The parent users manager.
+    parents = ParentManager()  # Our custom manager.
+    # The child users manager.
+    children = ChildManager()  # Our custom manager.
+
+    def is_parent(self):
+        if self.user_type == User.UserType.PARENT:
+            return True
+        else:
+            return False
+
+    def is_child(self):
+        if self.user_type == User.UserType.CHILD:
+            return True
+        else:
+            return False
 
     def __str__(self):
         return self.username
@@ -67,7 +84,9 @@ class ChildProfile(models.Model):
         FEMALE = "F", "Female"
 
     child = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    parent = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
+    parent_profile = models.ForeignKey(
+        ParentProfile, on_delete=models.CASCADE, null=True
+    )
     date_of_birth = models.DateField(blank=False, null=False)
     account_status = models.CharField(max_length=2, choices=AccountStatus.choices)
     gender = models.CharField(

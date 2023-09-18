@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Parent Registration{% endblock %}
+
+{% block header %}<h1 class="text-center">Register as a Parent</h1>{% endblock header%}
+
+{% block content %}
+<section class="container justify-content-center">
+    <form class="mb-3" method="post" enctype="multipart/form-data">
+        {% bootstrap_form parent_form %}
+        {% bootstrap_form parent_profile_form %}
+        {% csrf_token %}
+        <input class="btn btn-outline-success" type="submit" value="Register">
+    </form>
+</section>
+
+{% endblock content %}

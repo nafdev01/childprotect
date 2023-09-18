@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block header %}<h1 class="text-center">Dashboard</h1>{% endblock header%}
+
+{% block content %}
+<section class="container justify-content-center">
+
+    {% for child in children %}
+    <p>{{ child.username }}</p>
+    {% empty %}
+    <p>No children registered yet</p>
+    {% endfor %}
+
+</section>
+
+{% endblock content %}

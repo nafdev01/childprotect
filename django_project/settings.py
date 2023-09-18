@@ -25,13 +25,17 @@ SECRET_KEY = "django-insecure-!($2$v-!1b4z=3i0!vc$gwln#e(mlk!2-iin4(#d)ixge_ck^=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # my apps
     "accounts",
+    # 3rd party
+    "django_bootstrap5",
+    # default apps
     "safesearch",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -104,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGOUT_REDIRECT_URL = "home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -121,6 +126,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

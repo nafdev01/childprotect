@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Parent Login{% endblock %}
+
+{% block header %}<h1 class="text-center">Parent Login</h1>{% endblock header%}
+
+{% block content %}
+<section class="container justify-content-center">
+    <form class="mb-3" method="post">
+        {% bootstrap_form form layout='floating' %}
+        {% csrf_token %}
+        <input class="btn btn-outline-success" type="submit" value="Login">
+    </form>
+</section>
+
+{% endblock content %}
