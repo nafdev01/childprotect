@@ -9,8 +9,8 @@
 {% block content %}
 <section class="container justify-content-center">
 
-    {% for child in children %}
-    <p>{{ child.username }}</p>
+    {% for child_profile in children_profile %}
+    <p>{{ child_profile.child.username }}</p>
     {% empty %}
     <p>No children registered yet</p>
     {% endfor %}

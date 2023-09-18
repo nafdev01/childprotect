@@ -83,9 +83,9 @@ def parent_dashboard(request):
 
     parent = request.user
     parent_profile = ParentProfile.objects.get(parent=parent)
-    children = parent_profile.childprofile_set.all()
+    children_profile = parent_profile.childprofile_set.all()
 
-    context = {"parent": parent, "children": children, "parent_profile": parent_profile}
+    context = {"parent": parent, "children_profile": children_profile, "parent_profile": parent_profile}
     template_name = "accounts/parent_dashboard.html"
 
     return render(request, template_name, context)
