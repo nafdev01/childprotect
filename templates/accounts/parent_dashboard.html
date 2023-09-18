@@ -9,11 +9,28 @@
 {% block content %}
 <section class="container justify-content-center">
 
-    {% for child_profile in children_profile %}
-    <p>{{ child_profile.child.username }}</p>
-    {% empty %}
-    <p>No children registered yet</p>
-    {% endfor %}
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Date of Birth</th>
+            <th>Account Status</th>
+        </tr>
+
+
+        {% for child_profile in children_profiles %}
+        <tr>
+            <td>{{ child_profile.child.get_username }}</td>
+            <td>{{ child_profile.child.get_full_name }}</td>
+            <td>{{ child_profile.date_of_birth }}</td>
+            <td>{{ child_profile.get_account_status_display }}</td>
+
+        </tr>
+        {% empty %}
+        <p>No children registered yet</p>
+        {% endfor %}
+    </table>
+
 
 </section>
 

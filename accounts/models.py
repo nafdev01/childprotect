@@ -72,12 +72,13 @@ class ParentProfile(models.Model):
         ordering = ["parent"]
 
 
-class ChildProfile(models.Model):
-    # choices for account status
-    class AccountStatus(models.TextChoices):
-        ACTIVE = "AC", "Active"
-        BANNED = "BN", "Banned"
+# choices for account status
+class AccountStatus(models.TextChoices):
+    ACTIVE = "AC", "Active"
+    BANNED = "BN", "Banned"
 
+
+class ChildProfile(models.Model):
     # choices for child gender
     class ChildGender(models.TextChoices):
         MALE = "M", "Male"

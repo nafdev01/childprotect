@@ -83,9 +83,9 @@ def parent_dashboard(request):
 
     parent = request.user
     parent_profile = ParentProfile.objects.get(parent=parent)
-    children_profile = parent_profile.childprofile_set.all()
+    children_profiles = parent_profile.childprofile_set.all()
 
-    context = {"parent": parent, "children_profile": children_profile, "parent_profile": parent_profile}
+    context = {"parent": parent, "children_profiles": children_profiles, "parent_profile": parent_profile}
     template_name = "accounts/parent_dashboard.html"
 
     return render(request, template_name, context)
@@ -136,9 +136,7 @@ def child_dashboard(request):
         # redirect to dashboard if parent is already logged in
         messages.warning(request, "You are already logged in as a parent.")
         return redirect("accounts:parent_dashboard")
-    else:
-        messages.warning(request, "You should be logged in as a parent to add a child.")
-        return redirect("accounts:login_parent")
+    
     child = request.user
     child_profile = ChildProfile.objects.get(child=child)
 
