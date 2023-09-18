@@ -4,13 +4,17 @@
 
 {% block title %}Parent Registration{% endblock %}
 
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock custom_css %}
+
 {% block header %}<h1 class="text-center">Register as a Parent</h1>{% endblock header%}
 
 {% block content %}
 <section class="container justify-content-center">
     <form class="mb-3" method="post" enctype="multipart/form-data">
-        {% bootstrap_form parent_form %}
-        {% bootstrap_form parent_profile_form %}
+        {{ parent_form }}
+        {{ parent_form }}
         {% csrf_token %}
         <input class="btn btn-outline-success" type="submit" value="Register">
     </form>
