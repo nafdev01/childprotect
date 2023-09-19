@@ -18,7 +18,8 @@
         <img src="{% static 'img/fam.jpeg' %}" alt="Family Logo" class="logo">
         <p>Lets keep our children safe online!.</p>
         <a href="{% url 'accounts:register_parent' %}">Sign Up</a>
-        <a href="{% url 'accounts:login_parent' %}">Login</a>
+        <a href="{% url 'accounts:login_parent' %}">Parent Login</a>
+        <a href="{% url 'accounts:login_child' %}" title="Child Login">Child Login</a>
         <a href="{% url 'about' %}">About</a>
     </main>
 </body>
