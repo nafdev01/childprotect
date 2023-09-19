@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.decorators import login_required
 from .forms import *
-from .models import User, ParentProfile, ChildProfile
+from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -167,7 +167,7 @@ def register_child(request):
             child.user_type = User.UserType.CHILD
             profile = child_profile_form.save(commit=False)
             profile.child = child
-            profile.account_status = ChildProfile.AccountStatus.ACTIVE
+            profile.account_status = AccountStatus.ACTIVE
             profile.parent_profile = parent.parentprofile
             child.email = parent.email
             child.save()

@@ -60,9 +60,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}"
-                            title="View Children Search History">
-                            Search History
+                        <a class=" nav-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
+                            Ban a Word
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
+                            Banned Words
                         </a>
                     </li>
 
@@ -74,8 +78,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'safesearch:search' %}"
-                            title="View Children Search History">
+                        <a class=" nav-link" href="{% url 'safesearch:search' %}" title="View Children Search History">
                             Search
                         </a>
                     </li>
@@ -85,7 +88,11 @@
                             Search History
                         </a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
+                            Banned Words
+                        </a>
+                    </li>
 
                     {% else %}
                     <li>Not A Parent or Child</li>

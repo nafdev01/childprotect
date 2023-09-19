@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from accounts.models import ChildProfile, ParentProfile
 from django.utils import timezone
 
+
 class SearchPhrase(models.Model):
     searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
     phrase = models.CharField(max_length=256)
@@ -23,14 +24,15 @@ class SearchPhrase(models.Model):
         verbose_name_plural = "Search Phrases"
 
 
-class BannedWord(models.Model):
-    # choices for reasons for a ban
-    class BanReason(models.TextChoices):
-        INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
-        OBSCENITIES_AND_PROFANITY = "OP", "Obscenities and Profanity"
-        VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
-        OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
+# choices for reasons for a ban
+class BanReason(models.TextChoices):
+    INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
+    OBSCENITIES_AND_PROFANITY = "OP", "Obscenities and Profanity"
+    VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
+    OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
 
+# class for a banned word
+class BannedWord(models.Model):
     banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
     word = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)

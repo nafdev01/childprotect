@@ -1,0 +1,36 @@
+<!-- safesearch/search.html -->
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Banned Words{% endblock title %}
+
+{% block header %}
+<h1>List of Banned Words</h1>
+{% endblock header %}
+
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Word</th>
+            <th scope="col">Reason</th>
+            <th scope="col">Added On</th>
+            <th scope="col">Updated On</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for banned_word in banned_words %}
+        <tr>
+            <td>{{ banned_word.word }}</td>
+            <td>{{ banned_word.get_reason_display }}</td>
+            <td>{{ banned_word.date_added }}</td>
+            <td>{{ banned_word.date_updated }}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock content %}
