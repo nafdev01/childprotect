@@ -1,3 +1,5 @@
+from io import BytesIO
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import *
@@ -6,8 +8,14 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .filter import get_results, send_email_alert, is_word_banned
+from .filter import get_results, send_email_alert, is_word_banned, get_allowed
 from django.utils import timezone
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from safesearch.models import SearchPhrase
 import csv
 
 
@@ -245,3 +253,80 @@ def add_banned_csv(request):
     else:
         form = BannedCSVForm()
     return render(request, "safesearch/add_banned_csv.html", {"form": form})
+
+
+@login_required
+def generate_pdf_report(request, child_id=None):
+    # Fetch the child's search history
+    if child_id:
+        child = User.children.get(id=child_id)
+        child_search_history = SearchPhrase.objects.filter(
+            searched_by__child_id=child_id
+        )
+    else:
+        child_search_history = SearchPhrase.objects.filter(
+            searched_by__parent_profile__parent_id=request.user.id
+        )
+
+    # Create a BytesIO buffer to receive the PDF content
+    buffer = BytesIO()
+
+    # Create the PDF object, using the BytesIO buffer as its "file."
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
+
+    # Create a list to hold the table data
+    data = [
+        ["Searched By", "Search Phrase", "Searched On", "No. of Results", "Allowed"]
+    ]
+
+    # Populate the data list with search history
+    for entry in child_search_history:
+        data.append(
+            [
+                entry.searched_by.child.get_full_name(),
+                entry.phrase,
+                entry.searched_on.strftime("%Y-%m-%d %H:%M:%S"),
+                entry.no_of_results,
+                get_allowed(entry.allowed),
+            ]
+        )
+
+    # Create the table and add style
+    table = Table(data)
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ]
+        )
+    )
+
+    # Build the PDF document
+    elements = []
+    elements.append(table)
+    doc.build(elements)
+
+    # Get the value of the BytesIO buffer and write it to the response.
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    response = HttpResponse(content_type="application/pdf")
+
+    if child_id:
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="{0}_search_history.pdf"'.format(child.get_username())
+    else:
+        response["Content-Disposition"] = 'attachment; filename="search_history.pdf"'
+
+    response.write(pdf_content)
+
+    response.write(pdf_content)
+
+    return response

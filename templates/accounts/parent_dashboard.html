@@ -17,6 +17,7 @@
             <th>Full Name</th>
             <th>Date of Birth</th>
             <th>Account Status</th>
+            <th>Actions</th>
         </tr>
 
         {% for child_profile in children_profiles %}
@@ -25,7 +26,11 @@
             <td>{{ child_profile.child.get_full_name }}</td>
             <td>{{ child_profile.date_of_birth }}</td>
             <td>{{ child_profile.get_account_status_display }}</td>
-
+            <td>
+                <a class="btn btn-outline-success btn-sm" href="{% url 'safesearch:generate_child_pdf_report' child_profile.child.id %}">
+                    Report
+                </a>
+            </td>
         </tr>
         {% endfor %}
     </table>
@@ -33,7 +38,7 @@
     {% else %}
 
     <p>No children registered yet</p>
-    
+
     {% endif %}
 
 </section>

@@ -79,3 +79,10 @@ def send_email_alert(request, flagged_words, search_phrase):
         )
     else:
         messages.error(request, f"Email could not be sent to your parent")
+
+
+def get_allowed(value):
+    if value:
+        return "Yes"
+    else:
+        return "No"

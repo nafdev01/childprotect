@@ -16,4 +16,14 @@ urlpatterns = [
     path("alerts/", views.alert_list, name="alert_list"),
     path("alerts/review/<int:alert_id>/", views.review_alert, name="review_alert"),
     path("add_banned_csv/", views.add_banned_csv, name="add_banned_csv"),
+    path(
+        "generate_pdf_report/<int:child_id>/",
+        views.generate_pdf_report,
+        name="generate_child_pdf_report",
+    ),
+    path(
+        "generate_pdf_report/",
+        views.generate_pdf_report,
+        name="generate_children_pdf_report",
+    ),
 ]
