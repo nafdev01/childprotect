@@ -12,6 +12,9 @@
     <title>{% block title %}{% endblock title %}</title>
     <!-- Font Awesome -->
     {% block custom_css %}{% endblock custom_css %}
+    <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
+    <script src="{% static 'js/silverBox.min.js' %}"></script>
+
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <!-- Google Fonts -->
@@ -147,25 +150,85 @@
     {% if messages %}
     {% for message in messages %}
     {% if message.tags == 'success' %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert" data-mdb-color="success">
-        {{ message }}
-        <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <script>
+        var message = "{{ message }}";
+        var alertType = "success";
+
+        silverBox({
+            timer: 2000,
+            alertIcon: "success",
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            confirmButton: {
+                bgColor: "#3085d6",
+                borderColor: "#3085d6",
+                textColor: "#fff",
+                text: "Confirm",
+                closeOnClick: true
+            }
+        })
+    </script>
     {% elif message.tags == 'info' %}
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <script>
+        var message = "{{ message }}";
+        var alertType = "info";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            confirmButton: {
+                bgColor: "#3085d6",
+                borderColor: "#3085d6",
+                textColor: "#fff",
+                text: "Confirm",
+                closeOnClick: true
+            }
+        })
+    </script>
+
     {% elif message.tags == 'warning' %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <script>
+        var message = "{{ message }}";
+        var alertType = "warning";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            confirmButton: {
+                bgColor: "#3085d6",
+                borderColor: "#3085d6",
+                textColor: "#fff",
+                text: "Confirm",
+                closeOnClick: true
+            }
+        })
+    </script>
+
     {% elif message.tags == 'error' %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-mdb-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <script>
+        var message = "{{ message }}";
+        var alertType = "error";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            confirmButton: {
+                bgColor: "#3085d6",
+                borderColor: "#3085d6",
+                textColor: "#fff",
+                text: "Confirm",
+                closeOnClick: true
+            }
+        })
+    </script>
+
     {% endif %}
     {% endfor %}
     {% endif %}
