@@ -1,0 +1,61 @@
+<!-- safesearch/search.html -->
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Search Alerts{% endblock title %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/alert.css' %}"> 
+{% endblock custom_css %}
+
+{% block header %}
+<h1>
+    <center>Search Alerts</center>
+</h1>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Phrase</th>
+                <th scope="col">Reviewed</th>
+                <th scope="col">Reviewed On</th>
+                <th scope="col">Review</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for alert in alerts %}
+            <tr>
+                <td>{{ alert.flagged_search }}</td>
+                <td>
+                    {% if alert.been_reviewed %}
+                    <i class="fa-regular fa-circle-check fa-xl" style="color: green;"></i>
+                    {% else %}
+                    <i class="fa-regular fa-circle-xmark fa-xl" style="color: red;"></i>
+                    {% endif %}
+                </td>
+                <td>{{ alert.reviewed_on }}</td>
+                <td>
+                    {% if alert.been_reviewed %}
+                    <a href="{% url 'safesearch:review_alert' alert.pk %}" class="btn btn-sm btn-warning disabled">
+                        Reviewed
+                    </a>
+                    {% else %}
+                    <a href="{% url 'safesearch:review_alert' alert.pk %}" class="btn btn-sm btn-warning">
+                        Review Alert
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+{% endblock content %}

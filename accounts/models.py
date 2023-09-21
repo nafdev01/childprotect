@@ -65,6 +65,11 @@ class ParentProfile(models.Model):
         max_length=1, choices=ParentGender.choices, default=ParentGender.MALE
     )
 
+    @property
+    def unreviewed_alerts(self):
+        unreviewed = self.flaggedalert_set.filter(been_reviewed=False)
+        return unreviewed.count()
+
     def __str__(self):
         return f"{self.parent.username}'s profile"
 

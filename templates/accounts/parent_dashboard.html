@@ -9,6 +9,8 @@
 {% block content %}
 <section class="container justify-content-center">
 
+    {% if children_profiles %}
+
     <table>
         <tr>
             <th>Username</th>
@@ -16,7 +18,6 @@
             <th>Date of Birth</th>
             <th>Account Status</th>
         </tr>
-
 
         {% for child_profile in children_profiles %}
         <tr>
@@ -26,11 +27,14 @@
             <td>{{ child_profile.get_account_status_display }}</td>
 
         </tr>
-        {% empty %}
-        <p>No children registered yet</p>
         {% endfor %}
     </table>
 
+    {% else %}
+
+    <p>No children registered yet</p>
+    
+    {% endif %}
 
 </section>
 

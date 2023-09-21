@@ -1,6 +1,7 @@
 <!-- base.html -->
 {% load django_bootstrap5 %}
 {% load static %}
+{% load safesearch_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +70,22 @@
                             Banned Words
                         </a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}"
+                            title="View Search History">
+                            Search History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'safesearch:alert_list' %}" title="View Search History">
+                            Alerts
+                            {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
+                            {% if unreviewed > 0 %}
+                            <span class="badge text-bg-danger">{{ unreviewed }}</span>
+                            {% endif %}
+                            {% endwith %}
+                        </a>
+                    </li>
                     {% elif user.is_child %}
 
                     <li class="nav-item">
@@ -88,12 +104,6 @@
                             Search History
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
-                            Banned Words
-                        </a>
-                    </li>
-
                     {% else %}
                     <li>Not A Parent or Child</li>
 

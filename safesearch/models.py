@@ -1,3 +1,4 @@
+# safesearch/models,py
 from django.db import models
 from django.utils.text import slugify
 from accounts.models import ChildProfile, ParentProfile
@@ -31,10 +32,11 @@ class BanReason(models.TextChoices):
     VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
     OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
 
+
 # class for a banned word
 class BannedWord(models.Model):
     banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
-    word = models.CharField(max_length=50, unique=True)
+    word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -46,6 +48,7 @@ class BannedWord(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)
+        self.word = self.word.lower()
         super(BannedWord, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -54,14 +57,20 @@ class BannedWord(models.Model):
     class Meta:
         verbose_name = "Banned Word"
         verbose_name_plural = "Banned Words"
+        unique_together = ["word", "banned_by"]
 
 
 class FlaggedSearch(models.Model):
     search_phrase = models.ForeignKey(SearchPhrase, on_delete=models.CASCADE, null=True)
     flagged_on = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def flagged_words(self):
+        words = self.flaggedword_set.all()
+        return words
+
     def __str__(self):
-        return self.search_phrase
+        return self.search_phrase.phrase
 
     class Meta:
         verbose_name = "Flagged Search"
@@ -69,13 +78,15 @@ class FlaggedSearch(models.Model):
 
 
 class FlaggedWord(models.Model):
-    search_phrase = models.ForeignKey(SearchPhrase, on_delete=models.CASCADE)
+    flagged_search = models.ForeignKey(
+        FlaggedSearch, on_delete=models.CASCADE, null=True
+    )
     flagged_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
 
     flagged_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.flagged_word} in {self.search_phrase}"
+        return f"{self.flagged_word.word} in {self.flagged_search}"
 
     class Meta:
         verbose_name = "Flagged Word"
@@ -83,10 +94,16 @@ class FlaggedWord(models.Model):
 
 
 class FlaggedAlert(models.Model):
-    flagged_search = models.ForeignKey(FlaggedSearch, on_delete=models.CASCADE)
+    flagged_search = models.OneToOneField(FlaggedSearch, on_delete=models.CASCADE)
     been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
-    reviewed_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE)
+    reviewed_by = models.ForeignKey(
+        ParentProfile, null=True, editable=False, on_delete=models.CASCADE
+    )
+
+    def save(self, *args, **kwargs):
+        self.reviewed_by = self.flagged_search.search_phrase.searched_by.parent_profile
+        super(FlaggedAlert, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.flagged_search} flagged for {self.reviewed_by}"

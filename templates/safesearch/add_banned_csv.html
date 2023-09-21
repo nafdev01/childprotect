@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Add CSV of Banned Words{% endblock %}
+
+{% block header %}
+<h1 class="text-center">Add CSV of Banned Words</h1>
+{% endblock header%}
+
+{% block content %}
+<section class="container justify-content-center">
+    <form method="post" enctype="multipart/form-data">
+        {% bootstrap_form form %}
+        {% csrf_token %}
+        <input class="btn btn-success" type="submit" value="Upload CSV">
+    </form>
+</section>
+
+{% endblock content %}

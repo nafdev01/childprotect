@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from .filter import get_results, send_email_alert, is_word_banned
+from django.utils import timezone
+import csv
 
 
 @login_required
@@ -28,24 +30,41 @@ def search(request):
         no_of_results = request.POST.get("no-of-results")
         searched = True
         flagged_words = list()
-        illegal_search = False
+        safe = True
+
+        for word in search_query.split():
+            if is_word_banned(word, child.childprofile.parent_profile):
+                flagged_words.append(word)
+                safe = False
 
         search_phrase = SearchPhrase(
             searched_by=child.childprofile,
             phrase=search_query,
             no_of_results=no_of_results,
+            allowed=safe,
         )
         search_phrase.save()
 
-        for word in search_query.split():
-            if is_word_banned(word):
-                flagged_words.append(word)
-                illegal_search = True
-
-        if illegal_search:
+        if not safe:
             messages.error(
                 request, f"You searched for the banned words {flagged_words}"
             )
+
+            flagged_search = FlaggedSearch(search_phrase=search_phrase)
+            flagged_search.save()
+
+            flagged_alert = FlaggedAlert(flagged_search=flagged_search)
+            flagged_alert.save()
+
+            for flagged_word in flagged_words:
+                banned_word = BannedWord.objects.get(
+                    word=flagged_word.lower(),
+                    banned_by=child.childprofile.parent_profile,
+                )
+                FlaggedWord(
+                    flagged_search=flagged_search, flagged_word=banned_word
+                ).save()
+
             send_email_alert(request, flagged_words, search_phrase)
             return redirect("safesearch:child_search_history")
 
@@ -137,11 +156,8 @@ def banned_word_list(request):
     # Check if the user is a child
     if request.user.user_type == User.UserType.PARENT:
         parent = request.user.parentprofile
-    elif request.user.user_type == User.UserType.CHILD:
-        child = request.user
-        parent = child.childprofile.parent_profile
     else:
-        messages.error(request, "You need to be a child or parent to access this page")
+        messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
 
     banned_words = BannedWord.objects.filter(banned_by=parent)
@@ -149,3 +165,72 @@ def banned_word_list(request):
     template_name = ("safesearch/banned_words.html",)
     context = {"banned_words": banned_words}
     return render(request, template_name, context)
+
+
+@login_required
+def alert_list(request):
+    # Check if the user is a child
+    if request.user.user_type == User.UserType.PARENT:
+        parent_profile = request.user.parentprofile
+    else:
+        messages.error(request, "You need to be a parent to access this page")
+        return redirect("home")
+
+    flagged_alerts = FlaggedAlert.objects.filter(reviewed_by=parent_profile)
+
+    template_name = ("safesearch/flagged_alerts.html",)
+    context = {"alerts": flagged_alerts}
+    return render(request, template_name, context)
+
+
+@login_required
+def review_alert(request, alert_id):
+    # Check if the user is a child
+    if request.user.user_type == User.UserType.PARENT:
+        parent_profile = request.user.parentprofile
+    else:
+        messages.error(request, "You need to be a parent to access this page")
+        return redirect("home")
+
+    alert = FlaggedAlert.objects.get(id=alert_id)
+
+    if alert:
+        if not alert.been_reviewed:
+            alert.been_reviewed = True
+            alert.reviewed_on = timezone.now()
+            alert.save()
+            messages.success(request, "Alert reviewed successfully")
+        else:
+            messages.error(request, "Alert has already been reviewed")
+    else:
+        messages.error(request, "Alert not reviewed. Error occurred")
+
+    return redirect("safesearch:alert_list")
+
+
+def add_banned_csv(request):
+    if request.method == "POST":
+        form = BannedCSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = form.cleaned_data["csv_file"]
+            # Process the CSV file and add banned words to the database
+            if csv_file:
+                decoded_file = csv_file.read().decode("utf-8")
+                csv_data = csv.reader(decoded_file.splitlines(), delimiter=",")
+                for row in csv_data:
+                    for word in row:
+                        if not BannedWord.objects.filter(
+                            word=word,
+                            banned_by=request.user.parentprofile,
+                        ):
+                            banned_word = BannedWord(
+                                banned_by=request.user.parentprofile,
+                                word=word,
+                                reason=BanReason.INAPPROPRIATE_CONTENT,
+                            )
+                            banned_word.save()
+
+            return redirect("safesearch:banned_words")
+    else:
+        form = BannedCSVForm()
+    return render(request, "safesearch/add_banned_csv.html", {"form": form})

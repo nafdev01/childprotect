@@ -41,9 +41,9 @@ def get_results(api_key, custom_search_engine_id, query, num_results):
         return None
 
 
-def is_word_banned(user_word):
+def is_word_banned(user_word, banned_by):
     try:
-        banned_word = BannedWord.objects.get(word=user_word)
+        banned_word = BannedWord.objects.get(word=user_word, banned_by=banned_by)
         return True
     except BannedWord.DoesNotExist:
         return False

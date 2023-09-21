@@ -5,10 +5,22 @@
 {% block title %}Ban a Word{% endblock title %}
 
 {% block header %}
-<h1>Creating a New Banned Word</h1>
+<h1>
+    <center>Creating a New Banned Word</center>
+</h1>
 {% endblock header %}
 
 {% block content %}
+<a class="btn btn-secondary m-3" href="{% url 'safesearch:banned_words' %}" title="Ban a Word">
+    List of Banned Words
+</a>
+
+<br><br>
+
+<a class="btn btn-secondary m-3" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+    Add a banned csv file
+</a>
+
 <section class="container justify-content-center">
     <form class="mb-3" method="post" enctype="multipart/form-data">
         {% bootstrap_form form %}
