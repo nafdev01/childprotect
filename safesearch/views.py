@@ -177,6 +177,15 @@ def alert_list(request):
         return redirect("home")
 
     flagged_alerts = FlaggedAlert.objects.filter(reviewed_by=parent_profile)
+    alert_count = FlaggedAlert.objects.filter(
+        flagged_search__search_phrase__searched_by__parent_profile_id=parent_profile.id,
+        been_reviewed=False,
+    ).count()
+
+    if alert_count > 1:
+        messages.info(request, f"You have {alert_count} unreviewed alerts")
+    elif alert_count == 1:
+        messages.warning(request, "You have one unreviewed alert")
 
     template_name = ("safesearch/flagged_alerts.html",)
     context = {"alerts": flagged_alerts}
@@ -229,7 +238,9 @@ def add_banned_csv(request):
                                 reason=BanReason.INAPPROPRIATE_CONTENT,
                             )
                             banned_word.save()
-
+            messages.success(
+                request, "Successfully uploaded banned words from csv file"
+            )
             return redirect("safesearch:banned_words")
     else:
         form = BannedCSVForm()

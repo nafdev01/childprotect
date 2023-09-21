@@ -26,7 +26,13 @@ class FlaggedWordAdmin(admin.ModelAdmin):
     list_filter = ("flagged_on",)
 
 
+@admin.action(description="Mark alerts as unreviewed")
+def make_unreviewed(modeladmin, request, queryset):
+    queryset.update(been_reviewed=False)
+
+
 @admin.register(FlaggedAlert)
 class FlaggedAlertAdmin(admin.ModelAdmin):
     list_display = ("flagged_search", "been_reviewed", "reviewed_on")
     list_filter = ("been_reviewed",)
+    actions = [make_unreviewed]
