@@ -5,7 +5,6 @@ from .notifications import *
 from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
@@ -16,11 +15,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import PasswordResetConfirmView
-from django.http import HttpResponse
 from .models import Confirmation
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
@@ -28,36 +23,41 @@ from django.contrib.auth import logout
 # parent login view
 def login_parent(request):
     if request.user.is_authenticated:
-        # redirect to dashboard if parent is already logged in
+        # Redirect to dashboard if the parent is already logged in
         messages.warning(request, "You are already logged in.")
         return redirect("accounts:parent_dashboard")
 
     if request.method != "POST":
-        form = AuthenticationForm()
+        form = LoginForm()
     else:
-        form = AuthenticationForm(data=request.POST)
+        form = LoginForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
 
-            parent = authenticate(
-                request,
-                username=username,
-                password=password,
-            )
+            try:
+                parent = User.objects.get(username=username)
 
-            if parent is not None and parent.user_type == User.UserType.PARENT:
-                if parent.is_active:
-                    login(request, parent)
-                    messages.success(request, "Log In Successful!")
-                    send_parent_login_email(request)
-                    return redirect("accounts:parent_dashboard")
-                else:
+                if not parent.is_active:
                     messages.error(
                         request,
-                        f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]}  before attempting to log in",
+                        f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
                     )
-            else:
+                else:
+                    parent = authenticate(
+                        request,
+                        username=username,
+                        password=password,
+                    )
+
+                    if parent is not None and parent.user_type == User.UserType.PARENT:
+                        login(request, parent)
+                        messages.success(request, "Log In Successful!")
+                        send_parent_login_email(request)
+                        return redirect("accounts:parent_dashboard")
+                    else:
+                        messages.error(request, "Invalid username or password.")
+            except User.DoesNotExist:
                 messages.error(request, "Invalid username or password.")
 
     template_name = "registration/parent_login.html"
@@ -174,9 +174,9 @@ def login_child(request):
             return redirect("accounts:parent_dashboard")
 
     if request.method != "POST":
-        form = AuthenticationForm()
+        form = LoginForm()
     else:
-        form = AuthenticationForm(data=request.POST)
+        form = LoginForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
