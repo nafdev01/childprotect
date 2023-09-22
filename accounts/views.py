@@ -1,15 +1,28 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.decorators import login_required
 from .forms import *
-from .notifications import send_parent_login_email, send_child_login_email
+from .notifications import *
 from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
-from django.contrib.auth import views as auth_views
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.http import HttpResponse
+from .models import Confirmation
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 # parent login view
@@ -34,10 +47,16 @@ def login_parent(request):
             )
 
             if parent is not None and parent.user_type == User.UserType.PARENT:
-                login(request, parent)
-                messages.success(request, "Log In Successful!")
-                send_parent_login_email(request)
-                return redirect("accounts:parent_dashboard")
+                if parent.is_active:
+                    login(request, parent)
+                    messages.success(request, "Log In Successful!")
+                    send_parent_login_email(request)
+                    return redirect("accounts:parent_dashboard")
+                else:
+                    messages.error(
+                        request,
+                        f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]}  before attempting to log in",
+                    )
             else:
                 messages.error(request, "Invalid username or password.")
 
@@ -59,11 +78,29 @@ def register_parent(request):
         if parent_form.is_valid() and parent_profile_form.is_valid():
             parent = parent_form.save(commit=False)
             parent.user_type = User.UserType.PARENT
+            parent.is_active = False
             profile = parent_profile_form.save(commit=False)
             profile.parent = parent
             parent.save()
             profile.save()
-            messages.success(request, "Registration Successful! Log in to continue")
+
+            # Create a confirmation token
+            token = token_generator.make_token(parent)
+            Confirmation.objects.create(user=parent, token=token)
+            current_site = get_current_site(request)
+            token_dict = {
+                "protocol": request.scheme,
+                "parent": parent,
+                "domain": current_site.domain,
+                "uid": urlsafe_base64_encode(force_bytes(parent.pk)),
+                "token": token,
+            }
+
+            messages.success(
+                request,
+                "Your account has been created successfully! Please check your email to confirm your email address and activate your account.",
+            )
+            send_parent_signup_confirm_email(request, parent, token_dict)
             return redirect("accounts:login_parent")
 
     else:
@@ -73,6 +110,33 @@ def register_parent(request):
     template_name = "registration/parent_registration.html"
     context = {"parent_form": parent_form, "parent_profile_form": parent_profile_form}
     return render(request, template_name, context)
+
+
+# activate parent account after email confirmation
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        parent = User.parents.get(pk=uid)
+        if token_generator.check_token(parent, token):
+            parent.is_active = True
+            parent.save()
+            messages.success(
+                request,
+                "Account activated successfully! You can now login.",
+            )
+            send_parent_signup_confirmation_success_email(request, parent)
+        else:
+            messages.error(
+                request,
+                "Activation link is invalid.",
+            )
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        messages.error(
+            request,
+            "Activation link is invalid.",
+        )
+
+    return redirect("accounts:login_parent")
 
 
 # View for parent user registration with profile information
@@ -180,6 +244,7 @@ def register_child(request):
             child.save()
             profile.save()
             messages.success(request, "Registration Successful! Log in to continue")
+            send_child_signup_email(request, parent, child)
             return redirect("accounts:parent_dashboard")
 
     else:

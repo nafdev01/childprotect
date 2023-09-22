@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, ParentProfile, ChildProfile
+from .models import User, ParentProfile, ChildProfile, Confirmation
 
 
 @admin.register(User)
@@ -17,3 +17,7 @@ class ChildProfileAdmin(admin.ModelAdmin):
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     list_display = ("parent",)
+
+@admin.register(Confirmation)
+class ConfirmationAdmin(admin.ModelAdmin):
+    list_display = ("user",)

@@ -117,3 +117,9 @@ class ChildProfile(models.Model):
 
     class Meta:
         ordering = ["child"]
+
+
+class Confirmation(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -6,6 +6,116 @@ from django.contrib import messages
 from django.utils import timezone
 
 
+def send_parent_signup_confirm_email(request, parent, token_dict):
+    try:
+        device_info = {
+            "browser_family": request.user_agent.browser.family,
+            "browser_version": request.user_agent.browser.version_string,
+            "device_os": request.user_agent.os.family,
+            "device_version": request.user_agent.os.version_string,
+        }
+
+        # Merge the dictionaries using dictionary unpacking
+        context_dict = {
+            "parent": parent,
+            "time": timezone.now(),
+            "device_info": device_info,
+            **token_dict,  # Merge token_dict into context_dict
+        }
+
+        # Retrieve entry by id
+        subject = f"Please Confirm Your Email Address"
+        sender = settings.EMAIL_HOST_USER
+        recipient = parent.email
+        message = get_template(
+            "accounts/includes/parent_confirm_signup_email_template.html"
+        ).render(context_dict)
+
+        mail = EmailMessage(
+            subject=subject,
+            body=message,
+            from_email=sender,
+            to=[recipient],
+            reply_to=[sender],
+        )
+        mail.content_subtype = "html"
+
+        if mail.send():
+            return True
+        else:
+            return False
+    except Exception as e:
+        # Handle any exceptions that might occur during email sending
+        print(f"Error sending confirmation email: {str(e)}")
+        return False
+
+
+def send_parent_signup_confirmation_success_email(request, parent):
+    device_info = {
+        "browser_family": request.user_agent.browser.family,
+        "browser_version": request.user_agent.browser.version_string,
+        "device_os": request.user_agent.os.family,
+        "device version": request.user_agent.os.version_string,
+    }
+    context_dict = {
+        "parent": parent,
+        "time": timezone.now(),
+        "device_info": device_info,
+    }
+    # Retrieve entry by id
+    subject = f"Email Confirmation Succcessful"
+    sender = settings.EMAIL_HOST_USER
+    recipient = parent.email
+    message = get_template(
+        "accounts/includes/parent_confirm_success_email_template.html"
+    ).render(context_dict)
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        return True
+    else:
+        return False
+
+
+def send_child_signup_email(request, parent, child):
+    device_info = {
+        "browser_family": request.user_agent.browser.family,
+        "browser_version": request.user_agent.browser.version_string,
+        "device_os": request.user_agent.os.family,
+        "device version": request.user_agent.os.version_string,
+    }
+    # Retrieve entry by id
+    subject = f"Successful Login Notification"
+    sender = settings.EMAIL_HOST_USER
+    recipient = parent.email
+    message = get_template("accounts/includes/child_signup_email_template.html").render(
+        {
+            "parent": parent,
+            "child": child,
+            "time": timezone.now(),
+            "device_info": device_info,
+        }
+    )
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        return True
+    else:
+        return False
+
+
 def send_parent_login_email(request):
     parent = request.user
     device_info = {
@@ -18,7 +128,7 @@ def send_parent_login_email(request):
     subject = f"Successful Login Notification"
     sender = settings.EMAIL_HOST_USER
     recipient = parent.email
-    message = get_template("safesearch/includes/parent_login_email_template.html").render(
+    message = get_template("accounts/includes/parent_login_email_template.html").render(
         {
             "parent": parent,
             "time": timezone.now(),
@@ -52,7 +162,7 @@ def send_child_login_email(request):
     subject = f"Successful Login Notification"
     sender = settings.EMAIL_HOST_USER
     recipient = parent.email
-    message = get_template("safesearch/includes/child_login_email_template.html").render(
+    message = get_template("accounts/includes/child_login_email_template.html").render(
         {
             "child": child,
             "parent": parent,
@@ -72,7 +182,6 @@ def send_child_login_email(request):
         return True
     else:
         return False
-
 
 
 def send_email_alert(request, flagged_words, search_phrase):
