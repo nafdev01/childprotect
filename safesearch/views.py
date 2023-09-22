@@ -8,7 +8,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .filter import get_results, send_email_alert, is_word_banned, get_allowed
+from .search import get_results, send_email_alert, is_word_banned, get_allowed
 from django.utils import timezone
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
@@ -35,7 +35,6 @@ def search(request):
 
     if request.method == "POST":
         search_query = request.POST.get("search-query")
-        no_of_results = request.POST.get("no-of-results")
         searched = True
         flagged_words = list()
         safe = True
@@ -48,7 +47,6 @@ def search(request):
         search_phrase = SearchPhrase(
             searched_by=child.childprofile,
             phrase=search_query,
-            no_of_results=no_of_results,
             allowed=safe,
         )
         search_phrase.save()
@@ -80,7 +78,6 @@ def search(request):
             settings.GOOGLE_API_KEY,
             settings.CUSTOM_SEARCH_ENGINE_ID,
             search_query,
-            no_of_results,
         )
 
     else:
@@ -276,7 +273,7 @@ def generate_pdf_report(request, child_id=None):
 
     # Create a list to hold the table data
     data = [
-        ["Searched By", "Search Phrase", "Searched On", "No. of Results", "Allowed"]
+        ["Searched By", "Search Phrase", "Searched On", "Allowed"]
     ]
 
     # Populate the data list with search history
@@ -286,7 +283,6 @@ def generate_pdf_report(request, child_id=None):
                 entry.searched_by.child.get_full_name(),
                 entry.phrase,
                 entry.searched_on.strftime("%Y-%m-%d %H:%M:%S"),
-                entry.no_of_results,
                 get_allowed(entry.allowed),
             ]
         )

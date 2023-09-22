@@ -10,7 +10,6 @@ class SearchPhrase(models.Model):
     phrase = models.CharField(max_length=256)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     allowed = models.BooleanField(default=False)
-    no_of_results = models.IntegerField(default=4)
     searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
     def save(self, *args, **kwargs):

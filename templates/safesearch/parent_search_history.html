@@ -14,7 +14,6 @@
         <tr>
             <th>Search Phrase</th>
             <th>Date Searched</th>
-            <th>No of Results</th>
             <th>Child</th>
             <th>Allowed</th>
         </tr>
@@ -24,7 +23,6 @@
         <tr>
             <td>{{ search_phrase.phrase }}</td>
             <td>{{ search_phrase.searched_on }}</td>
-            <td>{{ search_phrase.no_of_results }}</td>
             <td>{{ search_phrase.searched_by.child }}</td>
             <td>
                 {% if search_phrase.allowed %}

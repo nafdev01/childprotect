@@ -7,11 +7,11 @@ from django.core.mail import EmailMessage
 from django.contrib import messages
 
 
-def get_results(api_key, custom_search_engine_id, query, num_results):
+def get_results(api_key, custom_search_engine_id, query):
     search_results = list()
 
     # Make a request to the Google Custom Search API.
-    url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={custom_search_engine_id}&q={query}&num={num_results}"
+    url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={custom_search_engine_id}&q={query}&num=10"
 
     response = requests.get(url)
 
