@@ -8,7 +8,8 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .search import get_results, send_email_alert, is_word_banned, get_allowed
+from .search import get_results, is_word_banned, get_allowed
+from accounts.notifications import send_email_alert
 from django.utils import timezone
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404

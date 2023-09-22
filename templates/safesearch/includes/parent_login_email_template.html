@@ -1,0 +1,33 @@
+{% load django_bootstrap5 %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+
+<body>
+    <p>Hello {{ parent.get_full_name }},</p>
+    <p>Your login to the child protection website was successful.</p>
+    <p>Here are some details about your login:</p>
+    
+    <ul>
+        <li><strong>Time:</strong> {{ time }}</li>
+        <li><strong>Browser Family:</strong> {{ device_info.browser_family }}</li>
+        <li><strong>Browser Version:</strong> {{ device_info.browser_version }}</li>
+        <li><strong>Device OS:</strong> {{ device_info.device_os }}</li>
+        <li><strong>Device Version:</strong> {{ device_info.device_version }}</li>
+    </ul>
+
+    <p>If you did not perform this login or have any concerns, please contact our support team immediately.</p>
+    
+    <hr>
+    <p>Thank you for using the child protection website!</p>
+</body>
+
+</html>

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth.decorators import login_required
 from .forms import *
+from .notifications import send_parent_login_email, send_child_login_email
 from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -35,6 +36,7 @@ def login_parent(request):
             if parent is not None and parent.user_type == User.UserType.PARENT:
                 login(request, parent)
                 messages.success(request, "Log In Successful!")
+                send_parent_login_email(request)
                 return redirect("accounts:parent_dashboard")
             else:
                 messages.error(request, "Invalid username or password.")
@@ -85,7 +87,11 @@ def parent_dashboard(request):
     parent_profile = ParentProfile.objects.get(parent=parent)
     children_profiles = parent_profile.childprofile_set.all()
 
-    context = {"parent": parent, "children_profiles": children_profiles, "parent_profile": parent_profile}
+    context = {
+        "parent": parent,
+        "children_profiles": children_profiles,
+        "parent_profile": parent_profile,
+    }
     template_name = "accounts/parent_dashboard.html"
 
     return render(request, template_name, context)
@@ -120,6 +126,7 @@ def login_child(request):
             if child is not None and child.user_type == User.UserType.CHILD:
                 login(request, child)
                 messages.success(request, "Log In Successful!")
+                send_child_login_email(request)
                 return redirect("accounts:child_dashboard")
             else:
                 messages.error(request, "Invalid username or password.")
@@ -136,7 +143,7 @@ def child_dashboard(request):
         # redirect to dashboard if parent is already logged in
         messages.warning(request, "You are already logged in as a parent.")
         return redirect("accounts:parent_dashboard")
-    
+
     child = request.user
     child_profile = ChildProfile.objects.get(child=child)
 

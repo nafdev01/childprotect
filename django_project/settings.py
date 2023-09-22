@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "accounts",
     "safesearch",
     # 3rd party
+    "django_user_agents",
     "django_bootstrap5",
     # default apps
     "django.contrib.admin",
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
