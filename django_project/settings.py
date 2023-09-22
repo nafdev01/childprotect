@@ -144,3 +144,9 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS").lower() == "true"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://2f4a-197-232-61-199.ngrok-free.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]

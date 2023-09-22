@@ -160,6 +160,9 @@
             position: "top-right",
             text: message,
             centerContent: true,
+            cancelButton: {
+                text: "OK",
+            }
         })
     </script>
     {% elif message.tags == 'info' %}
@@ -173,6 +176,9 @@
             position: "top-right",
             text: message,
             centerContent: true,
+            cancelButton: {
+                text: "OK"
+            }
         })
     </script>
 
@@ -187,6 +193,9 @@
             position: "top-right",
             text: message,
             centerContent: true,
+            cancelButton: {
+                text: "Close"
+            }
         })
     </script>
 
@@ -201,6 +210,9 @@
             position: "top-right",
             text: message,
             centerContent: true,
+            cancelButton: {
+                text: "Close"
+            }
         })
     </script>
 
@@ -231,5 +243,6 @@
     crossorigin="anonymous"></script>
 <!-- MDB -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
 
 </html>

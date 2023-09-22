@@ -5,6 +5,8 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 
 def get_results(api_key, custom_search_engine_id, query):
@@ -41,12 +43,14 @@ def get_results(api_key, custom_search_engine_id, query):
         return None
 
 
-def is_word_banned(user_word, banned_by):
-    try:
-        banned_word = BannedWord.objects.get(word=user_word, banned_by=banned_by)
-        return True
-    except BannedWord.DoesNotExist:
-        return False
+def is_word_banned_by_parent(user_word, banned_by):
+    banned_word = BannedWord.objects.filter(word=user_word, banned_by=banned_by).first()
+    return banned_word is not None
+
+
+def is_word_banned_by_default(user_word):
+    banned_word = BannedWord.objects.filter(word=user_word, banned_default=True).first()
+    return banned_word is not None
 
 
 def get_allowed(value):

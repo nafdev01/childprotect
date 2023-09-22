@@ -8,7 +8,12 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .search import get_results, is_word_banned, get_allowed
+from .search import (
+    get_results,
+    is_word_banned_by_default,
+    is_word_banned_by_parent,
+    get_allowed,
+)
 from accounts.notifications import send_email_alert
 from django.utils import timezone
 from django.http import FileResponse
@@ -18,6 +23,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from safesearch.models import SearchPhrase
 import csv
+from django.db.models import Q
 
 
 @login_required
@@ -34,55 +40,59 @@ def search(request):
 
     search_results = []  # Initialize an empty list
 
-    if request.method == "POST":
-        search_query = request.POST.get("search-query")
-        searched = True
-        flagged_words = list()
-        safe = True
+    if request.method == "GET":
+        search_query = request.GET.get("search-query")
+        if search_query:
+            searched = True
+            flagged_words = list()
+            safe = True
 
-        for word in search_query.split():
-            if is_word_banned(word, child.childprofile.parent_profile):
-                flagged_words.append(word)
-                safe = False
+            for word in search_query.lower().split():
+                if is_word_banned_by_parent(word, child.childprofile.parent_profile):
+                    flagged_words.append(word)
+                    safe = False
+                elif is_word_banned_by_default(word):
+                    flagged_words.append(word)
+                    safe = False
 
-        search_phrase = SearchPhrase(
-            searched_by=child.childprofile,
-            phrase=search_query,
-            allowed=safe,
-        )
-        search_phrase.save()
+            search_phrase = SearchPhrase(
+                searched_by=child.childprofile,
+                phrase=search_query,
+                allowed=safe,
+            )
+            search_phrase.save()
 
-        if not safe:
-            messages.error(
-                request, f"You searched for the banned words {flagged_words}"
+            if not safe:
+                messages.error(
+                    request, f"You searched for the banned words {flagged_words}"
+                )
+
+                flagged_search = FlaggedSearch(search_phrase=search_phrase)
+                flagged_search.save()
+
+                flagged_alert = FlaggedAlert(flagged_search=flagged_search)
+                flagged_alert.save()
+
+                for flagged_word in flagged_words:
+                    banned_word = BannedWord.objects.filter(
+                        Q(word=flagged_word.lower(), banned_by=child.childprofile.parent_profile)
+                        | Q(word=flagged_word.lower(), banned_default=True)
+                    ).first()
+                    FlaggedWord(
+                        flagged_search=flagged_search, flagged_word=banned_word
+                    ).save()
+
+                send_email_alert(request, flagged_words, search_phrase)
+                return redirect("safesearch:child_search_history")
+
+            search_results = get_results(
+                settings.GOOGLE_API_KEY,
+                settings.CUSTOM_SEARCH_ENGINE_ID,
+                search_query,
             )
 
-            flagged_search = FlaggedSearch(search_phrase=search_phrase)
-            flagged_search.save()
-
-            flagged_alert = FlaggedAlert(flagged_search=flagged_search)
-            flagged_alert.save()
-
-            for flagged_word in flagged_words:
-                banned_word = BannedWord.objects.get(
-                    word=flagged_word.lower(),
-                    banned_by=child.childprofile.parent_profile,
-                )
-                FlaggedWord(
-                    flagged_search=flagged_search, flagged_word=banned_word
-                ).save()
-
-            send_email_alert(request, flagged_words, search_phrase)
-            return redirect("safesearch:child_search_history")
-
-        search_results = get_results(
-            settings.GOOGLE_API_KEY,
-            settings.CUSTOM_SEARCH_ENGINE_ID,
-            search_query,
-        )
-
-    else:
-        searched = False
+        else:
+            searched = False
 
     template_name = "safesearch/search.html"
     context = {"search_results": search_results, "searched": searched}
@@ -273,9 +283,7 @@ def generate_pdf_report(request, child_id=None):
     doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
 
     # Create a list to hold the table data
-    data = [
-        ["Searched By", "Search Phrase", "Searched On", "Allowed"]
-    ]
+    data = [["Searched By", "Search Phrase", "Searched On", "Allowed"]]
 
     # Populate the data list with search history
     for entry in child_search_history:

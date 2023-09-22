@@ -8,11 +8,17 @@ class SearchPhraseAdmin(admin.ModelAdmin):
     list_filter = ("allowed",)
 
 
+@admin.action(description="Mark as a default banned word")
+def mark_default_ban(modeladmin, request, queryset):
+    queryset.update(banned_default=True)
+
+
 @admin.register(BannedWord)
 class BannedWordAdmin(admin.ModelAdmin):
     list_display = ("word", "reason", "date_added", "date_updated")
     list_filter = ("reason",)
-
+    actions = [mark_default_ban]
+    search_fields = ["word"]
 
 @admin.register(FlaggedSearch)
 class FlaggedSearchAdmin(admin.ModelAdmin):

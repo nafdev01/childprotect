@@ -44,6 +44,7 @@ class BannedWord(models.Model):
         choices=BanReason.choices,
         default=BanReason.INAPPROPRIATE_CONTENT,
     )
+    banned_default = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)

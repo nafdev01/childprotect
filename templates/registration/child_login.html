@@ -11,6 +11,14 @@
     <form class="mb-3" method="post">
         {% bootstrap_form child_login_form layout='floating' %}
         {% csrf_token %}
+        <div class="form-check m-2">
+            <input class="form-check-input" type="checkbox" value="" id="showPasswordBox"
+                onclick="togglePasswordVisibility('login',this);">
+            <label class="form-check-label" for="showPassBox">
+                Show Password
+            </label>
+        </div>
+
         <input class="btn btn-outline-success" type="submit" value="Login">
     </form>
 </section>
