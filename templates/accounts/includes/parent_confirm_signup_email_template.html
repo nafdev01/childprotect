@@ -8,6 +8,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <style>
         /* Define your link styles here */
+        .button1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #4CAF50;
+        }
+
+        .button1:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
         a {
             color: #007BFF;
             /* Link color */
@@ -30,7 +41,7 @@
     <p>Please confirm your email address to activate your account.</p>
     <p>Click the link below to activate your account:</p>
 
-    <a class="" href="{{ protocol }}://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}">
+    <a class="button" href="{{ protocol }}://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}">
         Activate Account
     </a>
 
