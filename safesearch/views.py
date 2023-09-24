@@ -10,8 +10,8 @@ from django.contrib import messages
 from django.conf import settings
 from .search import (
     get_results,
-    is_word_banned_by_default,
-    is_word_banned_by_parent,
+    word_banned_by_default,
+    word_banned_by_parent,
     get_allowed,
 )
 from accounts.notifications import send_email_alert
@@ -48,10 +48,10 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if is_word_banned_by_parent(word, child.childprofile.parent_profile):
+                if word_banned_by_parent(word, child.childprofile.parent_profile):
                     flagged_words.append(word)
                     safe = False
-                elif is_word_banned_by_default(word):
+                elif word_banned_by_default(word):
                     flagged_words.append(word)
                     safe = False
 
@@ -64,7 +64,7 @@ def search(request):
 
             if not safe:
                 messages.error(
-                    request, f"You searched for the banned words {flagged_words}"
+                    request, f"You searched for the banned words { ','.join(flagged_words)}"
                 )
 
                 flagged_search = FlaggedSearch(search_phrase=search_phrase)

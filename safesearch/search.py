@@ -43,12 +43,12 @@ def get_results(api_key, custom_search_engine_id, query):
         return None
 
 
-def is_word_banned_by_parent(user_word, banned_by):
+def word_banned_by_parent(user_word, banned_by):
     banned_word = BannedWord.objects.filter(word=user_word, banned_by=banned_by).first()
     return banned_word is not None
 
 
-def is_word_banned_by_default(user_word):
+def word_banned_by_default(user_word):
     banned_word = BannedWord.objects.filter(word=user_word, banned_default=True).first()
     return banned_word is not None
 
