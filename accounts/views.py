@@ -8,8 +8,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator as token_generator
@@ -17,7 +15,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .models import Confirmation
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 
 
 # parent login view
@@ -243,7 +240,7 @@ def register_child(request):
             child.email = parent.email
             child.save()
             profile.save()
-            messages.success(request, "Registration Successful! Log in to continue")
+            messages.success(request, f"Child {child.get_full_name()} Has Been Registered Successfully")
             send_child_signup_email(request, parent, child)
             return redirect("accounts:parent_dashboard")
 

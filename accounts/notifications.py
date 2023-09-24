@@ -91,7 +91,7 @@ def send_child_signup_email(request, parent, child):
         "device version": request.user_agent.os.version_string,
     }
     # Retrieve entry by id
-    subject = f"Successful Login Notification"
+    subject = f"Child {child.get_full_name()} Has Been Signed Up Successfully"
     sender = settings.EMAIL_HOST_USER
     recipient = parent.email
     message = get_template("accounts/includes/child_signup_email_template.html").render(
@@ -159,7 +159,7 @@ def send_child_login_email(request):
         "device version": request.user_agent.os.version_string,
     }
     # Retrieve entry by id
-    subject = f"Successful Login Notification"
+    subject = f"Child {child.get_full_name()} Login Notification"
     sender = settings.EMAIL_HOST_USER
     recipient = parent.email
     message = get_template("accounts/includes/child_login_email_template.html").render(
