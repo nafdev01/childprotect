@@ -1,6 +1,3 @@
  - filtering urls and desciptions as well
- - filter django_user_agents
- - optimize alerts
- - open results in popup page
  - rate limiting for logins
  - rate limiting for banned words

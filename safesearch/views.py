@@ -13,6 +13,7 @@ from .search import (
     word_banned_by_default,
     word_banned_by_parent,
     get_allowed,
+    filter_search_results,
 )
 from accounts.notifications import send_email_alert
 from django.utils import timezone
@@ -31,6 +32,7 @@ def search(request):
     # Check if the user is a child
     if request.user.is_child:
         child = request.user
+        parent = child.childprofile.parent_profile
     elif request.user.is_parent:
         messages.error(request, "You need to be a child to access this search engine")
         return redirect("accounts:dashboard")
@@ -48,7 +50,7 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if word_banned_by_parent(word, child.childprofile.parent_profile):
+                if word_banned_by_parent(word, parent):
                     flagged_words.append(word)
                     safe = False
                 elif word_banned_by_default(word):
@@ -64,7 +66,8 @@ def search(request):
 
             if not safe:
                 messages.error(
-                    request, f"You searched for the banned words { ','.join(flagged_words)}"
+                    request,
+                    f"You searched for the banned words { ','.join(flagged_words)}",
                 )
 
                 flagged_search = FlaggedSearch(search_phrase=search_phrase)
@@ -75,8 +78,11 @@ def search(request):
 
                 for flagged_word in flagged_words:
                     banned_word = BannedWord.objects.filter(
-                        Q(word=flagged_word.lower(), banned_by=child.childprofile.parent_profile)
-                        | Q(word=flagged_word.lower(), banned_default=True)
+                        Q(
+                            word=flagged_word.lower(),
+                            banned_by=child.childprofile.parent_profile,
+                        )
+                        | Q(word=flagged_word.lower(), default_ban=True)
                     ).first()
                     FlaggedWord(
                         flagged_search=flagged_search, flagged_word=banned_word
@@ -89,6 +95,7 @@ def search(request):
                 settings.GOOGLE_API_KEY,
                 settings.CUSTOM_SEARCH_ENGINE_ID,
                 search_query,
+                parent,
             )
 
         else:
@@ -168,7 +175,7 @@ def create_banned_word(request):
 
 
 @login_required
-def banned_word_list(request):
+def custom_banned_word_list(request):
     # Check if the user is a child
     if request.user.user_type == User.UserType.PARENT:
         parent = request.user.parentprofile
@@ -176,7 +183,7 @@ def banned_word_list(request):
         messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
 
-    banned_words = BannedWord.objects.filter(banned_by=parent)
+    banned_words = BannedWord.banned_by_parent.filter(banned_by=parent)
 
     template_name = ("safesearch/banned_words.html",)
     context = {"banned_words": banned_words}

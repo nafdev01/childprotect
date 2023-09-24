@@ -34,6 +34,14 @@ class BanReason(models.TextChoices):
 
 # class for a banned word
 class BannedWord(models.Model):
+    class BannedByDefaultManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(default_ban=True)
+
+    class BannedByParentManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(default_ban=False)
+
     banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
     word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
@@ -44,7 +52,11 @@ class BannedWord(models.Model):
         choices=BanReason.choices,
         default=BanReason.INAPPROPRIATE_CONTENT,
     )
-    banned_default = models.BooleanField(default=False)
+    default_ban = models.BooleanField(default=False)
+
+    objects = models.Manager()  # The default manager.
+    banned_by_default = BannedByDefaultManager()  # Our custom manager.
+    banned_by_parent = BannedByParentManager()  # Our custom manager.
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)
