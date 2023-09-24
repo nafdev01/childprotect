@@ -15,10 +15,11 @@ def mark_default_ban(modeladmin, request, queryset):
 
 @admin.register(BannedWord)
 class BannedWordAdmin(admin.ModelAdmin):
-    list_display = ("word", "reason", "date_added", "date_updated")
+    list_display = ("word", "reason", "last_updated")
     list_filter = ("reason",)
-    actions = [mark_default_ban]
+    actions = (mark_default_ban,)
     search_fields = ["word"]
+
 
 @admin.register(FlaggedSearch)
 class FlaggedSearchAdmin(admin.ModelAdmin):
@@ -41,4 +42,4 @@ def make_unreviewed(modeladmin, request, queryset):
 class FlaggedAlertAdmin(admin.ModelAdmin):
     list_display = ("flagged_search", "been_reviewed", "reviewed_on")
     list_filter = ("been_reviewed",)
-    actions = [make_unreviewed]
+    actions = (make_unreviewed,)

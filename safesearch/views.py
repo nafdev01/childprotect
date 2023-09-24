@@ -8,13 +8,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .search import (
-    get_results,
-    word_banned_by_default,
-    word_banned_by_parent,
-    get_allowed,
-    filter_search_results,
-)
+from .search import get_results, get_allowed, word_banned
 from accounts.notifications import send_email_alert
 from django.utils import timezone
 from django.http import FileResponse
@@ -50,10 +44,7 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if word_banned_by_parent(word, parent):
-                    flagged_words.append(word)
-                    safe = False
-                elif word_banned_by_default(word):
+                if word_banned(word, parent):
                     flagged_words.append(word)
                     safe = False
 

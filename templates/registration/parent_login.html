@@ -8,7 +8,7 @@
 
 {% block content %}
 <section class="container justify-content-center">
-    <form class="mb-3" method="post">
+    <form class="mb-3" method="post" action="{% url 'accounts:login_parent' %}">
         {% bootstrap_form form layout='floating' %}
         {% csrf_token %}
         <div class="form-check m-2">

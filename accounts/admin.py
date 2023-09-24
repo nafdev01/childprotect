@@ -10,13 +10,14 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(ChildProfile)
 class ChildProfileAdmin(admin.ModelAdmin):
-    list_display = ("child", "account_status")
-    list_filter = ("account_status",)
+    list_display = ("child", "parent_profile")
+    list_filter = ("child", "parent_profile")
 
 
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     list_display = ("parent",)
+
 
 @admin.register(Confirmation)
 class ConfirmationAdmin(admin.ModelAdmin):

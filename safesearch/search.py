@@ -8,29 +8,19 @@ def filter_search_results(search_results, parent):
 
     for result in search_results:
         # Check if the title, link, or snippet contains any banned words by default
-        title_has_banned_word_default = any(
-            word_banned_by_default(word) for word in result["title"].lower().split()
-        )
-        snippet_has_banned_word_default = any(
-            word_banned_by_default(word) for word in result["snippet"].lower().split()
-        )
-
-        # Check if the title, link, or snippet contains any banned words by parent
-        title_has_banned_word_parent = any(
-            word_banned_by_parent(word, banned_by=parent)
+        title_has_banned_word = any(
+            word_banned(word, banned_by=parent)
             for word in result["title"].split()
         )
-        snippet_has_banned_word_parent = any(
-            word_banned_by_parent(word, banned_by=parent)
+        snippet_has_banned_word = any(
+            word_banned(word, banned_by=parent)
             for word in result["snippet"].split()
         )
 
         # If none of them have banned words, add the result to filtered_results
         if not (
-            title_has_banned_word_default
-            or snippet_has_banned_word_default
-            or title_has_banned_word_parent
-            or snippet_has_banned_word_parent
+            title_has_banned_word
+            or snippet_has_banned_word
         ):
             filtered_results.append(result)
 
@@ -72,16 +62,9 @@ def get_results(api_key, custom_search_engine_id, query, parent):
         return None
 
 
-def word_banned_by_parent(user_word, banned_by):
-    banned_word = BannedWord.banned_by_parent.filter(
+def word_banned(user_word, banned_by):
+    banned_word = BannedWord.custom_banned_words.filter(
         word=user_word, banned_by=banned_by
-    ).first()
-    return banned_word is not None
-
-
-def word_banned_by_default(user_word):
-    banned_word = BannedWord.banned_by_default.filter(
-        word=user_word, default_ban=True
     ).first()
     return banned_word is not None
 
