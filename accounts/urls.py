@@ -12,6 +12,7 @@ urlpatterns = [
     path("parent/dashboard/", views.parent_dashboard, name="parent_dashboard"),
     # email confirmation urls
     path("activate/<uidb64>/<token>/", views.activate, name="activate"),
+    path("parent/not_activated/", views.parent_not_activated, name="parent_not_activated"),
     # child urls
     path("child/login/", views.login_child, name="login_child"),
     path("child/register/", views.register_child, name="register_child"),

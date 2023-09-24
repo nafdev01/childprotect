@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import *
-from accounts.models import *
 from .models import *
+from accounts.decorators import account_activation_required
+from accounts.models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -29,7 +30,7 @@ def search(request):
         parent = child.childprofile.parent_profile
     elif request.user.is_parent:
         messages.error(request, "You need to be a child to access this search engine")
-        return redirect("accounts:dashboard")
+        return redirect("accounts:parent_dashboard")
     else:
         messages.error(request, "You need to be a child to access this search engine")
         return redirect("home")
@@ -100,9 +101,9 @@ def search(request):
 @login_required
 def child_search_history(request):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.CHILD:
+    if request.user.user_type == UserType.CHILD:
         child = request.user
-    elif request.user.user_type == User.UserType.PARENT:
+    elif request.user.user_type == UserType.PARENT:
         messages.warning(
             request, "Redirecting you to all your children's search history"
         )
@@ -119,11 +120,12 @@ def child_search_history(request):
 
 
 @login_required
+@account_activation_required
 def parent_search_history(request):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
+    if request.user.user_type == UserType.PARENT:
         parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
+    elif request.user.user_type == UserType.CHILD:
         messages.warning(request, "Redirecting you to your search history")
         return redirect("safesearch:child_search_history")
     else:
@@ -140,11 +142,12 @@ def parent_search_history(request):
 
 
 @login_required
+@account_activation_required
 def create_banned_word(request):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
+    if request.user.user_type == UserType.PARENT:
         parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
+    elif request.user.user_type == UserType.CHILD:
         messages.warning(request, "You need to be a parent to ban a word")
         return redirect("safesearch:child_dashboard")
     else:
@@ -166,9 +169,10 @@ def create_banned_word(request):
 
 
 @login_required
+@account_activation_required
 def custom_banned_word_list(request):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
+    if request.user.user_type == UserType.PARENT:
         parent = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
@@ -182,9 +186,10 @@ def custom_banned_word_list(request):
 
 
 @login_required
+@account_activation_required
 def alert_list(request):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
+    if request.user.user_type == UserType.PARENT:
         parent_profile = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
@@ -207,9 +212,10 @@ def alert_list(request):
 
 
 @login_required
+@account_activation_required
 def review_alert(request, alert_id):
     # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
+    if request.user.user_type == UserType.PARENT:
         parent_profile = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
@@ -262,6 +268,7 @@ def add_banned_csv(request):
 
 
 @login_required
+@account_activation_required
 def generate_pdf_report(request, child_id=None):
     # Fetch the child's search history
     if child_id:

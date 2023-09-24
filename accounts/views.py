@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from .notifications import *
 from .models import *
+from .decorators import account_activation_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate
@@ -35,25 +36,19 @@ def login_parent(request):
             try:
                 user = User.objects.get(username=username)
 
-                if user.account_status == AccountStatus.NOTACTIVATED:
-                    messages.error(
-                        request,
-                        f"Please confirm your email at {user.email[:5]}**************{user.email[-10:]} before attempting to log in",
-                    )
-                else:
-                    user = authenticate(
-                        request,
-                        username=username,
-                        password=password,
-                    )
+                user = authenticate(
+                    request,
+                    username=username,
+                    password=password,
+                )
 
-                    if user is not None and user.user_type == UserType.PARENT:
-                        login(request, user)
-                        messages.success(request, "Log In Successful!")
-                        send_parent_login_email(request)
-                        return redirect("accounts:parent_dashboard")
-                    else:
-                        messages.error(request, "Invalid username or password.")
+                if user is not None and user.user_type == UserType.PARENT:
+                    login(request, user)
+                    messages.success(request, "Log In Successful!")
+                    send_parent_login_email(request)
+                    return redirect("accounts:parent_dashboard")
+                else:
+                    messages.error(request, "Invalid username or password.")
             except User.DoesNotExist:
                 messages.error(request, "Invalid username or password.")
 
@@ -135,8 +130,31 @@ def activate(request, uidb64, token):
     return redirect("accounts:login_parent")
 
 
+@login_required
+def parent_not_activated(request):
+    if request.user.user_type == UserType.PARENT:
+        parent = request.user
+        if parent.account_status == AccountStatus.ACTIVATED:
+            messages.info(request, "You are account is already activated!")
+            return redirect("accounts:parent_dashboard")
+    elif request.user.user_type == UserType.CHILD:
+        messages.info(request, "You are logged in as a child!")
+        return redirect("accounts:child_dashboard")
+    else:
+        messages.info(request, "You are not allowed to access this page!")
+        return redirect("accounts:child_dashboard")
+
+    context = {
+        "parent": parent,
+    }
+    template_name = "registration/not_activated.html"
+
+    return render(request, template_name, context)
+
+
 # View for parent user registration with profile information
 @login_required
+@account_activation_required
 def parent_dashboard(request):
     if request.user.user_type == UserType.CHILD:
         # redirect to dashboard if parent is already logged in
@@ -214,6 +232,8 @@ def child_dashboard(request):
 
 
 # View for parent user registration with profile information
+@login_required
+@account_activation_required
 def register_child(request):
     if request.user.is_authenticated:
         if request.user.user_type == UserType.CHILD:
