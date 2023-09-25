@@ -3,13 +3,17 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import *
-from .models import *
-from accounts.decorators import account_activation_required
 from accounts.models import *
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from .search import get_results, get_allowed, word_banned
+from .search import (
+    get_results,
+    is_word_banned_by_default,
+    is_word_banned_by_parent,
+    get_allowed,
+)
 from accounts.notifications import send_email_alert
 from django.utils import timezone
 from django.http import FileResponse
@@ -27,10 +31,9 @@ def search(request):
     # Check if the user is a child
     if request.user.is_child:
         child = request.user
-        parent = child.childprofile.parent_profile
     elif request.user.is_parent:
         messages.error(request, "You need to be a child to access this search engine")
-        return redirect("accounts:parent_dashboard")
+        return redirect("accounts:dashboard")
     else:
         messages.error(request, "You need to be a child to access this search engine")
         return redirect("home")
@@ -45,7 +48,10 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if word_banned(word, parent):
+                if is_word_banned_by_parent(word, child.childprofile.parent_profile):
+                    flagged_words.append(word)
+                    safe = False
+                elif is_word_banned_by_default(word):
                     flagged_words.append(word)
                     safe = False
 
@@ -58,8 +64,7 @@ def search(request):
 
             if not safe:
                 messages.error(
-                    request,
-                    f"You searched for the banned words { ','.join(flagged_words)}",
+                    request, f"You searched for the banned words {flagged_words}"
                 )
 
                 flagged_search = FlaggedSearch(search_phrase=search_phrase)
@@ -70,11 +75,8 @@ def search(request):
 
                 for flagged_word in flagged_words:
                     banned_word = BannedWord.objects.filter(
-                        Q(
-                            word=flagged_word.lower(),
-                            banned_by=child.childprofile.parent_profile,
-                        )
-                        | Q(word=flagged_word.lower(), default_ban=True)
+                        Q(word=flagged_word.lower(), banned_by=child.childprofile.parent_profile)
+                        | Q(word=flagged_word.lower(), banned_default=True)
                     ).first()
                     FlaggedWord(
                         flagged_search=flagged_search, flagged_word=banned_word
@@ -87,7 +89,6 @@ def search(request):
                 settings.GOOGLE_API_KEY,
                 settings.CUSTOM_SEARCH_ENGINE_ID,
                 search_query,
-                parent,
             )
 
         else:
@@ -101,9 +102,9 @@ def search(request):
 @login_required
 def child_search_history(request):
     # Check if the user is a child
-    if request.user.user_type == UserType.CHILD:
+    if request.user.user_type == User.UserType.CHILD:
         child = request.user
-    elif request.user.user_type == UserType.PARENT:
+    elif request.user.user_type == User.UserType.PARENT:
         messages.warning(
             request, "Redirecting you to all your children's search history"
         )
@@ -120,12 +121,11 @@ def child_search_history(request):
 
 
 @login_required
-@account_activation_required
 def parent_search_history(request):
     # Check if the user is a child
-    if request.user.user_type == UserType.PARENT:
+    if request.user.user_type == User.UserType.PARENT:
         parent = request.user
-    elif request.user.user_type == UserType.CHILD:
+    elif request.user.user_type == User.UserType.CHILD:
         messages.warning(request, "Redirecting you to your search history")
         return redirect("safesearch:child_search_history")
     else:
@@ -142,12 +142,11 @@ def parent_search_history(request):
 
 
 @login_required
-@account_activation_required
 def create_banned_word(request):
     # Check if the user is a child
-    if request.user.user_type == UserType.PARENT:
+    if request.user.user_type == User.UserType.PARENT:
         parent = request.user
-    elif request.user.user_type == UserType.CHILD:
+    elif request.user.user_type == User.UserType.CHILD:
         messages.warning(request, "You need to be a parent to ban a word")
         return redirect("safesearch:child_dashboard")
     else:
@@ -169,16 +168,15 @@ def create_banned_word(request):
 
 
 @login_required
-@account_activation_required
-def custom_banned_word_list(request):
+def banned_word_list(request):
     # Check if the user is a child
-    if request.user.user_type == UserType.PARENT:
+    if request.user.user_type == User.UserType.PARENT:
         parent = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
 
-    banned_words = BannedWord.banned_by_parent.filter(banned_by=parent)
+    banned_words = BannedWord.objects.filter(banned_by=parent)
 
     template_name = ("safesearch/banned_words.html",)
     context = {"banned_words": banned_words}
@@ -186,10 +184,9 @@ def custom_banned_word_list(request):
 
 
 @login_required
-@account_activation_required
 def alert_list(request):
     # Check if the user is a child
-    if request.user.user_type == UserType.PARENT:
+    if request.user.user_type == User.UserType.PARENT:
         parent_profile = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
@@ -212,10 +209,9 @@ def alert_list(request):
 
 
 @login_required
-@account_activation_required
 def review_alert(request, alert_id):
     # Check if the user is a child
-    if request.user.user_type == UserType.PARENT:
+    if request.user.user_type == User.UserType.PARENT:
         parent_profile = request.user.parentprofile
     else:
         messages.error(request, "You need to be a parent to access this page")
@@ -268,7 +264,6 @@ def add_banned_csv(request):
 
 
 @login_required
-@account_activation_required
 def generate_pdf_report(request, child_id=None):
     # Fetch the child's search history
     if child_id:

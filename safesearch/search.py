@@ -1,33 +1,15 @@
 # safesearch/filter.py
 import requests
 from safesearch.models import BannedWord
+from django.template.loader import get_template
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 
-def filter_search_results(search_results, parent):
-    filtered_results = []
-
-    for result in search_results:
-        # Check if the title, link, or snippet contains any banned words by default
-        title_has_banned_word = any(
-            word_banned(word, banned_by=parent)
-            for word in result["title"].split()
-        )
-        snippet_has_banned_word = any(
-            word_banned(word, banned_by=parent)
-            for word in result["snippet"].split()
-        )
-
-        # If none of them have banned words, add the result to filtered_results
-        if not (
-            title_has_banned_word
-            or snippet_has_banned_word
-        ):
-            filtered_results.append(result)
-
-    return filtered_results
-
-
-def get_results(api_key, custom_search_engine_id, query, parent):
+def get_results(api_key, custom_search_engine_id, query):
     search_results = list()
 
     # Make a request to the Google Custom Search API.
@@ -51,8 +33,7 @@ def get_results(api_key, custom_search_engine_id, query, parent):
                 }
                 search_results.append(search_result)
 
-            filtered_search_results = filter_search_results(search_results, parent)
-            return filtered_search_results
+            return search_results  # Return the list of search results
 
         else:
             print("No search results found.")
@@ -62,10 +43,13 @@ def get_results(api_key, custom_search_engine_id, query, parent):
         return None
 
 
-def word_banned(user_word, banned_by):
-    banned_word = BannedWord.custom_banned_words.filter(
-        word=user_word, banned_by=banned_by
-    ).first()
+def is_word_banned_by_parent(user_word, banned_by):
+    banned_word = BannedWord.objects.filter(word=user_word, banned_by=banned_by).first()
+    return banned_word is not None
+
+
+def is_word_banned_by_default(user_word):
+    banned_word = BannedWord.objects.filter(word=user_word, banned_default=True).first()
     return banned_word is not None
 
 

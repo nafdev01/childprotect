@@ -82,7 +82,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'safesearch:alert_list' %}" title="View Search History">
                             Alerts
-                            {% with unreviewed=request.user.parentprofile.unreviewed_alerts_count %}
+                            {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
                             {% if unreviewed > 0 %}
                             <span class="badge text-bg-danger">{{ unreviewed }}</span>
                             {% endif %}
@@ -156,7 +156,7 @@
 
         silverBox({
             alertIcon: "success",
-            position: "top-left",
+            position: "top-right",
             text: message,
             centerContent: true,
             cancelButton: {
@@ -187,7 +187,7 @@
 
         silverBox({
             alertIcon: alertType,
-            position: "top-left",
+            position: "top-right",
             text: message,
             centerContent: true,
             cancelButton: {

@@ -1,14 +1,8 @@
 # safesearch/models,py
 from django.db import models
 from django.utils.text import slugify
-from accounts.models import ChildProfile, ParentProfile, User, UserType
+from accounts.models import ChildProfile, ParentProfile
 from django.utils import timezone
-
-
-# choices for unban request response
-class RequestResponse(models.TextChoices):
-    APPROVED = "AP", "Approved"
-    DENIED = "DE", "Denied"
 
 
 class SearchPhrase(models.Model):
@@ -40,29 +34,17 @@ class BanReason(models.TextChoices):
 
 # class for a banned word
 class BannedWord(models.Model):
-    class DefaultBannedWordsManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(default_ban=True)
-
-    class CustomBannedWordsManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(default_ban=False)
-
     banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
     word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
-    last_updated = models.DateTimeField(auto_now=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     reason = models.CharField(
         max_length=2,
         choices=BanReason.choices,
         default=BanReason.INAPPROPRIATE_CONTENT,
     )
-    default_ban = models.BooleanField(default=False)
-    been_unbanned = models.BooleanField(default=False)
-
-    objects = models.Manager()
-    default_banned_words = DefaultBannedWordsManager()
-    custom_banned_words = CustomBannedWordsManager()
+    banned_default = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.word)
@@ -129,43 +111,3 @@ class FlaggedAlert(models.Model):
     class Meta:
         verbose_name = "Flagged Alert"
         verbose_name_plural = "Flagged Alerts"
-
-
-class UnbanRequest(models.Model):
-    class ReviewedManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(been_reviewed=True)
-
-    class UnreviewedManager(models.Manager):
-        def get_queryset(self):
-            return super().get_queryset().filter(been_reviewed=False)
-
-    banned_word = models.OneToOneField(BannedWord, on_delete=models.CASCADE)
-    been_reviewed = models.BooleanField(default=False)
-    requested_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        limit_choices_to={"user_type": UserType.CHILD},
-    )
-    requested_on = models.DateTimeField(auto_now_add=True, null=True)
-    review_response = models.CharField(
-        max_length=2, choices=RequestResponse.choices, null=True
-    )
-
-    objects = models.Manager()
-    reviewed_requests = ReviewedManager()
-    unreviewed_requests = UnreviewedManager()
-
-    @property
-    def request_approved(self):
-        if self.review_response == RequestResponse.APPROVED:
-            return True
-        if self.review_response == RequestResponse.DENIED:
-            return False
-
-    def __str__(self):
-        return f"{self.banned_word} unban request"
-
-    class Meta:
-        verbose_name = "Unban Request"
-        verbose_name_plural = "Unban Requests"
