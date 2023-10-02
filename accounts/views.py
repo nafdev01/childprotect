@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from .forms import *
 from .notifications import *
 from .models import User, ParentProfile, ChildProfile, AccountStatus
@@ -33,13 +34,14 @@ def login_parent(request):
             password = form.cleaned_data.get("password")
 
             try:
-                parent = User.objects.get(username=username)
+                parent = User.objects.get(username=username, is_active=False)
 
                 if not parent.is_active:
                     messages.error(
                         request,
                         f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
                     )
+                    redirect(reverse("accounts:login_parent"))
                 else:
                     parent = authenticate(
                         request,
@@ -240,7 +242,10 @@ def register_child(request):
             child.email = parent.email
             child.save()
             profile.save()
-            messages.success(request, f"Child {child.get_full_name()} Has Been Registered Successfully")
+            messages.success(
+                request,
+                f"Child {child.get_full_name()} Has Been Registered Successfully",
+            )
             send_child_signup_email(request, parent, child)
             return redirect("accounts:parent_dashboard")
 

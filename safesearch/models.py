@@ -111,3 +111,18 @@ class FlaggedAlert(models.Model):
     class Meta:
         verbose_name = "Flagged Alert"
         verbose_name_plural = "Flagged Alerts"
+
+
+class UnbanRequest(models.Model):
+    banned_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
+    requested_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE)
+    requested_on = models.DateTimeField(null=True)
+    reviewed = models.BooleanField(default=False)
+    reviewed_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f"{self.banned_word} review request"
+
+    class Meta:
+        verbose_name = "Unban Request"
+        verbose_name_plural = "Unban Request"
