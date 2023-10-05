@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
-
 {% block title %}Profile{% endblock %}
+
+{% block custom_css %}{% endblock custom_css %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,9 +10,48 @@
     <div class="row mb-3">
         <div class="col-lg-4">
             <div class="card mb-3">
-                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="/dogs/image2.jpeg"
-                        width="160" height="160">
-                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="button">Change Photo</button></div>
+                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
+                        src="{{ profile.photo.url }}" width="160" height="160">
+                    <div class="mb-3">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Change Photo</button>
+                    </div>
+
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{% url 'accounts:update_profile_photo' %}" method="post"
+                                        id="photoForm" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <label class="form-label" for="profile_photo">Select New Photo</label>
+                                        <input type="file" class="form-control" id="profile_photo"
+                                            name="profile_photo" />
+
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onclick="updatePhoto()">
+                                        Save changes
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
             <div class="card shadow mb-4">
@@ -19,10 +59,10 @@
                     <h6 class="text-primary fw-bold m-0">Projects</h6>
                 </div>
                 <div class="card-body">
-                    <h4 class="small fw-bold">Server migration<span class="float-end">20%</span></h4>
+                    <h4 class="small fw-bold">Server migration<span class="float-end">57%</span></h4>
                     <div class="progress progress-sm mb-3">
-                        <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
-                            style="width: 20%;"><span class="visually-hidden">20%</span></div>
+                        <div class="progress-bar bg-danger" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"
+                            style="width: 57%;"><span class="visually-hidden">57%</span></div>
                     </div>
                     <h4 class="small fw-bold">Sales tracking<span class="float-end">40%</span></h4>
                     <div class="progress progress-sm mb-3">
@@ -84,64 +124,91 @@
                 <div class="col">
                     <div class="card shadow mb-3">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 fw-bold">User Settings</p>
+                            <p class="text-primary m-0 fw-bold">Your Info</p>
                         </div>
                         <div class="card-body">
-                            <form>
+                            <form method="post" action="{% url 'accounts:update_parent_info' %}">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col">
-                                        <div class="mb-3"><label class="form-label"
-                                                for="username"><strong>Username</strong></label><input
-                                                class="form-control" type="text" id="username" placeholder="user.name"
-                                                name="username"></div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="mb-3"><label class="form-label" for="email"><strong>Email
-                                                    Address</strong></label><input class="form-control" type="email"
-                                                id="email" placeholder="user@example.com" name="email"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="username"><strong>Username</strong></label>
+                                            <input class="form-control" type="text" id="username"
+                                                placeholder="user.name" name="username" value="{{ parent.username }}">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <div class="mb-3"><label class="form-label" for="first_name"><strong>First
-                                                    Name</strong></label><input class="form-control" type="text"
-                                                id="first_name" placeholder="John" name="first_name"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="first_name"><strong>First
+                                                    Name</strong></label>
+                                            <input class="form-control" type="text" id="first_name" placeholder="John"
+                                                name="first_name" value="{{ parent.first_name }}">
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <div class="mb-3"><label class="form-label" for="last_name"><strong>Last
-                                                    Name</strong></label><input class="form-control" type="text"
-                                                id="last_name" placeholder="Doe" name="last_name"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="last_name"><strong>Last Name</strong></label>
+                                            <input class="form-control" type="text" id="last_name" placeholder="Doe"
+                                                name="last_name" value="{{ parent.last_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="gender"><strong>Gender</strong></label>
+                                            <select class="form-select" id="gender" name="gender">
+                                                {% for choice in profile.ParentGender.choices %}
+                                                <option value="{{ choice.0 }}" {% if choice.0 is profile.gender %}
+                                                    selected {% endif %}>
+                                                    {{ choice.1 }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Save
-                                        Settings</button></div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
+                                </div>
                             </form>
                         </div>
                     </div>
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <p class="text-primary m-0 fw-bold">Contact Settings</p>
+                            <p class="text-primary m-0 fw-bold">Contact Details</p>
                         </div>
                         <div class="card-body">
-                            <form>
-                                <div class="mb-3"><label class="form-label"
-                                        for="address"><strong>Address</strong></label><input class="form-control"
-                                        type="text" id="address" placeholder="Sunset Blvd, 38" name="address"></div>
+                            <form action="{% url 'accounts:update_parent_contacts' %}" method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="address"><strong>Address</strong></label>
+                                    <input class="form-control" type="text" id="address" placeholder="Sunset Blvd, 38"
+                                        name="address" value="{{ profile.address }}">
+                                </div>
                                 <div class="row">
                                     <div class="col">
-                                        <div class="mb-3"><label class="form-label"
-                                                for="city"><strong>City</strong></label><input class="form-control"
-                                                type="text" id="city" placeholder="Los Angeles" name="city"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="email"><strong>Email
+                                                    Number</strong></label>
+                                            <input class="form-control" type="email" id="email"
+                                                placeholder="Your email address" name="email"
+                                                value="{{ parent.email }}">
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <div class="mb-3"><label class="form-label"
-                                                for="country"><strong>Country</strong></label><input
-                                                class="form-control" type="text" id="country" placeholder="USA"
-                                                name="country"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="phone_number"><strong>Phone
+                                                    Number</strong></label>
+                                            <input class="form-control" type="tel" id="phone_number"
+                                                placeholder="Los Angeles" name="phone_number"
+                                                value="{{ profile.phone_number }}">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mb-3"><button class="btn btn-primary btn-sm"
-                                        type="submit">Save&nbsp;Settings</button></div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -151,3 +218,16 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block custom_js %}
+<script>
+    function updatePhoto() {
+        // Get a reference to the form element
+        var form = document.getElementById("photoForm");
+
+        // Submit the form
+        form.submit();
+    }
+
+</script>
+{% endblock custom_js %}

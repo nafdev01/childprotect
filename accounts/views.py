@@ -166,6 +166,7 @@ def parent_dashboard(request):
 
     return render(request, template_name, context)
 
+
 # View for parent user registration with profile information
 @login_required
 def parent_profile(request):
@@ -175,17 +176,99 @@ def parent_profile(request):
         return redirect("accounts:child_dashboard")
 
     parent = request.user
-    parent_profile = ParentProfile.objects.get(parent=parent)
+    parent_profile = parent.parentprofile
     children_profiles = parent_profile.childprofile_set.all()
 
     context = {
         "parent": parent,
         "children_profiles": children_profiles,
-        "parent_profile": parent_profile,
+        "profile": parent_profile,
     }
     template_name = "accounts/parent_profile.html"
 
     return render(request, template_name, context)
+
+
+# update parent details
+def update_parent_info(request):
+    if request.method == "POST":
+        # Get the parent's profile instance for the logged-in user
+        parent = request.user
+        parent_profile = request.user.parentprofile
+        # Extract data from the POST request
+        username = request.POST.get("username")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        gender = request.POST.get("gender")
+
+        # Update the parent's info fields with the extracted data
+        parent.username = username
+        parent.first_name = first_name
+        parent.last_name = last_name
+        parent.save()
+
+        # Update the parent's profile fields with the extracted data
+        parent_profile.gender = gender
+        parent_profile.save()
+
+        messages.success(request, "Parent info updated successfully.")
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("accounts:parent_profile")
+
+
+# update parent contact info details
+def update_parent_contacts(request):
+    if request.method == "POST":
+        # Get the parent's profile instance for the logged-in user
+        parent = request.user
+        parent_profile = request.user.parentprofile
+        # Extract data from the POST request
+        email = request.POST.get("email")
+        phone_number = request.POST.get("phone_number")
+        address = request.POST.get("address")
+
+        # Update the parent's info fields with the extracted data
+        parent.email = email
+        parent.save()
+
+        # Update the parent's profile fields with the extracted data
+        parent_profile.address = address
+        parent_profile.phone_number = phone_number
+        parent_profile.save()
+
+        messages.success(request, "Parent contact details updated successfully.")
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("accounts:parent_profile")
+
+
+# update parent profile photo view
+def update_profile_photo(request):
+    if request.method == "POST":
+        # Retrieve the current user's parent profile
+        parent = request.user
+        parent_profile = ParentProfile.objects.get(parent=parent)
+
+        # Handle the uploaded photo
+        new_photo = request.FILES.get("profile_photo")
+
+        # Update the profile photo
+        if new_photo:
+            parent_profile.photo = new_photo
+            parent_profile.save()
+            messages.success(request, "Profile photo updated successfully.")
+        else:
+            messages.error(request, "Please select a valid photo.")
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("accounts:parent_profile")
 
 
 # child login view

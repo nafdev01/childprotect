@@ -7,6 +7,11 @@ from django.utils import timezone
 from django.db import models
 
 
+def parent_profile_photo_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return f"user_{instance.parent.username}/profile_photo/{filename[:6]}"
+
+
 class ParentManager(UserManager):
     def get_queryset(self):
         return super().get_queryset().filter(user_type=User.UserType.PARENT)
@@ -63,6 +68,11 @@ class ParentProfile(models.Model):
     address = models.TextField(blank=True, null=True)
     gender = models.CharField(
         max_length=1, choices=ParentGender.choices, default=ParentGender.MALE
+    )
+    photo = models.ImageField(
+        upload_to=parent_profile_photo_path,
+        blank=True,
+        default="default.png",
     )
 
     @property
