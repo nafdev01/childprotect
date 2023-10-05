@@ -189,6 +189,28 @@ def parent_profile(request):
     return render(request, template_name, context)
 
 
+# View for child profile
+@login_required
+def child_profile(request):
+    if request.user.user_type == User.UserType.PARENT:
+        # redirect to dashboard if parent is already logged in
+        messages.warning(request, "You are already logged in as a parent.")
+        return redirect("accounts:parent_dashboard")
+
+    child = request.user
+    child_profile = child.childprofile
+    parent_profile = child_profile.parent_profile
+
+    context = {
+        "child": child,
+        "profile": child_profile,
+        "parent_profile": parent_profile,
+    }
+    template_name = "accounts/child_profile.html"
+
+    return render(request, template_name, context)
+
+
 # update parent details
 def update_parent_info(request):
     if request.method == "POST":
@@ -217,6 +239,28 @@ def update_parent_info(request):
         messages.error(request, "You don't have access to this page")
 
     return redirect("accounts:parent_profile")
+
+
+# update child details
+def update_child_info(request):
+    if request.method == "POST":
+        # Get the parent's profile instance for the logged-in user
+        child = request.user
+        child_profile = child.childprofile
+        # Extract data from the POST request
+        username = request.POST.get("username")
+
+        # Update the parent's info fields with the extracted data
+        child.username = username
+        child.save()
+
+        # Update the parent's profile fields with the extracted data
+        messages.success(request, "Child info updated successfully.")
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("accounts:child_profile")
 
 
 # update parent contact info details

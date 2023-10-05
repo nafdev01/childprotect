@@ -201,11 +201,6 @@ def alert_list(request):
         been_reviewed=False,
     ).count()
 
-    if alert_count > 1:
-        messages.info(request, f"You have {alert_count} unreviewed alerts")
-    elif alert_count == 1:
-        messages.warning(request, "You have one unreviewed alert")
-
     template_name = ("safesearch/flagged_alerts.html",)
     context = {"alerts": flagged_alerts}
     return render(request, template_name, context)

@@ -20,6 +20,8 @@ urlpatterns = [
     path("child/login/", views.login_child, name="login_child"),
     path("child/register/", views.register_child, name="register_child"),
     path("child/dashboard/", views.child_dashboard, name="child_dashboard"),
+    path("child/profile/", views.child_profile, name="child_profile"),
+    path("update_child_info/", views.update_child_info, name="update_child_info"),
     # auth urls
     path("logout/", views.logout_view, name="logout"),
 ]

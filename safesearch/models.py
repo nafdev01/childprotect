@@ -125,7 +125,7 @@ class FlaggedAlert(models.Model):
     class Meta:
         verbose_name = "Flagged Alert"
         verbose_name_plural = "Flagged Alerts"
-        ordering = ["-flagged_on"]
+        ordering = ["been_reviewed","-flagged_on"]
 
 
 class UnbanRequest(models.Model):
