@@ -103,6 +103,10 @@ class FlaggedAlert(models.Model):
             return super().get_queryset().filter(been_reviewed=False)
 
     flagged_search = models.OneToOneField(FlaggedSearch, on_delete=models.CASCADE)
+    flagged_on = models.DateTimeField(null=True, editable=False)
+    searched_by = models.ForeignKey(
+        ChildProfile, null=True, editable=False, on_delete=models.CASCADE
+    )
     been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
     reviewed_by = models.ForeignKey(
@@ -111,6 +115,8 @@ class FlaggedAlert(models.Model):
 
     def save(self, *args, **kwargs):
         self.reviewed_by = self.flagged_search.search_phrase.searched_by.parent_profile
+        self.searched_by = self.flagged_search.search_phrase.searched_by
+        self.flagged_on = self.flagged_search.flagged_on
         super(FlaggedAlert, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -119,6 +125,7 @@ class FlaggedAlert(models.Model):
     class Meta:
         verbose_name = "Flagged Alert"
         verbose_name_plural = "Flagged Alerts"
+        ordering = ["-flagged_on"]
 
 
 class UnbanRequest(models.Model):

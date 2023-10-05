@@ -17,3 +17,17 @@ def get_alert_count(user):
         return alert_count
     except ParentProfile.DoesNotExist:
         return 0
+
+
+@register.simple_tag
+def latest_alerts(parent):
+    try:
+        # Assuming your ParentProfile is related to User via a ForeignKey
+        parent_profile = ParentProfile.objects.get(parent=parent)
+        alerts = FlaggedAlert.objects.filter(
+            flagged_search__search_phrase__searched_by__parent_profile_id=parent_profile.id,
+            been_reviewed=False,
+        ).order_by("flagged_on")[:3]
+        return alerts
+    except ParentProfile.DoesNotExist:
+        return 0

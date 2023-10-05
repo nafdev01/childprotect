@@ -22,7 +22,7 @@
             <tr>
                 <th scope="col">Phrase</th>
                 <th scope="col">Reviewed</th>
-                <th scope="col">Reviewed On</th>
+                <th scope="col">Flagged on</th>
                 <th scope="col">Review</th>
             </tr>
         </thead>
@@ -38,7 +38,7 @@
                     <i class="fa-regular fa-circle-xmark fa-xl" style="color: red;"></i>
                     {% endif %}
                 </td>
-                <td>{{ alert.reviewed_on }}</td>
+                <td>{{ alert.flagged_on }}</td>
                 <td>
                     {% if alert.been_reviewed %}
                     <a href="{% url 'safesearch:review_alert' alert.pk %}" class="btn btn-sm btn-warning disabled">
