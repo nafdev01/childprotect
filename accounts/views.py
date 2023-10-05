@@ -7,7 +7,7 @@ from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -16,6 +16,13 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .models import Confirmation
 from django.contrib.auth.decorators import login_required
+
+
+# logout view
+def logout_view(request):
+    messages.success(request, "You have logged out successfully!")
+    logout(request)
+    return redirect("accounts:login_parent")
 
 
 # parent login view
@@ -34,14 +41,14 @@ def login_parent(request):
             password = form.cleaned_data.get("password")
 
             try:
-                parent = User.objects.get(username=username, is_active=False)
+                parent = User.objects.get(username=username)
 
                 if not parent.is_active:
                     messages.error(
                         request,
                         f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
                     )
-                    redirect(reverse("accounts:login_parent"))
+                    return redirect(reverse("accounts:login_parent"))
                 else:
                     parent = authenticate(
                         request,

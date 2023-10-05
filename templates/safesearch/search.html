@@ -17,7 +17,11 @@
         <ul>
             {% for result in search_results %}
             <li>
-                <h3><a href="{{ result.link }}" target="_blank">{{ result.title }}</a></h3>
+                <h3>
+                    <a href="javascript:void(0);" onclick="openLink('{{ result.link }}')" target="_blank">
+                        {{ result.title }}
+                    </a>
+                </h3>
                 <p>{{ result.snippet }}</p>
             </li>
             {% endfor %}
@@ -42,4 +46,15 @@
     </form>
     {% csrf_token %}
 </div>
+
+<script>
+    function openLink(link) {
+        // Specify the desired window properties, including height
+        var windowFeatures = 'height=400,width=600';
+
+        // Open the link in a new window with the specified properties
+        window.open(link, '_blank', windowFeatures);
+    }
+</script>
+
 {% endblock %}

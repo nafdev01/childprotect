@@ -179,3 +179,4 @@ cython_debug/
 data.json
 todo
 test.py
+banned_words.csv

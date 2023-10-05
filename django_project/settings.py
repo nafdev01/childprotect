@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     # 3rd party
     "django_user_agents",
     "django_bootstrap5",
+    "django_extensions",
     # default apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -104,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGOUT_REDIRECT_URL = "home"
+LOGIN_URL = "home"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

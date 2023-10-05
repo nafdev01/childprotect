@@ -2,14 +2,53 @@
 import requests
 from safesearch.models import BannedWord
 from django.template.loader import get_template
-from django.conf import settings
-from django.core.mail import EmailMessage
-from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+import re
 
 
-def get_results(api_key, custom_search_engine_id, query):
+def word_is_banned(word, banned_by):
+    banned_word = BannedWord.objects.filter(
+        word=word.lower(), banned_by=banned_by
+    ).first()
+    return banned_word is not None
+
+
+def split_string(text):
+    # Define a regular expression pattern to match commas, full stops, exclamation marks, or spaces
+    pattern = r"[,\.\s!]+"
+
+    # Use the re.split() function to split the text based on the pattern
+    words = re.split(pattern, text)
+
+    # Remove any empty strings from the result
+    words = [word for word in words if word.strip()]
+
+    return words
+
+
+def filter_search_results(search_results, parent):
+    filtered_results = []
+
+    for result in search_results:
+        # Split the title and snippet using split_string function
+        title_words = split_string(result["title"])
+        snippet_words = split_string(result["snippet"])
+
+        # Check if the title or snippet contains any banned words by default
+        title_has_banned_word = any(
+            word_is_banned(word, banned_by=parent) for word in title_words
+        )
+        snippet_has_banned_word = any(
+            word_is_banned(word, banned_by=parent) for word in snippet_words
+        )
+
+        # If none of them have banned words, add the result to filtered_results
+        if not (title_has_banned_word or snippet_has_banned_word):
+            filtered_results.append(result)
+
+    return filtered_results
+
+
+def get_results(api_key, custom_search_engine_id, query, parent):
     search_results = list()
 
     # Make a request to the Google Custom Search API.
@@ -33,6 +72,9 @@ def get_results(api_key, custom_search_engine_id, query):
                 }
                 search_results.append(search_result)
 
+            filtered_search_results = filter_search_results(search_results, parent)
+            return filtered_search_results
+
             return search_results  # Return the list of search results
 
         else:
@@ -41,16 +83,6 @@ def get_results(api_key, custom_search_engine_id, query):
     else:
         print(f"Error: {response.status_code}")
         return None
-
-
-def is_word_banned_by_parent(user_word, banned_by):
-    banned_word = BannedWord.objects.filter(word=user_word, banned_by=banned_by).first()
-    return banned_word is not None
-
-
-def is_word_banned_by_default(user_word):
-    banned_word = BannedWord.objects.filter(word=user_word, banned_default=True).first()
-    return banned_word is not None
 
 
 def get_allowed(value):

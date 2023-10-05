@@ -17,5 +17,5 @@ urlpatterns = [
     path("child/register/", views.register_child, name="register_child"),
     path("child/dashboard/", views.child_dashboard, name="child_dashboard"),
     # auth urls
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("logout/", views.logout_view, name="logout"),
 ]

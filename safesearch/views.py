@@ -10,8 +10,7 @@ from django.contrib import messages
 from django.conf import settings
 from .search import (
     get_results,
-    is_word_banned_by_default,
-    is_word_banned_by_parent,
+    word_is_banned,
     get_allowed,
 )
 from accounts.notifications import send_email_alert
@@ -31,6 +30,8 @@ def search(request):
     # Check if the user is a child
     if request.user.is_child:
         child = request.user
+        parent = child.childprofile.parent_profile
+
     elif request.user.is_parent:
         messages.error(request, "You need to be a child to access this search engine")
         return redirect("accounts:dashboard")
@@ -48,10 +49,7 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if is_word_banned_by_parent(word, child.childprofile.parent_profile):
-                    flagged_words.append(word)
-                    safe = False
-                elif is_word_banned_by_default(word):
+                if word_is_banned(word, child.childprofile.parent_profile):
                     flagged_words.append(word)
                     safe = False
 
@@ -75,7 +73,10 @@ def search(request):
 
                 for flagged_word in flagged_words:
                     banned_word = BannedWord.objects.filter(
-                        Q(word=flagged_word.lower(), banned_by=child.childprofile.parent_profile)
+                        Q(
+                            word=flagged_word.lower(),
+                            banned_by=child.childprofile.parent_profile,
+                        )
                         | Q(word=flagged_word.lower(), banned_default=True)
                     ).first()
                     FlaggedWord(
@@ -85,11 +86,13 @@ def search(request):
                 send_email_alert(request, flagged_words, search_phrase)
                 return redirect("safesearch:child_search_history")
 
-            search_results = get_results(
-                settings.GOOGLE_API_KEY,
-                settings.CUSTOM_SEARCH_ENGINE_ID,
-                search_query,
-            )
+            else:
+                search_results = get_results(
+                    settings.GOOGLE_API_KEY,
+                    settings.CUSTOM_SEARCH_ENGINE_ID,
+                    search_query,
+                    parent,
+                )
 
         else:
             searched = False

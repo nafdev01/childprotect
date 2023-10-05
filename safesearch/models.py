@@ -94,6 +94,14 @@ class FlaggedWord(models.Model):
 
 
 class FlaggedAlert(models.Model):
+    class ReviewedManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(been_reviewed=True)
+
+    class UnreviewedManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(been_reviewed=False)
+
     flagged_search = models.OneToOneField(FlaggedSearch, on_delete=models.CASCADE)
     been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
@@ -114,15 +122,41 @@ class FlaggedAlert(models.Model):
 
 
 class UnbanRequest(models.Model):
+    class ReviewedManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(been_reviewed=True)
+
+    class UnreviewedManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(been_reviewed=False)
+
     banned_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
     requested_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE)
-    requested_on = models.DateTimeField(null=True)
-    reviewed = models.BooleanField(default=False)
+    request_timestamp = models.DateTimeField(auto_now_add=True)
+    been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
+    seen_by_child = models.BooleanField(default=False)
+    seen_on = models.DateTimeField(null=True)
 
     def __str__(self):
-        return f"{self.banned_word} review request"
+        return f"{self.banned_word} unban request"
 
     class Meta:
         verbose_name = "Unban Request"
-        verbose_name_plural = "Unban Request"
+        verbose_name_plural = "Unban Requests"
+
+
+class SuspiciousSearch(models.Model):
+    search_phrase = models.ForeignKey(SearchPhrase, on_delete=models.CASCADE)
+    flagged_results = models.PositiveIntegerField(editable=False)
+    been_reviewed = models.BooleanField(default=False)
+    reviewed_on = models.DateTimeField(null=True)
+    seen_by_child = models.BooleanField(default=False)
+    seen_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f"Suspicious search {self.search_phrase}"
+
+    class Meta:
+        verbose_name = "Suspicious Search"
+        verbose_name_plural = "Suspicious Searches"
