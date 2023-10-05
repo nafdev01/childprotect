@@ -166,6 +166,27 @@ def parent_dashboard(request):
 
     return render(request, template_name, context)
 
+# View for parent user registration with profile information
+@login_required
+def parent_profile(request):
+    if request.user.user_type == User.UserType.CHILD:
+        # redirect to dashboard if parent is already logged in
+        messages.warning(request, "You are already logged in as a child.")
+        return redirect("accounts:child_dashboard")
+
+    parent = request.user
+    parent_profile = ParentProfile.objects.get(parent=parent)
+    children_profiles = parent_profile.childprofile_set.all()
+
+    context = {
+        "parent": parent,
+        "children_profiles": children_profiles,
+        "parent_profile": parent_profile,
+    }
+    template_name = "accounts/parent_profile.html"
+
+    return render(request, template_name, context)
+
 
 # child login view
 def login_child(request):
