@@ -64,6 +64,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django_project.context_processors.set_section",  # Replace 'your_app_name' with your app's name
             ],
         },
     },

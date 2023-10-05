@@ -4,79 +4,54 @@
 {% load safesearch_tags %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html data-bs-theme="light" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock title %}</title>
-    <!-- Font Awesome -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
     {% block custom_css %}{% endblock custom_css %}
-    <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
-    <script src="{% static 'js/silverBox.min.js' %}"></script>
-
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <!-- MDB -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'assets1/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/Nunito.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 </head>
 
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Container wrapper -->
-        <div class="container-fluid">
-            <!-- Toggle button -->
-            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
-                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Collapsible wrapper -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Navbar brand -->
-                <a class="navbar-brand mt-2 mt-lg-0" href="{% url 'home' %}">
-                    <img src="{% static 'img/fam.jpeg' %}" height="35" width="35" alt="PKMS Logo" loading="lazy" />
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-success p-0 navbar-dark">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>Brand</span></div>
                 </a>
-                <!-- Left links -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'about' %}" title="About Us">
-                            About Us
-                        </a>
-                    </li>
-
-                    {% if user.is_authenticated %}
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav" id="accordionSidebar">
                     {% if user.is_parent %}
 
                     <li class="nav-item">
                         <a class=" nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
-                            Dashboard
+                            <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class=" nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
-                            Register a Child
+                            <i class="fa-solid fa-user-plus fa-xl"></i><span>Register a Child</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class=" nav-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
-                            Ban a Word
+                            <i class="fa-solid fa-ban fa-xl"></i><span>Ban a word</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
-                            Banned Words
+                            <i class="fa-solid fa-flag fa-xl"></i><span>Banned Words</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}"
                             title="View Search History">
-                            Search History
+                            <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -107,138 +82,200 @@
                             Search History
                         </a>
                     </li>
-                    {% else %}
-                    <li>Not A Parent or Child</li>
-
                     {% endif %}
 
                     <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'accounts:logout' %}" title="Parent Logout">
-                            Logout
-                        </a>
+                        <a class="nav-link active" href="index.html"><i
+                                class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
                     </li>
-
-                    {% else %}
-
-                    <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'accounts:register_parent' %}" title="Parent Registration">
-                            Parent Registration
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'accounts:login_parent' %}" title="Parent Login">
-                            Parent Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class=" nav-link" href="{% url 'accounts:login_child' %}" title="Child Login">
-                            Child Login
-                        </a>
-                    </li>
-
-                    {% endif %}
-
+                    <li class="nav-item"><a class="nav-link" href="profile.html"><i
+                                class="fas fa-user"></i><span>Profile</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="table.html"><i
+                                class="fas fa-table"></i><span>Table</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"><i
+                                class="far fa-user-circle"></i><span>Login</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="register.html">
+                            <i class="fas fa-user-circle"></i><span>Register</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="forgot-password.html"><i
+                                class="fas fa-key"></i><span>Forgotten Password</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="404.html"><i
+                                class="fas fa-exclamation-circle"></i><span>Page Not Found</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="blank.html"><i
+                                class="fas fa-window-maximize"></i><span>Blank Page</span></a></li>
                 </ul>
-                <!-- Left links -->
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
             </div>
-            <!-- Collapsible wrapper -->
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
+                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text"
+                                    placeholder="Search for ..."><button class="btn btn-primary py-0" type="button"><i
+                                        class="fas fa-search"></i></button></div>
+                        </form>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
+                                    aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
+                                        class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in"
+                                    aria-labelledby="searchDropdown">
+                                    <form class="me-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small"
+                                                type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0"
+                                                    type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow">
+                                    <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown"
+                                        href="#">
+                                        {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
+                                        {% if unreviewed > 0 %}
+                                        <span class="badge bg-danger badge-counter">{{ unreviewed }}</span>
+                                        {% endif %}
+                                        {% endwith %}
+                                        <i class="fas fa-bell fa-fw"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a
+                                            class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="me-3">
+                                                <div class="bg-primary icon-circle"><i
+                                                        class="fas fa-file-alt text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 12, 2019</span>
+                                                <p>A new monthly report is ready to download!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="me-3">
+                                                <div class="bg-success icon-circle"><i
+                                                        class="fas fa-donate text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 7, 2019</span>
+                                                <p>$290.29 has been deposited into your account!</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="me-3">
+                                                <div class="bg-warning icon-circle"><i
+                                                        class="fas fa-exclamation-triangle text-white"></i></div>
+                                            </div>
+                                            <div><span class="small text-gray-500">December 2, 2019</span>
+                                                <p>Spending Alert: We've noticed unusually high spending for your
+                                                    account.</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
+                                            Alerts</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+                                            class="badge bg-danger badge-counter">7</span><i
+                                            class="fas fa-envelope fa-fw"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                                        <h6 class="dropdown-header">alerts center</h6><a
+                                            class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
+                                                    src="assets/img/avatars/avatar4.jpeg">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="fw-bold">
+                                                <div class="text-truncate"><span>Hi there! I am wondering if you can
+                                                        help me with a problem I've been having.</span></div>
+                                                <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
+                                                    src="assets/img/avatars/avatar2.jpeg">
+                                                <div class="status-indicator"></div>
+                                            </div>
+                                            <div class="fw-bold">
+                                                <div class="text-truncate"><span>I have the photos that you ordered last
+                                                        month!</span></div>
+                                                <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
+                                                    src="assets/img/avatars/avatar3.jpeg">
+                                                <div class="bg-warning status-indicator"></div>
+                                            </div>
+                                            <div class="fw-bold">
+                                                <div class="text-truncate"><span>Last month's report looks great, I am
+                                                        very happy with the progress so far, keep up the good
+                                                        work!</span></div>
+                                                <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                                            </div>
+                                        </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                            <div class="dropdown-list-image me-3"><img class="rounded-circle"
+                                                    src="assets/img/avatars/avatar5.jpeg">
+                                                <div class="bg-success status-indicator"></div>
+                                            </div>
+                                            <div class="fw-bold">
+                                                <div class="text-truncate"><span>Am I a good boy? The reason I ask is
+                                                        because someone told me that people say this to all dogs, even
+                                                        if they aren't good...</span></div>
+                                                <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                            </div>
+                                        </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
+                                            Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="shadow dropdown-list dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="alertsDropdown"></div>
+                            </li>
+                            <div class="d-none d-sm-block topbar-divider"></div>
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">Valerie Luna</span><img
+                                            class="border rounded-circle img-profile"
+                                            src="assets/img/avatars/avatar1.jpeg"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a
+                                            class="dropdown-item" href="#"><i
+                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity
+                                            log</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    {% block header %}
+
+                    {% endblock header %}
+
+                    {% block content %}
+
+                    {% endblock content %}
+                </div>
+            </div>
         </div>
-        <!-- Container wrapper -->
-    </nav>
-    <!-- Navbar -->
+    </div>
 
-    {% if messages %}
-    {% for message in messages %}
-    {% if message.tags == 'success' %}
-    <script>
-        var message = "{{ message }}";
-        var alertType = "success";
 
-        silverBox({
-            alertIcon: "success",
-            position: "top-right",
-            text: message,
-            centerContent: true,
-            cancelButton: {
-                text: "OK",
-            }
-        })
-    </script>
-    {% elif message.tags == 'info' %}
-    <script>
-        var message = "{{ message }}";
-        var alertType = "info";
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script src="{% static 'assets1/js/bs-init.js' %}"></script>
+    <script src="{% static 'assets1/js/theme.js' %}"></script>
+    <script src="{% static 'fontawesome-free/js/all.js' %}"></script>
 
-        silverBox({
-            alertIcon: alertType,
-            position: "top-right",
-            text: message,
-            centerContent: true,
-            cancelButton: {
-                text: "OK"
-            }
-        })
-    </script>
-
-    {% elif message.tags == 'warning' %}
-    <script>
-        var message = "{{ message }}";
-        var alertType = "warning";
-
-        silverBox({
-            alertIcon: alertType,
-            position: "top-right",
-            text: message,
-            centerContent: true,
-            cancelButton: {
-                text: "Close"
-            }
-        })
-    </script>
-
-    {% elif message.tags == 'error' %}
-    <script>
-        var message = "{{ message }}";
-        var alertType = "error";
-
-        silverBox({
-            alertIcon: alertType,
-            position: "top-right",
-            text: message,
-            centerContent: true,
-            cancelButton: {
-                text: "Close"
-            }
-        })
-    </script>
-
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-
-    <header>
-        {% block header %}
-
-        {% endblock header %}
-    </header>
-
-    <main>
-        {% block content %}
-
-        {% endblock content %}
-    </main>
-
-    <footer>
-        {% block footer %}
-
-        {% endblock footer %}
-    </footer>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-<!-- MDB -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
-<script src="{% static 'js/script.js' %}"></script>
 
 </html>

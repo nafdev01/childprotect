@@ -1,0 +1,244 @@
+<!-- base.html -->
+{% load django_bootstrap5 %}
+{% load static %}
+{% load safesearch_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+    <!-- Font Awesome -->
+    {% block custom_css %}{% endblock custom_css %}
+    <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
+    <script src="{% static 'js/silverBox.min.js' %}"></script>
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container-fluid">
+            <!-- Toggle button -->
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Collapsible wrapper -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Navbar brand -->
+                <a class="navbar-brand mt-2 mt-lg-0" href="{% url 'home' %}">
+                    <img src="{% static 'img/fam.jpeg' %}" height="35" width="35" alt="PKMS Logo" loading="lazy" />
+                </a>
+                <!-- Left links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'about' %}" title="About Us">
+                            About Us
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    {% if user.is_parent %}
+
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
+                            Register a Child
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
+                            Ban a Word
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
+                            Banned Words
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}"
+                            title="View Search History">
+                            Search History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'safesearch:alert_list' %}" title="View Search History">
+                            Alerts
+                            {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
+                            {% if unreviewed > 0 %}
+                            <span class="badge text-bg-danger">{{ unreviewed }}</span>
+                            {% endif %}
+                            {% endwith %}
+                        </a>
+                    </li>
+                    {% elif user.is_child %}
+
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:child_dashboard' %}" title="Dashboard">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:search' %}" title="View Children Search History">
+                            Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'safesearch:child_search_history' %}"
+                            title="View Search History">
+                            Search History
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>Not A Parent or Child</li>
+
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:logout' %}" title="Parent Logout">
+                            Logout
+                        </a>
+                    </li>
+
+                    {% else %}
+
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:register_parent' %}" title="Parent Registration">
+                            Parent Registration
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:login_parent' %}" title="Parent Login">
+                            Parent Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class=" nav-link" href="{% url 'accounts:login_child' %}" title="Child Login">
+                            Child Login
+                        </a>
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+                <!-- Left links -->
+            </div>
+            <!-- Collapsible wrapper -->
+        </div>
+        <!-- Container wrapper -->
+    </nav>
+    <!-- Navbar -->
+
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <script>
+        var message = "{{ message }}";
+        var alertType = "success";
+
+        silverBox({
+            alertIcon: "success",
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            cancelButton: {
+                text: "OK",
+            }
+        })
+    </script>
+    {% elif message.tags == 'info' %}
+    <script>
+        var message = "{{ message }}";
+        var alertType = "info";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            cancelButton: {
+                text: "OK"
+            }
+        })
+    </script>
+
+    {% elif message.tags == 'warning' %}
+    <script>
+        var message = "{{ message }}";
+        var alertType = "warning";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            cancelButton: {
+                text: "Close"
+            }
+        })
+    </script>
+
+    {% elif message.tags == 'error' %}
+    <script>
+        var message = "{{ message }}";
+        var alertType = "error";
+
+        silverBox({
+            alertIcon: alertType,
+            position: "top-right",
+            text: message,
+            centerContent: true,
+            cancelButton: {
+                text: "Close"
+            }
+        })
+    </script>
+
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <header>
+        {% block header %}
+
+        {% endblock header %}
+    </header>
+
+    <main>
+        {% block content %}
+
+        {% endblock content %}
+    </main>
+
+    <footer>
+        {% block footer %}
+
+        {% endblock footer %}
+    </footer>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+<!-- MDB -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
+
+</html>
