@@ -27,7 +27,7 @@ def latest_alerts(parent):
         alerts = FlaggedAlert.objects.filter(
             flagged_search__search_phrase__searched_by__parent_profile_id=parent_profile.id,
             been_reviewed=False,
-        ).order_by("flagged_on")[:3]
+        )[:3]
         return alerts
     except ParentProfile.DoesNotExist:
         return 0
