@@ -74,6 +74,11 @@ class ParentProfile(models.Model):
         blank=True,
         default="default.png",
     )
+    @classmethod
+    def create(cls, parent):
+        parent_profile = cls(parent=parent)
+        # do something with the book
+        return parent_profile
 
     @property
     def unreviewed_alerts(self):

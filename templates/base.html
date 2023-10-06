@@ -2,6 +2,7 @@
 {% load django_bootstrap5 %}
 {% load static %}
 {% load safesearch_tags %}
+{% load accounts_tags %}
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
@@ -53,16 +54,6 @@
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}" title="View Search History">
               <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'safesearch:alert_list' %}" title="View Search History">
-              Alerts
-              {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
-              {% if unreviewed > 0 %}
-              <span class="badge text-bg-danger">{{ unreviewed }}</span>
-              {% endif %}
-              {% endwith %}
             </a>
           </li>
           {% elif user.is_child %}
@@ -137,7 +128,8 @@
                           {{ alert.flagged_on }}
                         </span>
                         <p>
-                          A search ({{ alert.flagged_search }}) by your child {{ alert.searched_by.child.get_full_name }} has been flagged
+                          A search ({{ alert.flagged_search }}) by your child {{ alert.searched_by.child.get_full_name
+                          }} has been flagged
                           because it contained banned words
                         </p>
                       </div>
@@ -226,15 +218,34 @@
                 <div class="nav-item dropdown no-arrow">
                   <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
                     <span class="d-none d-lg-inline me-2 text-gray-600 small">
-                      {{ request.user.get_full_name }}</span>
+                      {{ request.user.get_full_name }}
+                    </span>
+                    {% if request.user.is_parent %}
+
+                    {% update_profile request.user as update_profile %}
+                    {% if update_profile %}
+                    <span
+                      class="position-absolute top-50 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                    </span>
+                    {% endif %}
+                    {% endif %}
                     <img class="border rounded-circle img-profile" src="{% static 'img/user.png' %}">
                   </a>
                   <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
 
                     {% if request.user.is_parent %}
-                    <a class="dropdown-item" href="{% url 'accounts:parent_profile' %}"><i
-                        class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
+
+                    <a class="dropdown-item position-relative" href="{% url 'accounts:parent_profile' %}">
+                      <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
+                      {% update_profile request.user as update_profile %}
+                      {% if update_profile %}
+                      <span
+                        class="position-absolute top-50 start-50 translate-middle p-1 bg-danger border border-light rounded-circle">
+                      </span>
+                      {% endif %}
                     </a>
+
+
                     {% elif request.user.is_child %}
                     <a class="dropdown-item" href="{% url 'accounts:child_profile' %}"><i
                         class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile

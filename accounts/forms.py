@@ -11,15 +11,8 @@ from django.contrib import messages
 class ParentRegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email")
+        fields = ("username", "email")
         field_classes = {"username": UsernameField}
-
-
-# form for editing a user object
-class ParentProfileForm(forms.ModelForm):
-    class Meta:
-        model = ParentProfile
-        fields = ["phone_number", "address", "gender"]
 
 
 class ChildRegistrationForm(UserCreationForm):

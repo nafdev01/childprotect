@@ -15,15 +15,6 @@
     <form class="mb-3" method="post" enctype="multipart/form-data">
         {% bootstrap_form parent_form %}
 
-        <div class="form-check m-2">
-            <input class="form-check-input" type="checkbox" value="" id="showPasswordBox"
-                onclick="togglePasswordVisibility('signup',this);">
-            <label class="form-check-label" for="showPassBox">
-                Show Password
-            </label>
-        </div>
-
-        {% bootstrap_form parent_profile_form %}
         {% csrf_token %}
         <div class="form-check m-2">
             <input class="form-check-input" type="checkbox" value="" id="showPasswordBox"

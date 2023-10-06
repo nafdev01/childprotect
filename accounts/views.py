@@ -67,7 +67,7 @@ def login_user(request):
                         ):
                             login(request, parent)
                             messages.success(request, "Parent Log In Successful!")
-                            send_parent_login_email(request)
+                            # send_parent_login_email(request)
                             return redirect("accounts:parent_dashboard")
                         else:
                             messages.error(
@@ -116,15 +116,14 @@ def register_parent(request):
 
     if request.method == "POST":
         parent_form = ParentRegistrationForm(request.POST)
-        parent_profile_form = ParentProfileForm(request.POST)
-        if parent_form.is_valid() and parent_profile_form.is_valid():
+
+        if parent_form.is_valid():
             parent = parent_form.save(commit=False)
             parent.user_type = User.UserType.PARENT
             parent.is_active = False
-            profile = parent_profile_form.save(commit=False)
-            profile.parent = parent
             parent.save()
-            profile.save()
+            parent_profile = ParentProfile.create(parent=parent)
+            parent_profile.save()
 
             # Create a confirmation token
             token = token_generator.make_token(parent)
@@ -147,10 +146,9 @@ def register_parent(request):
 
     else:
         parent_form = ParentRegistrationForm()
-        parent_profile_form = ParentProfileForm()
 
     template_name = "registration/parent_registration.html"
-    context = {"parent_form": parent_form, "parent_profile_form": parent_profile_form}
+    context = {"parent_form": parent_form}
     return render(request, template_name, context)
 
 
