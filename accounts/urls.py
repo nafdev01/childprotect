@@ -7,7 +7,7 @@ app_name = "accounts"
 
 urlpatterns = [
     # parent urls
-    path("parent/login/", views.login_parent, name="login_parent"),
+    path("login/", views.login_user, name="login"),
     path("parent/register/", views.register_parent, name="register_parent"),
     path("parent/dashboard/", views.parent_dashboard, name="parent_dashboard"),
     path("parent/profile/", views.parent_profile, name="parent_profile"),

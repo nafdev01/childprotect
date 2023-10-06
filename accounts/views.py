@@ -22,53 +22,89 @@ from django.contrib.auth.decorators import login_required
 def logout_view(request):
     messages.success(request, "You have logged out successfully!")
     logout(request)
-    return redirect("accounts:login_parent")
+    return redirect("accounts:login")
 
 
 # parent login view
-def login_parent(request):
+def login_user(request):
     if request.user.is_authenticated:
         # Redirect to dashboard if the parent is already logged in
         messages.warning(request, "You are already logged in.")
-        return redirect("accounts:parent_dashboard")
+        if request.user.is_parent():
+            return redirect("accounts:parent_dashboard")
+        elif request.user.is_child():
+            return redirect("accounts:child_dashboard")
 
-    if request.method != "POST":
-        form = LoginForm()
-    else:
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
+    if request.method == "POST":
+        # Retrieve username and password from POST data
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user_type = request.POST.get("user_type")
 
+        if not (username and password and user_type):
+            messages.error(f"Fill in the form fields as required")
+        elif username and password and user_type:
             try:
-                parent = User.objects.get(username=username)
+                if user_type == "parent":
+                    parent = User.parents.get(username=username)
 
-                if not parent.is_active:
-                    messages.error(
-                        request,
-                        f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
-                    )
-                    return redirect(reverse("accounts:login_parent"))
-                else:
-                    parent = authenticate(
-                        request,
-                        username=username,
-                        password=password,
-                    )
-
-                    if parent is not None and parent.user_type == User.UserType.PARENT:
-                        login(request, parent)
-                        messages.success(request, "Log In Successful!")
-                        send_parent_login_email(request)
-                        return redirect("accounts:parent_dashboard")
+                    if not parent.is_active:
+                        messages.error(
+                            request,
+                            f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
+                        )
+                        return redirect(reverse("accounts:login"))
                     else:
-                        messages.error(request, "Invalid username or password.")
+                        parent = authenticate(
+                            request,
+                            username=username,
+                            password=password,
+                        )
+
+                        if (
+                            parent is not None
+                            and parent.user_type == User.UserType.PARENT
+                        ):
+                            login(request, parent)
+                            messages.success(request, "Parent Log In Successful!")
+                            send_parent_login_email(request)
+                            return redirect("accounts:parent_dashboard")
+                        else:
+                            messages.error(
+                                request, "Invalid parent username or password."
+                            )
+
+                elif user_type == "child":
+                    child = User.children.get(username=username)
+
+                    if not child.is_active:
+                        messages.error(
+                            request,
+                            f"Your account is inactive",
+                        )
+                        return redirect(reverse("accounts:login"))
+                    else:
+                        child = authenticate(
+                            request,
+                            username=username,
+                            password=password,
+                        )
+
+                        if child is not None and child.user_type == User.UserType.CHILD:
+                            login(request, child)
+                            messages.success(request, "Child Log In Successful!")
+                            send_child_login_email(request)
+                            return redirect("accounts:child_dashboard")
+                        else:
+                            messages.error(
+                                request, "Invalid child username or password."
+                            )
+
             except User.DoesNotExist:
                 messages.error(request, "Invalid username or password.")
 
-    template_name = "registration/parent_login.html"
-    context = {"form": form}
-    return render(request, template_name, context)
+    template_name = "registration/login.html"
+    return render(request, template_name)
 
 
 # View for parent user registration with profile information
@@ -107,7 +143,7 @@ def register_parent(request):
                 "Your account has been created successfully! Please check your email to confirm your email address and activate your account.",
             )
             send_parent_signup_confirm_email(request, parent, token_dict)
-            return redirect("accounts:login_parent")
+            return redirect("accounts:login")
 
     else:
         parent_form = ParentRegistrationForm()
@@ -142,7 +178,7 @@ def activate(request, uidb64, token):
             "Activation link is invalid.",
         )
 
-    return redirect("accounts:login_parent")
+    return redirect("accounts:login")
 
 
 # View for parent user registration with profile information
@@ -349,7 +385,7 @@ def login_child(request):
             else:
                 messages.error(request, "Invalid username or password.")
 
-    template_name = "registration/child_login.html"
+    template_name = "registration/login.html"
     context = {"child_login_form": form}
     return render(request, template_name, context)
 
@@ -382,7 +418,7 @@ def register_child(request):
             parent = request.user
     else:
         messages.warning(request, "You should be logged in as a parent to add a child.")
-        return redirect("accounts:login_parent")
+        return redirect("accounts:login")
 
     if request.method == "POST":
         child_form = ChildRegistrationForm(request.POST)
