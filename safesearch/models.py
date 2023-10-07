@@ -58,6 +58,7 @@ class BannedWord(models.Model):
         verbose_name = "Banned Word"
         verbose_name_plural = "Banned Words"
         unique_together = ["word", "banned_by"]
+        ordering = ["word"]
 
 
 class FlaggedSearch(models.Model):
@@ -125,7 +126,7 @@ class FlaggedAlert(models.Model):
     class Meta:
         verbose_name = "Flagged Alert"
         verbose_name_plural = "Flagged Alerts"
-        ordering = ["been_reviewed","-flagged_on"]
+        ordering = ["been_reviewed", "-flagged_on"]
 
 
 class UnbanRequest(models.Model):

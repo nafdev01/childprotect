@@ -1,27 +1,37 @@
-<div class="pagination">
-    <span class="step-links">
-        <span class="current">
-            <div class="btn-group" data-toggle="buttons">
-                {% if page.has_previous %}
-                <a class="btn btn-secondary btn-lg" href="?page={{ page.previous_page_number }}">Previous</a>
-                {% endif %}
-
-                {% for page_number in page.paginator.page_range %}
-
-                {% if page.number is page_number %}
-                <a class="btn btn-secondary btn-lg disabled active" href="?page={{ page_number }}" role="link"
-                    aria-disabled="true">{{ page_number }}</a>
-                {% else %}
-                <a class="btn btn-secondary btn-lg " href="?page={{ page_number }}">{{ page_number }}</a>
-                {% endif %}
-
-                {% endfor %}
-
-                {% if page.has_next %}
-                <a class="btn btn-secondary btn-lg" href="?page={{ page.next_page_number }}">Next</a>
-                {% endif %}
-            </div>
-            Page {{ page.number }} of {{ page.paginator.num_pages }}.
-        </span>
-    </span>
+<div class="d-flex justify-content-center mx-auto">
+    Page {{ page.number }} of {{ page.paginator.num_pages }}.
 </div>
+<section class="d-flex justify-content-center mx-auto">
+    <div class="pagination">
+        <span class="step-links">
+            <span class="current">
+                <div class="btn-group" data-toggle="buttons">
+                    {% if page.has_previous %}
+                    <a class="btn btn-secondary btn-sm" href="?page=1">
+                        &laquo;&laquo;
+                    </a>
+                    <a class="btn btn-secondary btn-sm" href="?page={{ page.previous_page_number }}">Previous</a>
+                    {% endif %}
+
+                    {% for page_number in page.adjusted_elided_pages %}
+                    {% if page.number is page_number %}
+                    <a class="btn btn-secondary btn-sm disabled active" href="?page={{ page_number }}" role="link"
+                        aria-disabled="true">
+                        {{ page_number }}
+                    </a>
+                    {% else %}
+                    <a class="btn btn-secondary btn-sm " href="?page={{ page_number }}">{{ page_number }}</a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page.has_next %}
+                    <a class="btn btn-secondary btn-sm" href="?page={{ page.next_page_number }}">Next</a>
+                    <a class="btn btn-secondary btn-sm" href="?page={{ page.paginator.num_pages }}">
+                        &raquo;&raquo;
+                    </a>
+                    {% endif %}
+                </div>
+            </span>
+        </span>
+    </div>
+</section>

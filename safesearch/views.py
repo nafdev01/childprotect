@@ -186,6 +186,9 @@ def banned_word_list(request):
     # Try to open the page
     try:
         banned_words = paginator.page(page_number)
+        banned_words.adjusted_elided_pages = paginator.get_elided_page_range(
+            page_number
+        )
 
     # If page_number is not an integer deliver the first page
     except PageNotAnInteger:
