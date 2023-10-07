@@ -5,7 +5,9 @@
 {% block title %}Banned Words{% endblock title %}
 
 {% block header %}
-<h1><center>List of Banned Words</center></h1>
+<h1>
+    <center>List of Banned Words</center>
+</h1>
 {% endblock header %}
 
 {% block content %}
@@ -39,4 +41,6 @@
     </table>
 
 </div>
+{% include "safesearch/includes/pagination.html" with page=banned_words %}
+
 {% endblock content %}

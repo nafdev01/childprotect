@@ -128,8 +128,8 @@
                           {{ alert.flagged_on }}
                         </span>
                         <p>
-                          A search ({{ alert.flagged_search }}) by your child {{ alert.searched_by.child.get_full_name
-                          }} has been flagged
+                          A search ({{ alert.flagged_search }})
+                          by your child {{ alert.searched_by.child.get_full_name }} has been flagged
                           because it contained banned words
                         </p>
                       </div>
@@ -166,7 +166,7 @@
                     <h6 class="dropdown-header">Messages</h6><a class="dropdown-item d-flex align-items-center"
                       href="#">
                       <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="assets/img/avatars/avatar4.jpeg">
+                          src="{% static 'assets/img/avatars/avatar4.jpeg' %}">
                         <div class="bg-success status-indicator"></div>
                       </div>
                       <div class="fw-bold">
@@ -176,7 +176,7 @@
                       </div>
                     </a><a class="dropdown-item d-flex align-items-center" href="#">
                       <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="assets/img/avatars/avatar2.jpeg">
+                          src="{% static 'assets/img/avatars/avatar2.jpeg' %}">
                         <div class="status-indicator"></div>
                       </div>
                       <div class="fw-bold">
@@ -186,7 +186,7 @@
                       </div>
                     </a><a class="dropdown-item d-flex align-items-center" href="#">
                       <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="assets/img/avatars/avatar3.jpeg">
+                          src="{% static 'assets/img/avatars/avatar3.jpeg' %}">
                         <div class="bg-warning status-indicator"></div>
                       </div>
                       <div class="fw-bold">
@@ -197,7 +197,7 @@
                       </div>
                     </a><a class="dropdown-item d-flex align-items-center" href="#">
                       <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="assets/img/avatars/avatar5.jpeg">
+                          src="{% static 'assets/img/avatars/avatar5.jpeg' %}">
                         <div class="bg-success status-indicator"></div>
                       </div>
                       <div class="fw-bold">

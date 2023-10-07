@@ -1,28 +1,26 @@
 from io import BytesIO
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import *
+from safesearch.forms import *
 from accounts.models import *
-from .models import *
-from django.contrib.auth.decorators import login_required
+from safesearch.models import *
+from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
 from django.conf import settings
-from .search import (
+from safesearch.search import (
     get_results,
     word_is_banned,
     get_allowed,
 )
 from accounts.notifications import send_email_alert
 from django.utils import timezone
-from django.http import FileResponse
-from django.shortcuts import get_object_or_404
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from safesearch.models import SearchPhrase
 import csv
-from django.db.models import Q
 
 
 @login_required
@@ -179,7 +177,23 @@ def banned_word_list(request):
         messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
 
-    banned_words = BannedWord.objects.filter(banned_by=parent)
+    banned_words_list = BannedWord.objects.filter(banned_by=parent)
+
+    # Pagination with 20 banned words per page
+    paginator = Paginator(banned_words_list, 20)
+    page_number = request.GET.get("page", 1)
+
+    # Try to open the page
+    try:
+        banned_words = paginator.page(page_number)
+
+    # If page_number is not an integer deliver the first page
+    except PageNotAnInteger:
+        banned_words = paginator.page(1)
+
+    # If page_number is out of range deliver last page of results
+    except EmptyPage:
+        banned_words = paginator.page(paginator.num_pages)
 
     template_name = ("safesearch/banned_words.html",)
     context = {"banned_words": banned_words}
