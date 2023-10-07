@@ -11,6 +11,17 @@
 {% endblock header %}
 
 {% block content %}
+<div class="d-flex justify-content-center mx-auto">
+    <form class="d-inline-block mx-auto" method="get" action="{% url 'safesearch:banned_words' %}">
+        <div class="input-group">
+            <input class="bg-light form-control border-0 small" type="search" placeholder="Search for Banned Word" name="word">
+            <button class="btn btn-primary py-0" type="submit">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
 <div class="container">
     <a class="btn btn-lg btn-warning m-3" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
         Ban a Word
@@ -27,6 +38,7 @@
         </thead>
         <tbody>
 
+            {% if banned_words %}
             {% for banned_word in banned_words %}
             <tr>
                 <td>{{ banned_word.word }}</td>
@@ -35,6 +47,15 @@
                 <td>{{ banned_word.date_updated }}</td>
             </tr>
             {% endfor %}
+            {% else %}
+            {% if request.GET.word %}
+            <p>The word isnt in database</p>
+            {% else %}
+            <p>You have no banned words yet</p>
+            {% endif %}
+            {% endif %}
+
+
 
         </tbody>
 

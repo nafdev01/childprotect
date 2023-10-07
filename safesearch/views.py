@@ -176,8 +176,17 @@ def banned_word_list(request):
     else:
         messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
-
-    banned_words_list = BannedWord.objects.filter(banned_by=parent)
+    
+    word = request.GET.get("word")
+    
+    if word:
+        banned_words_list = BannedWord.objects.filter(
+            banned_by=parent, word__contains=word
+        )
+    else:
+        banned_words_list = BannedWord.objects.filter(
+            banned_by=parent,
+        )
 
     # Pagination with 20 banned words per page
     paginator = Paginator(banned_words_list, 20)

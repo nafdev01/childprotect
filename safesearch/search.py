@@ -6,7 +6,7 @@ import re
 
 
 def word_is_banned(word, banned_by):
-    banned_word = BannedWord.objects.filter(
+    banned_word = BannedWord.banned.filter(
         word=word.lower(), banned_by=banned_by
     ).first()
     return banned_word is not None
