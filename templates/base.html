@@ -17,6 +17,11 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
   <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
   <script src="{% static 'js/silverBox.min.js' %}"></script>
+  <style>
+    .banned-link {
+      display: none;
+    }
+  </style>
 </head>
 
 <body id="page-top">
@@ -28,30 +33,38 @@
           <div class="sidebar-brand-text mx-3"><span>Brand</span></div>
         </a>
         <hr class="sidebar-divider my-0">
+
         <ul class="navbar-nav" id="accordionSidebar">
           {% if user.is_parent %}
 
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
+            <a class="nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
               <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
+            <a class="nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
               <i class="fa-solid fa-user-plus fa-xl"></i><span>Register a Child</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
+            <button class="nav-link" onclick="toggleBannedLinks()" id="banned-link-toggle">
+              <i class="fa-solid fa-flag fa-xl"></i><span>Banned Words</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link banned-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
               <i class="fa-solid fa-ban fa-xl"></i><span>Ban a word</span>
-            </a>
-            <a class=" nav-link" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
-              <i class="fa-solid fa-upload fa-xl"></i><span>Add CSV of Banned Words</span>
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link banned-link" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+              <i class="fa-solid fa-upload fa-xl"></i><span>Add CSV of Banned Words</span>
+            </a>
+          </li>
+          <li class="nav-item banned-link">
             <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
-              <i class="fa-solid fa-flag fa-xl"></i><span>Banned Words</span>
+              <i class="fa-solid fa-flag fa-xl"></i><span>List of Banned Words</span>
             </a>
           </li>
           <li class="nav-item">
@@ -59,6 +72,7 @@
               <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
             </a>
           </li>
+
           {% elif user.is_child %}
 
           <li class="nav-item">
@@ -361,6 +375,22 @@
   {% block custom_js %}
 
   {% endblock custom_js %}
+  <script>
+    function toggleBannedLinks() {
+      var bannedLinks = document.getElementsByClassName("banned-link");
+
+      // Loop through all elements with the class name "banned-link"
+      for (var i = 0; i < bannedLinks.length; i++) {
+        var link = bannedLinks[i];
+
+        if (link.style.display === "none" || link.style.display === "") {
+          link.style.display = "block";
+        } else {
+          link.style.display = "none";
+        }
+      }
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
