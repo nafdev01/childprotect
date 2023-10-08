@@ -45,6 +45,9 @@
             <a class=" nav-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
               <i class="fa-solid fa-ban fa-xl"></i><span>Ban a word</span>
             </a>
+            <a class=" nav-link" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+              <i class="fa-solid fa-upload fa-xl"></i><span>Add CSV of Banned Words</span>
+            </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
@@ -60,17 +63,17 @@
 
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'accounts:child_dashboard' %}" title="Dashboard">
-              Dashboard
+              <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'safesearch:search' %}" title="View Children Search History">
-              Search
+              <i class="fa-solid fa-magnifying-glass fa-xl"></i><span>Search</span>
             </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'safesearch:child_search_history' %}" title="View Search History">
-              Search History
+              <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
             </a>
           </li>
           {% endif %}

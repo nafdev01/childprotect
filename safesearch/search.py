@@ -6,10 +6,11 @@ import re
 
 
 def word_is_banned(word, banned_by):
-    banned_word = BannedWord.banned.filter(
-        word=word.lower(), banned_by=banned_by
-    ).first()
-    return banned_word is not None
+    try:
+        banned_word = BannedWord.banned.get(word=word.lower(), banned_by=banned_by)
+        return True
+    except BannedWord.DoesNotExist:
+        return False
 
 
 def split_string(text):

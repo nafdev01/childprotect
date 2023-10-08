@@ -22,6 +22,7 @@ class SearchPhrase(models.Model):
     class Meta:
         verbose_name = "Search Phrase"
         verbose_name_plural = "Search Phrases"
+        ordering = ["searched_on"]
 
 
 # choices for reasons for a ban

@@ -60,7 +60,8 @@ def search(request):
 
             if not safe:
                 messages.error(
-                    request, f"You searched for the banned words {flagged_words}"
+                    request,
+                    f"You searched for the banned words { ','.join(flagged_words)}",
                 )
 
                 flagged_search = FlaggedSearch(search_phrase=search_phrase)
@@ -71,11 +72,8 @@ def search(request):
 
                 for flagged_word in flagged_words:
                     banned_word = BannedWord.objects.filter(
-                        Q(
-                            word=flagged_word.lower(),
-                            banned_by=child.childprofile.parent_profile,
-                        )
-                        | Q(word=flagged_word.lower(), banned_default=True)
+                        word=flagged_word.lower(),
+                        banned_by=child.childprofile.parent_profile,
                     ).first()
                     FlaggedWord(
                         flagged_search=flagged_search, flagged_word=banned_word
@@ -168,6 +166,37 @@ def create_banned_word(request):
     return render(request, "safesearch/banned_word_create.html", {"form": form})
 
 
+# unban a word
+def unban_word(request, word_id):
+    parent = request.user
+    parent = request.user
+    parent_profile = parent.parentprofile
+    banned_word = get_object_or_404(BannedWord, id=word_id, banned_by=parent_profile)
+
+    # Mark the word as unbanned
+    banned_word.is_banned = False
+    banned_word.save()
+    messages.success(request, f"You have unbanned the word {banned_word}")
+
+    # Redirect to a success page or the word list
+    return redirect("safesearch:banned_words")
+
+
+# ban a word
+def ban_word(request, word_id):
+    parent = request.user
+    parent_profile = parent.parentprofile
+    banned_word = get_object_or_404(BannedWord, id=word_id, banned_by=parent_profile)
+
+    # Mark the word as unbanned
+    banned_word.is_banned = True
+    banned_word.save()
+    messages.success(request, f"You have banned the word {banned_word}")
+
+    # Redirect to a success page or the word list
+    return redirect("safesearch:banned_words")
+
+
 @login_required
 def banned_word_list(request):
     # Check if the user is a child
@@ -176,9 +205,9 @@ def banned_word_list(request):
     else:
         messages.error(request, "You need to be a parent to access this page")
         return redirect("home")
-    
+
     word = request.GET.get("word")
-    
+
     if word:
         banned_words_list = BannedWord.objects.filter(
             banned_by=parent, word__contains=word
@@ -268,13 +297,16 @@ def add_banned_csv(request):
                 csv_data = csv.reader(decoded_file.splitlines(), delimiter=",")
                 for row in csv_data:
                     for word in row:
-                        if not BannedWord.objects.filter(
-                            word=word,
-                            banned_by=request.user.parentprofile,
+                        if (
+                            not BannedWord.objects.filter(
+                                word=word.strip(),
+                                banned_by=request.user.parentprofile,
+                            )
+                            and word != ""
                         ):
                             banned_word = BannedWord(
                                 banned_by=request.user.parentprofile,
-                                word=word,
+                                word=word.strip(),
                                 reason=BanReason.INAPPROPRIATE_CONTENT,
                             )
                             banned_word.save()
