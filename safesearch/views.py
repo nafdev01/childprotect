@@ -404,9 +404,21 @@ def create_unban_request(request, banned_word_id):
 
     try:
         banned_word = BannedWord.banned.get(id=banned_word_id)
+            # Check if an unban request with the same requested_by and banned_word already exists
+        existing_unban_request = UnbanRequest.objects.filter(
+            requested_by=child.childprofile,
+            banned_word=banned_word,
+        )
+
+        if existing_unban_request:
+            messages.warning(
+                request,
+                f"You have already submitted an unban request for this word ({banned_word}).",
+            )
+            return redirect("safesearch:child_search_history")
     except BannedWord.DoesNotExist:
         messages.error(request, f"Banned word does not exist")
-        return redirect("accounts:child_dashboard")
+        return redirect("accounts:child_search_history")
 
     unban_request = UnbanRequest(
         banned_word=banned_word, requested_by=child.childprofile

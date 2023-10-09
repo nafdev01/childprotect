@@ -210,7 +210,7 @@
                   <div class="nav-item dropdown no-arrow">
                     <a class="dropdown-toggle nav-link" aria-expanded="false"
                       data-bs-toggle="dropdown" href="#">
-                      {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
+                      {% with unreviewed=request.user.parentprofile.unreviewed_unban_requests %}
                       {% if unreviewed > 0 %}
                       <span class="badge bg-danger badge-counter">
                         {{ unreviewed }}
@@ -221,10 +221,10 @@
                     </a>
                     <div
                       class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                      <h6 class="dropdown-header">Alerts</h6>
+                      <h6 class="dropdown-header">Messages</h6>
 
-                      {% latest_alerts request.user as latest_alerts %}
-                      {% for alert in latest_alerts %}
+                      {% latest_unban_requests request.user as latest_unban_requests %}
+                      {% for unban_request in latest_unban_requests %}
                       <a class="dropdown-item d-flex align-items-center"
                         href="#">
                         <div class="me-3">
@@ -234,13 +234,11 @@
                         </div>
                         <div>
                           <span class="small text-gray-500">
-                            {{ alert.flagged_on }}
+                            {{ unban_request.requested_on }}
                           </span>
                           <p>
-                            A search ({{ alert.flagged_search }})
-                            by your child {{ alert.searched_by.child.get_full_name }} has been
-                            flagged
-                            because it contained banned words
+                            Your child {{ unban_request.requested_by.child.get_full_name }} has been
+                            requested that you unban the word ({{ unban_request.banned_word }})
                           </p>
                         </div>
                       </a>

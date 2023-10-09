@@ -173,6 +173,9 @@ class UnbanRequest(models.Model):
     class Meta:
         verbose_name = "Unban Request"
         verbose_name_plural = "Unban Requests"
+        unique_together = ["banned_word","requested_by"]
+        ordering = ["-requested_on"]
+
 
 
 class SuspiciousSearch(models.Model):

@@ -38,7 +38,7 @@ def latest_unban_requests(parent):
     try:
         # Assuming your ParentProfile is related to User via a ForeignKey
         parent_profile = ParentProfile.objects.get(parent=parent)
-        unban_requests = UnbanRequest.objects.filter(
+        unban_requests = UnbanRequest.unreviewed.filter(
             requested_by__parent_profile=parent_profile
         )[:3]
         return unban_requests

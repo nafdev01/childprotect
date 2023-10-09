@@ -74,6 +74,7 @@ class ParentProfile(models.Model):
         blank=True,
         default="default.png",
     )
+
     @classmethod
     def create(cls, parent):
         parent_profile = cls(parent=parent)
@@ -84,6 +85,17 @@ class ParentProfile(models.Model):
     def unreviewed_alerts(self):
         unreviewed = self.flaggedalert_set.filter(been_reviewed=False)
         return unreviewed.count()
+
+    @property
+    def unreviewed_unban_requests(self):
+        unreviewed = list()
+        for childprofile in self.childprofile_set.all():
+            unbanrequests = childprofile.unbanrequest_set.filter(been_reviewed=False)
+            if unbanrequests:
+                for unbanrequest in unbanrequests:
+                    unreviewed.append(unbanrequest)
+
+        return len(unreviewed)
 
     def __str__(self):
         return f"{self.parent.username}'s profile"
