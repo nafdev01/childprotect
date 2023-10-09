@@ -29,18 +29,18 @@ urlpatterns = [
         name="generate_children_pdf_report",
     ),
     path(
-        "unban-request/create/<int:banned_word_id>/",
+        "unban_request/create/<int:banned_word_id>/",
         views.create_unban_request,
-        name="create-unban-request",
+        name="create_unban_request",
     ),
     path(
-        "unban-request/approve/<int:unban_request_id>/",
+        "unban_request/approve/<int:unban_request_id>/",
         views.approve_unban_request,
-        name="approve-unban-request",
+        name="approve_unban_request",
     ),
     path(
-        "unban-request/deny/<int:unban_request_id>/",
+        "unban_request/deny/<int:unban_request_id>/",
         views.deny_unban_request,
-        name="deny-unban-request",
+        name="deny_unban_request",
     ),
 ]
