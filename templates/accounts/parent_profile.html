@@ -10,14 +10,13 @@
     <div class="row mb-3">
         <div class="col-lg-4">
             <div class="card mb-3">
-                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
-                        src="{{ profile.photo.url }}" width="160" height="160">
+                <div class="card-body text-center shadow">
+                    <img class="rounded-circle mb-2 mt-2 w-75" src="{{ profile.photo.url }}">
                     <div class="mb-3">
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">Change Photo</button>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Change Photo
+                        </button>
                     </div>
-
-
 
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -45,13 +44,10 @@
                                     <button type="button" class="btn btn-primary" onclick="updatePhoto()">
                                         Save changes
                                     </button>
-
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
             <div class="card shadow mb-4">
@@ -61,27 +57,23 @@
                 <div class="card-body">
                     {% if children_profiles %}
                     {% for child_profile in children_profiles %}
-
-                    <a class="btn btn-outline-success btn-sm"
-                        href="{% url 'safesearch:generate_child_pdf_report' child_profile.child.id %}">
-                        Report
-                    </a>
-
-                    <h4 class="small fw-bold">Server migration<span class="float-end">57%</span></h4>
-                    <div class="progress progress-sm mb-3">
-                        <div class="progress-bar bg-danger" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"
-                            style="width: 57%;"><span class="visually-hidden">57%</span></div>
+                    <h4 class="small fw-bold">
+                        {{ child_profile.child.get_full_name }}
+                    </h4>
+                    <div class="d-flex justify-content-end">
+                        <a class="btn btn-outline-success btn-sm mb-1"
+                            href="{% url 'safesearch:generate_child_pdf_report' child_profile.child.id %}">
+                            Generate Report
+                        </a>
                     </div>
-
                     {% endfor %}
-
                     {% else %}
-
                     <p>No children registered yet</p>
-                    <a class="btn btn-outline-info" href="{% url 'accounts:register_child' %}" title="Child Registration">
-                        <i class="fa-solid fa-user-plus fa-lg"></i><span>&nbsp;Register a Child</span>
-                      </a>
-          
+                    <a class="btn btn-outline-info" href="{% url 'accounts:register_child' %}"
+                        title="Child Registration">
+                        <i class="fa-solid fa-user-plus fa-lg"></i>
+                        <span>&nbsp;Register a Child</span>
+                    </a>
                     {% endif %}
 
                 </div>
@@ -100,7 +92,9 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="mb-3">
-                                            <label class="form-label" for="username"><strong>Username</strong></label>
+                                            <label class="form-label" for="username">
+                                                <strong>Username</strong>
+                                            </label>
                                             <input class="form-control" type="text" id="username"
                                                 placeholder="user.name" name="username" value="{{ parent.username }}">
                                         </div>
@@ -108,23 +102,28 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="first_name"><strong>First
-                                                    Name</strong></label>
+                                        <div class="mb-3 mx-0">
+                                            <label class="form-label" for="first_name">
+                                                <strong>First Name</strong>
+                                            </label>
                                             <input class="form-control" type="text" id="first_name" placeholder="John"
                                                 name="first_name" value="{{ parent.first_name }}">
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="last_name"><strong>Last Name</strong></label>
+                                        <div class="mb-3 mx-0">
+                                            <label class="form-label" for="last_name">
+                                                <strong>Last Name</strong>
+                                            </label>
                                             <input class="form-control" type="text" id="last_name" placeholder="Doe"
                                                 name="last_name" value="{{ parent.last_name }}">
                                         </div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-md-12 col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="gender"><strong>Gender</strong></label>
+                                            <label class="form-label" for="gender">
+                                                <strong>Gender</strong>
+                                            </label>
                                             <select class="form-select" id="gender" name="gender">
                                                 {% for choice in profile.ParentGender.choices %}
                                                 <option value="{{ choice.0 }}" {% if choice.0 is profile.gender %}
@@ -137,7 +136,9 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        Save Settings
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -150,24 +151,30 @@
                             <form action="{% url 'accounts:update_parent_contacts' %}" method="post">
                                 {% csrf_token %}
                                 <div class="mb-3">
-                                    <label class="form-label" for="address"><strong>Address</strong></label>
+                                    <label class="form-label" for="address">
+                                        <strong>Address</strong>
+                                    </label>
                                     <input class="form-control" type="text" id="address" placeholder="Sunset Blvd, 38"
                                         name="address" value="{{ profile.address }}">
                                 </div>
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-lg-6 col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label" for="email"><strong>Email
-                                                    Number</strong></label>
+                                            <label class="form-label" for="email">
+                                                <strong>Email
+                                                    Number</strong>
+                                                </label>
                                             <input class="form-control" type="email" id="email"
                                                 placeholder="Your email address" name="email"
                                                 value="{{ parent.email }}">
                                         </div>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-lg-6 col col-md-12">
                                         <div class="mb-3">
-                                            <label class="form-label" for="phone_number"><strong>Phone
-                                                    Number</strong></label>
+                                            <label class="form-label" for="phone_number">
+                                                <strong>Phone
+                                                    Number</strong>
+                                                </label>
                                             <input class="form-control" type="tel" id="phone_number"
                                                 placeholder="Los Angeles" name="phone_number"
                                                 value="{{ profile.phone_number }}">
