@@ -71,13 +71,14 @@ def search(request):
                 flagged_alert.save()
 
                 for flagged_word in flagged_words:
-                    banned_word = BannedWord.objects.filter(
+                    banned_word = BannedWord.objects.get(
                         word=flagged_word.lower(),
                         banned_by=child.childprofile.parent_profile,
-                    ).first()
-                    FlaggedWord(
+                    )
+                    flagged_word = FlaggedWord(
                         flagged_search=flagged_search, flagged_word=banned_word
-                    ).save()
+                    )
+                    flagged_word.save()
 
                 send_email_alert(request, flagged_words, search_phrase)
                 return redirect("safesearch:child_search_history")
@@ -404,13 +405,16 @@ def create_unban_request(request, banned_word_id):
     try:
         banned_word = BannedWord.banned.get(id=banned_word_id)
     except BannedWord.DoesNotExist:
-        messages.error(f"Banned word does not exist")
+        messages.error(request, f"Banned word does not exist")
         return redirect("accounts:child_dashboard")
 
-    unban_request = UnbanRequest(banned_word=banned_word, requested_by=child)
+    unban_request = UnbanRequest(
+        banned_word=banned_word, requested_by=child.childprofile
+    )
     unban_request.save()
     messages.success(
-        f"You have submitted an unban request for the word {banned_word.word} successfully"
+        request,
+        f"You have submitted an unban request for the word {banned_word.word} successfully",
     )
     return redirect("accounts:child_dashboard")
 
@@ -425,13 +429,13 @@ def approve_unban_request(request, unban_request_id):
 
     try:
         unban_request = UnbanRequest.objects.get(id=unban_request_id)
-        banned_word = BannedWord.banned.get(unban_request.banned_word)
+        banned_word = BannedWord.banned.get(id=unban_request.banned_word.id)
     except UnbanRequest.DoesNotExist:
-        messages.error(f"Unban request does not exist")
-        return redirect("accounts:parent_dashboard")
+        messages.error(request, f"Unban request does not exist")
+        return redirect("safesearch:unban_requests")
     except BannedWord.DoesNotExist:
-        messages.error(f"No banned word matches your request")
-        return redirect("accounts:parent_dashboard")
+        messages.error(request, f"No banned word matches your request")
+        return redirect("safesearch:unban_requests")
 
     unban_request.been_reviewed = True
     unban_request.approved = True
@@ -442,10 +446,11 @@ def approve_unban_request(request, unban_request_id):
     banned_word.save()
 
     messages.success(
-        f"You have approved the unban request by your child {unban_request.requested_by.child} and unbanned the word {banned_word.word}"
+        request,
+        f"You have approved the unban request by your child {unban_request.requested_by.child} and unbanned the word {banned_word.word}",
     )
 
-    return redirect("accounts:parent_dashboard")
+    return redirect("safesearch:unban_requests")
 
 
 @login_required
@@ -458,24 +463,46 @@ def deny_unban_request(request, unban_request_id):
 
     try:
         unban_request = UnbanRequest.objects.get(id=unban_request_id)
-        banned_word = BannedWord.banned.get(unban_request.banned_word)
+        banned_word = BannedWord.objects.get(id=unban_request.banned_word.id)
     except UnbanRequest.DoesNotExist:
-        messages.error(f"Unban request does not exist")
-        return redirect("accounts:parent_dashboard")
+        messages.error(request, f"Unban request does not exist")
+        return redirect("safesearch:unban_requests")
     except BannedWord.DoesNotExist:
-        messages.error(f"No banned word matches your request")
-        return redirect("accounts:parent_dashboard")
+        messages.error(request, f"No banned word matches your request")
+        return redirect("safesearch:unban_requests")
 
     unban_request.been_reviewed = True
     unban_request.approved = False
     unban_request.reviewed_on = timezone.now()
     unban_request.save()
 
-    banned_word.is_banned = False
+    banned_word.is_banned = True
     banned_word.save()
 
     messages.success(
-        f"You have denied the unban request by your child {unban_request.requested_by.child} to unban the word {banned_word.word}"
+        request,
+        f"You have denied the unban request by your child {unban_request.requested_by.child} to unban the word {banned_word.word}",
     )
 
-    return redirect("accounts:parent_dashboard")
+    return redirect("safesearch:unban_requests")
+
+
+@login_required
+def unban_requests(request):
+    # Check if the user is a child
+    if request.user.user_type == User.UserType.PARENT:
+        parent = request.user
+    elif request.user.user_type == User.UserType.CHILD:
+        messages.error(request, "You need to be a parent to access this page!")
+        return redirect("safesearch:parent_search_history")
+    else:
+        messages.error(request, "You need to be a child to access this page")
+        return redirect("home")
+
+    unban_requests = UnbanRequest.objects.filter(
+        requested_by__parent_profile__parent_id=parent.id
+    )
+
+    template_name = "safesearch/unban_requests.html"
+    context = {"unban_requests": unban_requests}
+    return render(request, template_name, context)

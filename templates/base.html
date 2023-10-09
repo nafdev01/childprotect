@@ -7,298 +7,374 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <title>{% block title %}{% endblock %}</title>
-  {% block custom_css %}{% endblock custom_css %}
-  <link rel="stylesheet" href="{% static 'assets1/bootstrap/css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'assets1/css/Nunito.css' %}">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-  <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
-  <script src="{% static 'js/silverBox.min.js' %}"></script>
-  <style>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+    {% block custom_css %}{% endblock custom_css %}
+    <link rel="stylesheet"
+      href="{% static 'assets1/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/Nunito.css' %}">
+    <link rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
+    <script src="{% static 'js/silverBox.min.js' %}"></script>
+    <style>
     .banned-link {
       display: none;
     }
   </style>
-</head>
+  </head>
 
-<body id="page-top">
-  <div id="wrapper">
-    <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-success p-0 navbar-dark">
-      <div class="container-fluid d-flex flex-column p-0"><a
-          class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-          <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
-          <div class="sidebar-brand-text mx-3"><span>ChildProtect</span></div>
-        </a>
-        <hr class="sidebar-divider my-0">
+  <body id="page-top">
+    <div id="wrapper">
+      <nav
+        class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-success p-0 navbar-dark">
+        <div class="container-fluid d-flex flex-column p-0"><a
+            class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0"
+            href="#">
+            <div class="sidebar-brand-icon rotate-n-15"><i
+                class="fas fa-laugh-wink"></i></div>
+            <div class="sidebar-brand-text mx-3"><span>ChildProtect</span></div>
+          </a>
+          <hr class="sidebar-divider my-0">
 
-        <ul class="navbar-nav" id="accordionSidebar">
-          {% if user.is_parent %}
+          <ul class="navbar-nav" id="accordionSidebar">
+            {% if user.is_parent %}
 
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
-              <i class="fa-solid fa-house fa-xl"></i>
-              &nbsp;<span>Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
-              <i class="fa-solid fa-user-plus fa-xl"></i>
-              &nbsp;<span>Register a Child</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <button class="nav-link" onclick="toggleBannedLinks()" id="banned-link-toggle">
-              <i class="fa-solid fa-flag fa-xl"></i>
-              &nbsp;<span>Banned Words</span>
-            </button>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link banned-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
-              <i class="fa-solid fa-ban fa-xl"></i>
-              &nbsp;<span>Ban a word</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link banned-link" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
-              <i class="fa-solid fa-upload fa-xl"></i>
-              &nbsp;<span>Add CSV of Banned Words</span>
-            </a>
-          </li>
-          <li class="nav-item banned-link">
-            <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
-              <i class="fa-solid fa-flag fa-xl"></i>
-              &nbsp;<span>List of Banned Words</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}" title="View Search History">
-              <i class="fa-solid fa-clock-rotate-left fa-xl"></i>
-              &nbsp;<span>Search History</span>
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'accounts:parent_dashboard' %}"
+                title="Dashboard">
+                <i class="fa-solid fa-house fa-xl"></i>
+                &nbsp;<span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'accounts:register_child' %}"
+                title="Child Registration">
+                <i class="fa-solid fa-user-plus fa-xl"></i>
+                &nbsp;<span>Register a Child</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" onclick="toggleBannedLinks()"
+                id="banned-link-toggle">
+                <i class="fa-solid fa-flag fa-xl"></i>
+                &nbsp;<span>Banned Words</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link banned-link"
+                href="{% url 'safesearch:create_banned_word' %}"
+                title="Ban a Word">
+                <i class="fa-solid fa-ban fa-xl"></i>
+                &nbsp;<span>Ban a word</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link banned-link"
+                href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+                <i class="fa-solid fa-upload fa-xl"></i>
+                &nbsp;<span>Add CSV of Banned Words</span>
+              </a>
+            </li>
+            <li class="nav-item banned-link">
+              <a class=" nav-link" href="{% url 'safesearch:banned_words' %}"
+                title="List of Banned Words">
+                <i class="fa-solid fa-flag fa-xl"></i>
+                &nbsp;<span>List of Banned Words</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class=" nav-link"
+                href="{% url 'safesearch:parent_search_history' %}"
+                title="View Search History">
+                <i class="fa-solid fa-clock-rotate-left fa-xl"></i>
+                &nbsp;<span>Search History</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class=" nav-link"
+                href="{% url 'safesearch:unban_requests' %}"
+                title="View Unban Requests">
+                <i class="fa-solid fa-toggle-on fa-xl"></i>
+                &nbsp;<span>Unban Requests</span>
+              </a>
+            </li>
 
-          {% elif user.is_child %}
+            {% elif user.is_child %}
 
-          <li class="nav-item">
-            <a class=" nav-link" href="{% url 'accounts:child_dashboard' %}" title="Dashboard">
-              <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:search' %}" title="View Children Search History">
-              <i class="fa-solid fa-magnifying-glass fa-xl"></i><span>Search</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:child_search_history' %}" title="View Search History">
-              <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
-            </a>
-          </li>
-          {% endif %}
-
-        </ul>
-        <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle"
-            type="button"></button></div>
-      </div>
-    </nav>
-    <div class="d-flex flex-column" id="content-wrapper">
-      <div id="content">
-        <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
-          <div class="container-fluid">
-            <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
-              <i class="fas fa-bars"></i>
-            </button>
-
-            {% if user.is_child %}
-            <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-              <div class="input-group">
-                <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                <button class="btn btn-primary py-0" type="button">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            </form>
+            <li class="nav-item">
+              <a class=" nav-link" href="{% url 'accounts:child_dashboard' %}"
+                title="Dashboard">
+                <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class=" nav-link" href="{% url 'safesearch:search' %}"
+                title="View Children Search History">
+                <i class="fa-solid fa-magnifying-glass fa-xl"></i><span>Search</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class=" nav-link"
+                href="{% url 'safesearch:child_search_history' %}"
+                title="View Search History">
+                <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search
+                  History</span>
+              </a>
+            </li>
             {% endif %}
 
-            <ul class="navbar-nav flex-nowrap ms-auto">
+          </ul>
+          <div class="text-center d-none d-md-inline"><button
+              class="btn rounded-circle border-0" id="sidebarToggle"
+              type="button"></button></div>
+        </div>
+      </nav>
+      <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+          <nav
+            class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
+            <div class="container-fluid">
+              <button class="btn btn-link d-md-none rounded-circle me-3"
+                id="sidebarToggleTop" type="button">
+                <i class="fas fa-bars"></i>
+              </button>
 
-              {% if user.is_parent %}
-              <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow">
-                  <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                    {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
-                    {% if unreviewed > 0 %}
-                    <span class="badge bg-danger badge-counter">{{ unreviewed }}</span>
-                    {% endif %}
-                    {% endwith %}
-                    <i class="fas fa-bell fa-fw"></i>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                    <h6 class="dropdown-header">Alerts</h6>
-
-                    {% latest_alerts request.user as latest_alerts %}
-                    {% for alert in latest_alerts %}
-                    <a class="dropdown-item d-flex align-items-center" href="#">
-                      <div class="me-3">
-                        <div class="bg-danger icon-circle">
-                          <i class="fas fa-exclamation-triangle text-white"></i>
-                        </div>
-                      </div>
-                      <div>
-                        <span class="small text-gray-500">
-                          {{ alert.flagged_on }}
-                        </span>
-                        <p>
-                          A search ({{ alert.flagged_search }})
-                          by your child {{ alert.searched_by.child.get_full_name }} has been flagged
-                          because it contained banned words
-                        </p>
-                      </div>
-                    </a>
-                    {% endfor %}
-
-                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'safesearch:alert_list' %}">
-                      Show All Alerts
-                    </a>
-                  </div>
+              {% if user.is_child %}
+              <form
+                class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
+                <div class="input-group">
+                  <input class="bg-light form-control border-0 small"
+                    type="text" placeholder="Search for ...">
+                  <button class="btn btn-primary py-0" type="button">
+                    <i class="fas fa-search"></i>
+                  </button>
                 </div>
-              </li>
-
-              {% elif user.is_child %}
-              <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false"
-                  data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
-                <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                  <form class="me-auto navbar-search w-100">
-                    <div class="input-group"><input class="bg-light form-control border-0 small" type="text"
-                        placeholder="Search for ...">
-                      <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i
-                            class="fas fa-search"></i></button></div>
-                    </div>
-                  </form>
-                </div>
-              </li>
+              </form>
               {% endif %}
 
-              <li class="nav-item dropdown no-arrow mx-1">
-                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false"
-                    data-bs-toggle="dropdown" href="#"><span class="badge bg-danger badge-counter">7</span><i
-                      class="fas fa-envelope fa-fw"></i></a>
-                  <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
-                    <h6 class="dropdown-header">Messages</h6><a class="dropdown-item d-flex align-items-center"
-                      href="#">
-                      <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="{% static 'assets/img/avatars/avatar4.jpeg' %}">
-                        <div class="bg-success status-indicator"></div>
-                      </div>
-                      <div class="fw-bold">
-                        <div class="text-truncate"><span>Hi there! I am wondering if you can
-                            help me with a problem I've been having.</span></div>
-                        <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
-                      </div>
-                    </a><a class="dropdown-item d-flex align-items-center" href="#">
-                      <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="{% static 'assets/img/avatars/avatar2.jpeg' %}">
-                        <div class="status-indicator"></div>
-                      </div>
-                      <div class="fw-bold">
-                        <div class="text-truncate"><span>I have the photos that you ordered last
-                            month!</span></div>
-                        <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
-                      </div>
-                    </a><a class="dropdown-item d-flex align-items-center" href="#">
-                      <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="{% static 'assets/img/avatars/avatar3.jpeg' %}">
-                        <div class="bg-warning status-indicator"></div>
-                      </div>
-                      <div class="fw-bold">
-                        <div class="text-truncate"><span>Last month's report looks great, I am
-                            very happy with the progress so far, keep up the good
-                            work!</span></div>
-                        <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
-                      </div>
-                    </a><a class="dropdown-item d-flex align-items-center" href="#">
-                      <div class="dropdown-list-image me-3"><img class="rounded-circle"
-                          src="{% static 'assets/img/avatars/avatar5.jpeg' %}">
-                        <div class="bg-success status-indicator"></div>
-                      </div>
-                      <div class="fw-bold">
-                        <div class="text-truncate"><span>Am I a good boy? The reason I ask is
-                            because someone told me that people say this to all dogs, even
-                            if they aren't good...</span></div>
-                        <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
-                      </div>
-                    </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All
-                      Alerts</a>
+              <ul class="navbar-nav flex-nowrap ms-auto">
+
+                {% if user.is_parent %}
+                <li class="nav-item dropdown no-arrow mx-1">
+                  <div class="nav-item dropdown no-arrow">
+                    <a class="dropdown-toggle nav-link" aria-expanded="false"
+                      data-bs-toggle="dropdown" href="#">
+                      {% with unreviewed=request.user.parentprofile.unreviewed_alerts %}
+                      {% if unreviewed > 0 %}
+                      <span class="badge bg-danger badge-counter">
+                        {{ unreviewed }}
+                      </span>
+                      {% endif %}
+                      {% endwith %}
+                      <i class="fas fa-bell fa-fw"></i>
+                    </a>
+                    <div
+                      class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                      <h6 class="dropdown-header">Alerts</h6>
+
+                      {% latest_alerts request.user as latest_alerts %}
+                      {% for alert in latest_alerts %}
+                      <a class="dropdown-item d-flex align-items-center"
+                        href="#">
+                        <div class="me-3">
+                          <div class="bg-danger icon-circle">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <span class="small text-gray-500">
+                            {{ alert.flagged_on }}
+                          </span>
+                          <p>
+                            A search ({{ alert.flagged_search }})
+                            by your child {{
+                            alert.searched_by.child.get_full_name }} has been
+                            flagged
+                            because it contained banned words
+                          </p>
+                        </div>
+                      </a>
+                      {% endfor %}
+
+                      <a class="dropdown-item text-center small text-gray-500"
+                        href="{% url 'safesearch:alert_list' %}">
+                        Show All Alerts
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div class="shadow dropdown-list dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown">
-                </div>
-              </li>
-              <div class="d-none d-sm-block topbar-divider"></div>
-              <li class="nav-item dropdown no-arrow">
-                <div class="nav-item dropdown no-arrow">
-                  <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">
-                    <span class="d-none d-lg-inline me-2 text-gray-600 small">
-                      {{ request.user.get_full_name }}
-                    </span>
-                    {% if request.user.is_parent %}
+                </li>
 
-                    {% update_profile request.user as update_profile %}
-                    {% if update_profile %}
-                    <span
-                      class="position-absolute top-50 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                    </span>
-                    {% endif %}
-                    {% endif %}
-                    <img class="border rounded-circle img-profile" src="{% static 'img/user.png' %}">
-                  </a>
-                  <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
+                {% elif user.is_child %}
+                <li class="nav-item dropdown d-sm-none no-arrow"><a
+                    class="dropdown-toggle nav-link" aria-expanded="false"
+                    data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                  <div
+                    class="dropdown-menu dropdown-menu-end p-3 animated--grow-in"
+                    aria-labelledby="searchDropdown">
+                    <form class="me-auto navbar-search w-100">
+                      <div class="input-group"><input
+                          class="bg-light form-control border-0 small"
+                          type="text"
+                          placeholder="Search for ...">
+                        <div class="input-group-append"><button
+                            class="btn btn-primary py-0" type="button"><i
+                              class="fas fa-search"></i></button></div>
+                      </div>
+                    </form>
+                  </div>
+                </li>
+                {% endif %}
 
-                    {% if request.user.is_parent %}
+                <li class="nav-item dropdown no-arrow mx-1">
+                  <div class="nav-item dropdown no-arrow"><a
+                      class="dropdown-toggle nav-link" aria-expanded="false"
+                      data-bs-toggle="dropdown" href="#"><span
+                        class="badge bg-danger badge-counter">7</span><i
+                        class="fas fa-envelope fa-fw"></i></a>
+                    <div
+                      class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                      <h6 class="dropdown-header">Messages</h6><a
+                        class="dropdown-item d-flex align-items-center"
+                        href="#">
+                        <div class="dropdown-list-image me-3"><img
+                            class="rounded-circle"
+                            src="{% static 'assets/img/avatars/avatar4.jpeg' %}">
+                          <div class="bg-success status-indicator"></div>
+                        </div>
+                        <div class="fw-bold">
+                          <div class="text-truncate"><span>Hi there! I am
+                              wondering if you can
+                              help me with a problem I've been having.</span></div>
+                          <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                        </div>
+                      </a><a class="dropdown-item d-flex align-items-center"
+                        href="#">
+                        <div class="dropdown-list-image me-3"><img
+                            class="rounded-circle"
+                            src="{% static 'assets/img/avatars/avatar2.jpeg' %}">
+                          <div class="status-indicator"></div>
+                        </div>
+                        <div class="fw-bold">
+                          <div class="text-truncate"><span>I have the photos
+                              that you ordered last
+                              month!</span></div>
+                          <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                        </div>
+                      </a><a class="dropdown-item d-flex align-items-center"
+                        href="#">
+                        <div class="dropdown-list-image me-3"><img
+                            class="rounded-circle"
+                            src="{% static 'assets/img/avatars/avatar3.jpeg' %}">
+                          <div class="bg-warning status-indicator"></div>
+                        </div>
+                        <div class="fw-bold">
+                          <div class="text-truncate"><span>Last month's report
+                              looks great, I am
+                              very happy with the progress so far, keep up the
+                              good
+                              work!</span></div>
+                          <p class="small text-gray-500 mb-0">Morgan Alvarez -
+                            2d</p>
+                        </div>
+                      </a><a class="dropdown-item d-flex align-items-center"
+                        href="#">
+                        <div class="dropdown-list-image me-3"><img
+                            class="rounded-circle"
+                            src="{% static 'assets/img/avatars/avatar5.jpeg' %}">
+                          <div class="bg-success status-indicator"></div>
+                        </div>
+                        <div class="fw-bold">
+                          <div class="text-truncate"><span>Am I a good boy? The
+                              reason I ask is
+                              because someone told me that people say this to
+                              all dogs, even
+                              if they aren't good...</span></div>
+                          <p class="small text-gray-500 mb-0">Chicken the Dog ·
+                            2w</p>
+                        </div>
+                      </a><a
+                        class="dropdown-item text-center small text-gray-500"
+                        href="#">Show All
+                        Alerts</a>
+                    </div>
+                  </div>
+                  <div
+                    class="shadow dropdown-list dropdown-menu dropdown-menu-end"
+                    aria-labelledby="alertsDropdown">
+                  </div>
+                </li>
+                <div class="d-none d-sm-block topbar-divider"></div>
+                <li class="nav-item dropdown no-arrow">
+                  <div class="nav-item dropdown no-arrow">
+                    <a class="dropdown-toggle nav-link" aria-expanded="false"
+                      data-bs-toggle="dropdown" href="#">
+                      <span class="d-none d-lg-inline me-2 text-gray-600 small">
+                        {{ request.user.get_full_name }}
+                      </span>
+                      {% if request.user.is_parent %}
 
-                    <a class="dropdown-item position-relative" href="{% url 'accounts:parent_profile' %}">
-                      <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
                       {% update_profile request.user as update_profile %}
                       {% if update_profile %}
                       <span
-                        class="position-absolute top-50 start-50 translate-middle p-1 bg-danger border border-light rounded-circle">
+                        class="position-absolute top-50 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                       </span>
                       {% endif %}
+                      {% endif %}
+                      <img class="border rounded-circle img-profile"
+                        src="{% static 'img/user.png' %}">
                     </a>
+                    <div
+                      class="dropdown-menu shadow dropdown-menu-end animated--grow-in">
 
+                      {% if request.user.is_parent %}
 
-                    {% elif request.user.is_child %}
-                    <a class="dropdown-item" href="{% url 'accounts:child_profile' %}"><i
-                        class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
-                    </a>
-                    {% endif %}
+                      <a class="dropdown-item position-relative"
+                        href="{% url 'accounts:parent_profile' %}">
+                        <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
+                        {% update_profile request.user as update_profile %}
+                        {% if update_profile %}
+                        <span
+                          class="position-absolute top-50 start-50 translate-middle p-1 bg-danger border border-light rounded-circle">
+                        </span>
+                        {% endif %}
+                      </a>
 
-                    <a class="dropdown-item" href="#"><i
-                        class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings
-                    </a>
-                    <a class="dropdown-item" href="#"><i
-                        class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity
-                      log</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">
-                      <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
-                      &nbsp;Logout
-                    </a>
+                      {% elif request.user.is_child %}
+                      <a class="dropdown-item"
+                        href="{% url 'accounts:child_profile' %}"><i
+                          class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
+                      </a>
+                      {% endif %}
+
+                      <a class="dropdown-item" href="#"><i
+                          class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings
+                      </a>
+                      <a class="dropdown-item" href="#"><i
+                          class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity
+                        log</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item"
+                        href="{% url 'accounts:logout' %}">
+                        <i
+                          class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
+                        &nbsp;Logout
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
-        <div class="container-fluid">
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <div class="container-fluid">
 
-          {% if messages %}
-          {% for message in messages %}
-          {% if message.tags == 'success' %}
-          <script>
+            {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <script>
             var message = "{{ message }}";
             var alertType = "success";
 
@@ -312,8 +388,8 @@
               }
             })
           </script>
-          {% elif message.tags == 'info' %}
-          <script>
+            {% elif message.tags == 'info' %}
+            <script>
             var message = "{{ message }}";
             var alertType = "info";
 
@@ -328,8 +404,8 @@
             })
           </script>
 
-          {% elif message.tags == 'warning' %}
-          <script>
+            {% elif message.tags == 'warning' %}
+            <script>
             var message = "{{ message }}";
             var alertType = "warning";
 
@@ -344,8 +420,8 @@
             })
           </script>
 
-          {% elif message.tags == 'error' %}
-          <script>
+            {% elif message.tags == 'error' %}
+            <script>
             var message = "{{ message }}";
             var alertType = "error";
 
@@ -360,29 +436,29 @@
             })
           </script>
 
-          {% endif %}
-          {% endfor %}
-          {% endif %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
 
-          {% block header %}
+            {% block header %}
 
-          {% endblock header %}
+            {% endblock header %}
 
-          {% block content %}
+            {% block content %}
 
-          {% endblock content %}
+            {% endblock content %}
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i
+        class="fas fa-angle-up"></i></a>
 
-  <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    {% block custom_js %}
 
-  {% block custom_js %}
-
-  {% endblock custom_js %}
-  <script>
+    {% endblock custom_js %}
+    <script>
     function toggleBannedLinks() {
       var bannedLinks = document.getElementsByClassName("banned-link");
 
@@ -399,12 +475,14 @@
     }
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-  <script src="{% static 'assets1/js/bs-init.js' %}"></script>
-  <script src="{% static 'assets1/js/theme.js' %}"></script>
-  <script src="{% static 'fontawesome-free/js/all.js' %}"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script src="{% static 'assets1/js/bs-init.js' %}"></script>
+    <script src="{% static 'assets1/js/theme.js' %}"></script>
+    <script src="{% static 'fontawesome-free/js/all.js' %}"></script>
 
-</body>
+  </body>
 
 </html>

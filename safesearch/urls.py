@@ -34,6 +34,11 @@ urlpatterns = [
         name="create_unban_request",
     ),
     path(
+        "unban_requests/",
+        views.unban_requests,
+        name="unban_requests",
+    ),
+    path(
         "unban_request/approve/<int:unban_request_id>/",
         views.approve_unban_request,
         name="approve_unban_request",

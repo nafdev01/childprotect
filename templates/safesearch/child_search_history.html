@@ -10,8 +10,8 @@
         <tr>
             <th>Search Phrase</th>
             <th>Date Searched</th>
-            <th>No of Results</th>
             <th>Allowed</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -19,12 +19,24 @@
         <tr>
             <td>{{ search_phrase.phrase }}</td>
             <td>{{ search_phrase.searched_on }}</td>
-            <td>{{ search_phrase.no_of_results }}</td>
             <td>
                 {% if search_phrase.allowed %}
                 Yes
                 {% else %}
                 No
+                {% endif %}
+            </td>
+            <td>
+                {% if search_phrase.flaggedsearch %}
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#illegalSearchModal{{search_phrase.id}}">
+                    Details
+                </button>
+                {% include 'safesearch/includes/illegal_search_details.html' %}
+                {% else %}
+                <a href></a>
                 {% endif %}
             </td>
         </tr>
@@ -35,5 +47,7 @@
         {% endfor %}
     </tbody>
 </table>
+
+
 
 {% endblock %}

@@ -1,0 +1,58 @@
+<!-- Modal -->
+<div class="modal fade" id="illegalSearchModal{{search_phrase.id}}" tabindex="-1"
+    aria-labelledby="illegalSearchModal{{search_phrase.id}}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="illegalSearchModal{{search_phrase.id}}Label">
+                    Search: {{ search_phrase }}
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h4>Banned Words</h4>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Word</th>
+                                <th scope="col">Reason</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for banned_word in search_phrase.flaggedsearch.flaggedword_set.all %}
+                            <tr>
+                                <td>{{ banned_word.flagged_word }}</td>
+                                <td>{{ banned_word.flagged_word.get_reason_display }}</td>
+                                <td>
+
+                                    {% if banned_word.flagged_word.is_banned %}
+                                    <a class="btn btn-sm btn-warning"
+                                        href="{% url 'safesearch:create_unban_request' banned_word.flagged_word.id %}">
+                                        Request Unban
+                                    </a>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-success" disabled>
+                                        Unbanned
+                                    </button>
+                                    {% endif %}
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
