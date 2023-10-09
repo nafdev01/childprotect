@@ -152,6 +152,7 @@ class UnbanRequest(models.Model):
             return super().get_queryset().filter(been_reviewed=False)
 
     banned_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
+    approved = models.BooleanField(default=False)
     requested_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE)
     request_timestamp = models.DateTimeField(auto_now_add=True)
     been_reviewed = models.BooleanField(default=False)

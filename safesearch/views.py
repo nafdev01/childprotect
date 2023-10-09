@@ -32,7 +32,7 @@ def search(request):
 
     elif request.user.is_parent:
         messages.error(request, "You need to be a child to access this search engine")
-        return redirect("accounts:dashboard")
+        return redirect("accounts:parent_dashboard")
     else:
         messages.error(request, "You need to be a child to access this search engine")
         return redirect("home")
@@ -391,3 +391,79 @@ def generate_pdf_report(request, child_id=None):
     response.write(pdf_content)
 
     return response
+
+
+@login_required
+def create_unban_request(request, banned_word_id):
+    if request.user.user_type == User.UserType.CHILD:
+        child = request.user
+    elif request.user.user_type == User.UserType.PARENT:
+        messages.warning(request, "You need to be a child to create an unban request")
+        return redirect("safesearch:parent_dashboard")
+
+    try:
+        banned_word = BannedWord.banned.get(id=banned_word_id)
+    except BannedWord.DoesNotExist:
+        messages.error(f"Banned word does not exist")
+        return redirect("accounts:child_dashboard")
+
+    unban_request = UnbanRequest(banned_word=banned_word, requested_by=child)
+    unban_request.save()
+    messages.success(
+        f"You have submitted an unban request for the word {banned_word.word} successfully"
+    )
+    return redirect("accounts:child_dashboard")
+
+
+@login_required
+def approve_unban_request(request, unban_request_id):
+    if request.user.user_type == User.UserType.PARENT:
+        parent = request.user
+    elif request.user.user_type == User.UserType.CHILD:
+        messages.warning(request, "You need to be a parent to approve an unban request")
+        return redirect("safesearch:child_dashboard")
+
+    try:
+        unban_request = UnbanRequest.objects.get(id=unban_request_id)
+        banned_word = BannedWord.banned.get(unban_request.banned_word)
+    except UnbanRequest.DoesNotExist:
+        messages.error(f"Unban request does not exist")
+        return redirect("accounts:parent_dashboard")
+    except BannedWord.DoesNotExist:
+        messages.error(f"No banned word matches your request")
+        return redirect("accounts:parent_dashboard")
+
+    unban_request.been_reviewed = True
+    unban_request.approved = True
+    unban_request.reviewed_on = timezone.now()
+    unban_request.save()
+
+    banned_word.is_banned = False
+    banned_word.save()
+    return redirect("accounts:parent_dashboard")
+
+
+@login_required
+def deny_unban_request(request, unban_request_id):
+    if request.user.user_type == User.UserType.PARENT:
+        parent = request.user
+    elif request.user.user_type == User.UserType.CHILD:
+        messages.warning(request, "You need to be a parent to approve an unban request")
+        return redirect("safesearch:child_dashboard")
+
+    try:
+        unban_request = UnbanRequest.objects.get(id=unban_request_id)
+        banned_word = BannedWord.banned.get(unban_request.banned_word)
+    except UnbanRequest.DoesNotExist:
+        messages.error(f"Unban request does not exist")
+        return redirect("accounts:parent_dashboard")
+    except BannedWord.DoesNotExist:
+        messages.error(f"No banned word matches your request")
+        return redirect("accounts:parent_dashboard")
+
+    unban_request.been_reviewed = True
+    unban_request.approved = False
+    unban_request.reviewed_on = timezone.now()
+    unban_request.save()
+
+    return redirect("accounts:parent_dashboard")
