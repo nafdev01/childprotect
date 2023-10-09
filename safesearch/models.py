@@ -75,7 +75,9 @@ class BannedWord(models.Model):
 
 
 class FlaggedSearch(models.Model):
-    search_phrase = models.OneToOneField(SearchPhrase, on_delete=models.CASCADE, null=True)
+    search_phrase = models.OneToOneField(
+        SearchPhrase, on_delete=models.CASCADE, null=True
+    )
     flagged_on = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -160,6 +162,10 @@ class UnbanRequest(models.Model):
     reviewed_on = models.DateTimeField(null=True)
     seen_by_child = models.BooleanField(default=False)
     seen_on = models.DateTimeField(null=True)
+
+    objects = models.Manager()
+    reviewed = ReviewedManager()
+    unreviewed = UnreviewedManager()
 
     def __str__(self):
         return f"{self.banned_word} unban request"

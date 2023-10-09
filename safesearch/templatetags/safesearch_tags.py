@@ -1,6 +1,6 @@
 from django import template
-from accounts.models import ParentProfile
-from safesearch.models import FlaggedAlert
+from accounts.models import *
+from safesearch.models import *
 
 register = template.Library()
 
@@ -29,5 +29,18 @@ def latest_alerts(parent):
             been_reviewed=False,
         )[:3]
         return alerts
+    except ParentProfile.DoesNotExist:
+        return 0
+
+
+@register.simple_tag
+def latest_unban_requests(parent):
+    try:
+        # Assuming your ParentProfile is related to User via a ForeignKey
+        parent_profile = ParentProfile.objects.get(parent=parent)
+        unban_requests = UnbanRequest.objects.filter(
+            requested_by__parent_profile=parent_profile
+        )[:3]
+        return unban_requests
     except ParentProfile.DoesNotExist:
         return 0
