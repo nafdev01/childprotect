@@ -440,6 +440,11 @@ def approve_unban_request(request, unban_request_id):
 
     banned_word.is_banned = False
     banned_word.save()
+
+    messages.success(
+        f"You have approved the unban request by your child {unban_request.requested_by.child} and unbanned the word {banned_word.word}"
+    )
+
     return redirect("accounts:parent_dashboard")
 
 
@@ -465,5 +470,12 @@ def deny_unban_request(request, unban_request_id):
     unban_request.approved = False
     unban_request.reviewed_on = timezone.now()
     unban_request.save()
+
+    banned_word.is_banned = False
+    banned_word.save()
+
+    messages.success(
+        f"You have denied the unban request by your child {unban_request.requested_by.child} to unban the word {banned_word.word}"
+    )
 
     return redirect("accounts:parent_dashboard")
