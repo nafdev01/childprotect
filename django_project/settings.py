@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # my apps
     "accounts",
     "safesearch",
+    "forum",
     # 3rd party
     "django_user_agents",
     "django_bootstrap5",

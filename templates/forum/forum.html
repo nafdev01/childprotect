@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block custom_css %}{% endblock custom_css %}
+
+{% block header %}
+<h1>Posts</h1>
+{% endblock header %}
+
+{% block content %}
+
+{% for post in posts %}
+<h3>{{ post.title }}</h3>
+<p>{{ post.content }}</p>
+
+<h2>Comments</h2>
+
+<!-- Original Comments -->
+<ul class="list-unstyled">
+    {% for comment in post.og_comments %}
+    <li>
+        {{ comment.content }}
+        {% for reply in comment.reply_comments %}
+        <br>
+        <small class="ms-5"> {{ reply.content }}</small>
+        {% endfor %}
+        <!-- Create a New Comment (Original Comment) -->
+        <form method="post" action="{% url 'forum:create_reply' comment.id %}">
+            {% csrf_token %}
+            <textarea name="content" rows="2" cols="50" placeholder="Your reply"></textarea><br>
+            <input class="btn btn-sm btn-success" type="submit" value="Reply">
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- Create a New Comment (Original Comment) -->
+<h3>Create a Comment</h3>
+<form method="post" action="{% url 'forum:create_og_comment' post.id %}">
+    {% csrf_token %}
+    <textarea name="content" rows="4" cols="50" placeholder="Your comment"></textarea><br>
+    <input class="btn btn-success" type="submit" value="Submit Comment">
+</form>
+{% endfor %}
+{% endblock content %}
