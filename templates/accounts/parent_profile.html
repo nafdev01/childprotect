@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Profile{% endblock %}
 
 {% block custom_css %}{% endblock custom_css %}
@@ -11,7 +13,7 @@
         <div class="col-lg-4">
             <div class="card mb-3">
                 <div class="card-body text-center shadow">
-                    <img class="rounded-circle mb-2 mt-2 w-75" src="{{ profile.photo.url }}" alt="{% static 'default.png' %}">
+                    <img class="rounded-circle mb-2 mt-2 w-75" src="{{ profile.photo.url }}" alt="{% static 'img/user.png' %}">
                     <div class="mb-3">
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             Change Photo
