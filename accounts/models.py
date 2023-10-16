@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.db import models
 import datetime
 
+
 def parent_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return f"user_{instance.parent.username}/profile_photo/{filename[:6]}"
@@ -162,11 +163,6 @@ class Confirmation(models.Model):
             # Compare the current time with 'expires_on'
             return self.expires_on <= timezone.now()
         return False
-
-    def save(self, *args, **kwargs):
-        expiration_time = self.created_at + datetime.timedelta(minutes=30)
-        self.expires_on = expiration_time
-        super(Confirmation, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.username}'s profile"
