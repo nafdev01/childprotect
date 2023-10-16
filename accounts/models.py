@@ -73,7 +73,7 @@ class ParentProfile(models.Model):
     photo = models.ImageField(
         upload_to=parent_profile_photo_path,
         blank=True,
-        default="default.png",
+        null=True,
     )
 
     @classmethod
