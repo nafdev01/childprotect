@@ -24,8 +24,6 @@ DEBUG = os.getenv("DEBUG")
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE")
 
-LOCAL_SERVER = os.getenv("LOCAL_SERVER")
-
 ALLOWED_HOSTS = ["*"]
 
 
@@ -104,7 +102,9 @@ if DEVELOPMENT_MODE:
             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
     }
-else:
+elif len(sys.argv) > 0 and sys.argv[1] != "collectstatic":
+    if os.getenv("DATABASE_URL", None) is None:
+        raise Exception("DATABASE_URL environment variable not defined")
     DATABASES = {
         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
     }
