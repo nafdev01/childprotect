@@ -5,7 +5,7 @@ from django.conf import settings
 from datetime import date
 from django.utils import timezone
 from django.db import models
-
+import datetime
 
 def parent_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -147,6 +147,29 @@ class ChildProfile(models.Model):
 
 
 class Confirmation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": User.UserType.PARENT},
+    )
     token = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    expires_on = models.DateTimeField(null=True)
+
+    @property
+    def expired(self):
+        if self.expires_on is not None:
+            # Compare the current time with 'expires_on'
+            return self.expires_on <= timezone.now()
+        return False
+
+    def save(self, *args, **kwargs):
+        expiration_time = self.created_at + datetime.timedelta(minutes=30)
+        self.expires_on = expiration_time
+        super(Confirmation, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
+    class Meta:
+        ordering = ["user"]
