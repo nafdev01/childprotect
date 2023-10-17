@@ -129,12 +129,12 @@
             </button>
 
             {% if user.is_child %}
-            <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" method="get" action="{% url 'safesearch:search' %}">
               <div class="input-group">
-                <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                <button class="btn btn-primary py-0" type="button">
-                  <i class="fas fa-search"></i>
-                </button>
+                <input class="bg-light form-control border-0 small" type="search" name="search-query"
+                id="search-query-nav" placeholder="Search for ...">
+                <input class="btn btn-primary py-0" type="submit">
+                <i class="fas fa-search"></i>
               </div>
             </form>
             {% endif %}
