@@ -65,6 +65,7 @@ def login_user(request):
                             parent is not None
                             and parent.user_type == User.UserType.PARENT
                         ):
+                            send_parent_login_email(request)
                             login(request, parent)
                             messages.success(request, "Parent Log In Successful!")
                             # send_parent_login_email(request)
