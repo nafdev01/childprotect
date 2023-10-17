@@ -63,7 +63,12 @@
                         Sign up
                     </a>
                 </div>
-
+                {% else %}
+                <div class="mx-auto">
+                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'accounts:logout' %}">
+                        Log Out
+                    </a>
+                </div>
                 {% endif %}
             </div>
         </div>
