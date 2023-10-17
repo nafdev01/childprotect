@@ -52,14 +52,12 @@ def add_subscriber(request):
         existing_subscriber = Subscriber.objects.filter(email=email).first()
         if existing_subscriber:
             messages.error(
-                request, f'A subscriber with the email "{email}" already exists.'
+                request, f"A subscriber with the email {email} already exists."
             )
         else:
             subscriber = Subscriber.objects.create(email=email)
             subscriber.save()
-            messages.success(
-                request, f"Subscriber with email '{email}' has been added."
-            )
+            messages.success(request, f"Subscriber with email {email} has been added.")
     else:
         messages.error(request, f"You cannot access this page")
 
