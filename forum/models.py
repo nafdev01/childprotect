@@ -67,3 +67,16 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Comment"
         verbose_name_plural = "Comments"
+
+
+class Subscriber(models.Model):
+    email = models.EmailField(max_length=254, unique=True)
+    subscribed_on = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.email}"
+
+    class Meta:
+        verbose_name = "Subscriber"
+        verbose_name_plural = "Subscribers"

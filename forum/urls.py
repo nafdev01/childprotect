@@ -9,4 +9,5 @@ urlpatterns = [
     # Create a comment for a specific post
     path("comment/<int:post_id>/", views.create_comment, name="create_og_comment"),
     path("reply/<int:comment_id>/", views.create_comment, name="create_reply"),
+    path("add-subscriber/", views.add_subscriber, name="add_subscriber"),
 ]

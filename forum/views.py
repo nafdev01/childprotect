@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Post, Comment, TypeOfComment
+from .models import Post, Comment, TypeOfComment, Subscriber
 from django.contrib.auth.decorators import login_required
+
 
 @login_required
 def post_detail(request):
@@ -28,7 +29,6 @@ def create_comment(request, post_id=None, comment_id=None):
             new_comment.save()
             messages.success(request, f"You have replied to a post")
 
-
         elif comment_id:
             comment = get_object_or_404(Comment, id=comment_id)
             reply = Comment.objects.create(
@@ -38,8 +38,29 @@ def create_comment(request, post_id=None, comment_id=None):
             )
             reply.save()
             messages.success(request, f"You have replied to a post")
-        
+
         else:
             messages.error(request, f"You don't have access to this page")
 
     return redirect("forum:post_detail")
+
+
+def add_subscriber(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        # Check if a subscriber with the provided email already exists
+        existing_subscriber = Subscriber.objects.filter(email=email).first()
+        if existing_subscriber:
+            messages.error(
+                request, f'A subscriber with the email "{email}" already exists.'
+            )
+        else:
+            subscriber = Subscriber.objects.create(email=email)
+            subscriber.save()
+            messages.success(
+                request, f"Subscriber with email '{email}' has been added."
+            )
+    else:
+        messages.error(request, f"You cannot access this page")
+
+        return redirect("home")
