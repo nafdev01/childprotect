@@ -12,19 +12,19 @@
 </head>
 
 <body>
-    <p>A search by your child {{ child.get_full_name }} has been flagged as suspicious because more than half the
-        returned results contained banned words</p>
+    <p>A search by your child {{ child.get_full_name }} has been flagged as suspicious because the returned results
+        contained banned words</p>
     <p>They searched for the phrase:
+        <span class="text-warning"> {{ search_phrase }} </span>
+        which returned the following suspicious results:
+    </p>
+    <div>
 
-        {% for word in search_phrase %}
-        {% if word in flagged_words %}
-        <b style="color: red;">{{ word }} </b>
-        {% else %}
-        {{ word }}
-        {% endif %}
+        {% for result in suspicious_results %}
+        <h4><a href="{{ result.link }}">{{ result.title }}</a></h4>
+        <p>{{ result.snippet }}</p>
         {% endfor %}
-    </p>
-    </p>
+    </div>
     <hr>
     <br>
 

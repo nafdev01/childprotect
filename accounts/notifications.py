@@ -220,7 +220,7 @@ def send_email_suspicious_alert(request, suspicious_results, search_phrase):
     child = request.user
     parent = child.childprofile.parent_profile.parent
     # Retrieve entry by id
-    subject = f"A search by your child {child.get_full_name()} has been flagged"
+    subject = f"Suspicious search by {child.get_full_name()}"
     sender = settings.EMAIL_HOST_USER
     recipient = parent.email
     message = get_template(
@@ -229,7 +229,7 @@ def send_email_suspicious_alert(request, suspicious_results, search_phrase):
         {
             "child": child,
             "suspicious_results": suspicious_results,
-            "search_phrase": search_phrase.phrase.split(),
+            "search_phrase": search_phrase.phrase,
         }
     )
     mail = EmailMessage(
