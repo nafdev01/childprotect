@@ -214,3 +214,35 @@ def send_email_flagged_alert(request, flagged_words, search_phrase):
         )
     else:
         messages.error(request, f"Email could not be sent to your parent")
+
+
+def send_email_suspicious_alert(request, suspicious_results, search_phrase):
+    child = request.user
+    parent = child.childprofile.parent_profile.parent
+    # Retrieve entry by id
+    subject = f"A search by your child {child.get_full_name()} has been flagged"
+    sender = settings.EMAIL_HOST_USER
+    recipient = parent.email
+    message = get_template(
+        "safesearch/includes/flagged_search_email_template.html"
+    ).render(
+        {
+            "child": child,
+            "suspicious_results": suspicious_results,
+            "search_phrase": search_phrase.phrase.split(),
+        }
+    )
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        messages.warning(
+            request, f"Your parent has been alerted about your illegal search"
+        )
+    else:
+        messages.error(request, f"Email could not be sent to your parent")

@@ -14,7 +14,7 @@ from safesearch.search import (
     word_is_banned,
     get_allowed,
 )
-from accounts.notifications import send_email_alert
+from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from django.utils import timezone
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
@@ -84,12 +84,15 @@ def search(request):
                 return redirect("safesearch:child_search_history")
 
             else:
-                search_results = get_results(
+                search_results, suspicious_results = get_results(
                     settings.GOOGLE_API_KEY,
                     settings.CUSTOM_SEARCH_ENGINE_ID,
                     search_query,
                     parent,
                 )
+                if len(suspicious_results) >=5:
+                    send_email_suspicious_alert(request, suspicious_results, search_phrase)
+                    messages.warning(request, f"Your search was flagged as suspicious and your parent has been alerted")
 
         else:
             searched = False
