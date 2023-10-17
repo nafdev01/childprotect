@@ -61,4 +61,4 @@ def add_subscriber(request):
     else:
         messages.error(request, f"You cannot access this page")
 
-        return redirect("home")
+    return redirect("home")
