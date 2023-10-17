@@ -80,7 +80,7 @@ def search(request):
                     )
                     flagged_word.save()
 
-                send_email_alert(request, flagged_words, search_phrase)
+                send_email_flagged_alert(request, flagged_words, search_phrase)
                 return redirect("safesearch:child_search_history")
 
             else:

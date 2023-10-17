@@ -184,7 +184,7 @@ def send_child_login_email(request):
         return False
 
 
-def send_email_alert(request, flagged_words, search_phrase):
+def send_email_flagged_alert(request, flagged_words, search_phrase):
     child = request.user
     parent = child.childprofile.parent_profile.parent
     # Retrieve entry by id
