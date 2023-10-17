@@ -162,8 +162,8 @@
                 </div>
                 <form class="d-flex justify-content-center flex-wrap flex-lg-nowrap" method="post" action="{% url 'forum:add_subscriber' %}"
                     data-bs-theme="light">
+                    {% csrf_token %}
                     <div class="my-2">
-                        {% csrf_token %}
                         <input class="border rounded-pill shadow-sm form-control" type="email"
                             name="email" placeholder="Your Email">
                         </div>
