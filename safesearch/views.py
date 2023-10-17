@@ -21,7 +21,7 @@ from reportlab.lib.pagesizes import letter, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from safesearch.models import SearchPhrase
 import csv
-
+import os
 
 @login_required
 def search(request):
@@ -90,8 +90,10 @@ def search(request):
                     search_query,
                     parent,
                 )
-                if len(suspicious_results) >=2:
-                    send_email_suspicious_alert(request, suspicious_results, search_phrase)
+                if len(suspicious_results) >= 2:
+                    send_email_suspicious_alert(
+                        request, suspicious_results, search_phrase
+                    )
         else:
             searched = False
 
@@ -239,6 +241,54 @@ def banned_word_list(request):
         banned_words = paginator.page(paginator.num_pages)
 
     template_name = ("safesearch/banned_words.html",)
+    context = {"banned_words": banned_words}
+    return render(request, template_name, context)
+
+@login_required
+def default_banned_word_list(request):
+    # Check if the user is a child
+    if request.user.user_type == User.UserType.PARENT:
+        parent = request.user.parentprofile
+    else:
+        messages.error(request, "You need to be a parent to access this page")
+        return redirect("home")
+
+    # Specify the path to your CSV file
+    csv_file_path = os.path.join(settings.STATIC_ROOT, 'banned.csv')
+
+    banned_words = []
+
+    # Open and read the CSV file
+    with open(csv_file_path, "r") as csv_file:
+        csv_data = csv.reader(csv_file, delimiter=",")
+        for row in csv_data:
+            for word in row:
+                banned_words.append(word)  # Assuming the words are in the first column
+
+    word = request.GET.get("word")
+
+    if word:
+        banned_words_list = [
+            word for word in banned_words if word and word.__contains__(word)
+        ]
+    else:
+        banned_words_list = banned_words
+
+    # Pagination with 20 banned words per page
+    paginator = Paginator(banned_words_list, 20)
+    page_number = request.GET.get("page", 1)
+
+    try:
+        banned_words = paginator.page(page_number)
+        banned_words.adjusted_elided_pages = paginator.get_elided_page_range(
+            page_number
+        )
+    except PageNotAnInteger:
+        banned_words = paginator.page(1)
+    except EmptyPage:
+        banned_words = paginator.page(paginator.num_pages)
+
+    template_name = ("safesearch/banned_words_default.html",)
     context = {"banned_words": banned_words}
     return render(request, template_name, context)
 
@@ -405,7 +455,7 @@ def create_unban_request(request, banned_word_id):
 
     try:
         banned_word = BannedWord.banned.get(id=banned_word_id)
-            # Check if an unban request with the same requested_by and banned_word already exists
+        # Check if an unban request with the same requested_by and banned_word already exists
         existing_unban_request = UnbanRequest.objects.filter(
             requested_by=child.childprofile,
             banned_word=banned_word,

@@ -13,6 +13,7 @@ urlpatterns = [
     ),
     path("banned_word/create/", views.create_banned_word, name="create_banned_word"),
     path("banned_word/list/", views.banned_word_list, name="banned_words"),
+    path("banned_word/default_list/", views.default_banned_word_list, name="banned_words_default"),
     path("banned_word/unban/<int:word_id>/", views.unban_word, name="unban_word"),
     path("banned_word/ban/<int:word_id>/", views.ban_word, name="ban_word"),
     path("alerts/", views.alert_list, name="alert_list"),

@@ -66,7 +66,7 @@ def login_user(request):
                             and parent.user_type == User.UserType.PARENT
                         ):
                             login(request, parent)
-                            send_parent_login_email(request)
+                            # send_parent_login_email(request)
                             messages.success(request, "Parent Log In Successful!")
                             # send_parent_login_email(request)
                             return redirect("accounts:parent_dashboard")

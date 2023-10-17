@@ -2,11 +2,11 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 
-{% block title %}Banned Words{% endblock title %}
+{% block title %}Default List of Banned Words{% endblock title %}
 
 {% block header %}
-<h1>
-    <center>List of Banned Words</center>
+<h1 class="d-flex justify-content-center">
+    Default List of Banned Words
 </h1>
 {% endblock header %}
 
@@ -24,20 +24,10 @@
 </div>
 
 <div class="container">
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
-        Ban a Word
-    </a>
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:banned_words_default' %}" title="Ban a Word">
-        View default banned words
-    </a>
-
     <table class="table">
         <thead>
             <tr>
                 <th scope="col">Word</th>
-                <th scope="col">Reason</th>
-                <th scope="col">Added On</th>
-                <th scope="col">Updated On</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -46,20 +36,11 @@
             {% if banned_words %}
             {% for banned_word in banned_words %}
             <tr>
-                <td>{{ banned_word.word }}</td>
-                <td>{{ banned_word.get_reason_display }}</td>
-                <td>{{ banned_word.date_added }}</td>
-                <td>{{ banned_word.date_updated }}</td>
+                <td>{{ banned_word }}</td>
                 <td>
-                    {% if banned_word.is_banned %}
-                    <a class="btn btn-warning" href="{% url 'safesearch:unban_word' banned_word.id %}">
-                        Unban
-                    </a>
-                    {% else %}
-                    <a class="btn btn-danger" href="{% url 'safesearch:ban_word' banned_word.id %}">
+                    <a class="btn btn-warning" href="#">
                         Ban
                     </a>
-                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
