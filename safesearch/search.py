@@ -28,6 +28,7 @@ def split_string(text):
 
 def filter_search_results(search_results, parent):
     filtered_results = []
+    suspicious_results = []
 
     for result in search_results:
         # Split the title and snippet using split_string function
@@ -45,8 +46,10 @@ def filter_search_results(search_results, parent):
         # If none of them have banned words, add the result to filtered_results
         if not (title_has_banned_word or snippet_has_banned_word):
             filtered_results.append(result)
+        else:
+            suspicious_results.append(result)
 
-    return filtered_results
+    return filtered_results, suspicious_results
 
 
 def get_results(api_key, custom_search_engine_id, query, parent):
@@ -73,10 +76,10 @@ def get_results(api_key, custom_search_engine_id, query, parent):
                 }
                 search_results.append(search_result)
 
-            filtered_search_results = filter_search_results(search_results, parent)
-            return filtered_search_results
-
-            return search_results  # Return the list of search results
+            filtered_search_results, suspicious_results = filter_search_results(
+                search_results, parent
+            )
+            return filtered_search_results, suspicious_results
 
         else:
             print("No search results found.")

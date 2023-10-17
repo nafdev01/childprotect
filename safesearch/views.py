@@ -90,10 +90,8 @@ def search(request):
                     search_query,
                     parent,
                 )
-                if len(suspicious_results) >=5:
+                if len(suspicious_results) >=2:
                     send_email_suspicious_alert(request, suspicious_results, search_phrase)
-                    messages.warning(request, f"Your search was flagged as suspicious and your parent has been alerted")
-
         else:
             searched = False
 
