@@ -233,12 +233,12 @@
                   <form class="me-auto navbar-search w-100" method="get" action="{% url 'safesearch:search' %}">
                     {% csrf_token %}
                     <div class="input-group">
-                      <input class="bg-light form-control border-0 small" type="search"  name="search-query" id="search-query-nav" placeholder="Search for ...">
+                      <input class="bg-light form-control border-0 small" type="search" name="search-query"
+                        id="search-query-nav" placeholder="Search for ...">
                       <div class="input-group-append">
-                        <button class="btn btn-primary py-0" type="submit">
-                          <i class="fas fa-search"></i>
-                          </button>
-                        </div>
+                        <input class="btn btn-primary py-0" type="submit">
+                        <i class="fas fa-search"></i>
+                      </div>
                     </div>
                   </form>
                 </div>
