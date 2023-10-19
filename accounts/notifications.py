@@ -252,7 +252,7 @@ def send_email_suspicious_alert(request, suspicious_results, search_phrase):
 
 def send_email_newsletter_subscription(request, subscriber_email):
     subject = f"Thank You for Subscribing to Our Newsletter"
-    sender = (settings.EMAIL_HOST_USER,)
+    sender = settings.EMAIL_HOST_USER
     recipient = subscriber_email
     message = get_template(
         "forum/includes/newsletter_subscription_email_template.html"
@@ -270,6 +270,8 @@ def send_email_newsletter_subscription(request, subscriber_email):
     )
     mail.content_subtype = "html"
     if mail.send():
-        messages.success(request, f"Subscriber with email {subscriber_email} has been added.")
+        messages.success(
+            request, f"Subscriber with email {subscriber_email} has been added."
+        )
     else:
         messages.error(request, f"Email could not be sent to subscriber")
