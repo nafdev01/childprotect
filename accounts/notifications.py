@@ -270,6 +270,6 @@ def send_email_newsletter_subscription(request, subscriber_email):
     )
     mail.content_subtype = "html"
     if mail.send():
-        pass
+        messages.success(request, f"Subscriber with email {subscriber_email} has been added.")
     else:
         messages.error(request, f"Email could not be sent to subscriber")

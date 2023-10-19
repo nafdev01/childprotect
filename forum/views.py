@@ -58,7 +58,7 @@ def add_subscriber(request):
         else:
             subscriber = Subscriber.objects.create(email=subscriber_email)
             subscriber.save()
-            send_email_newsletter_subscription(request, subscriber_email)
+            send_email_newsletter_subscription(request, subscriber.email)
     else:
         messages.error(request, f"You cannot access this page")
 
