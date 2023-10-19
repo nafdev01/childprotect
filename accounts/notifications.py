@@ -270,10 +270,6 @@ def send_email_newsletter_subscription(request, subscriber_email):
     )
     mail.content_subtype = "html"
     if mail.send():
-        messages.warning(
-            request,
-            f"Your search was flagged as suspicious and your parent has been alerted",
-        )
-
+        messages.success(request, f"Subscriber with email {subscriber_email} has been added.")
     else:
-        messages.error(request, f"Email could not be sent to your parent")
+        messages.error(request, f"Email could not be sent to subscriber")

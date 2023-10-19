@@ -48,18 +48,17 @@ def create_comment(request, post_id=None, comment_id=None):
 
 def add_subscriber(request):
     if request.method == "POST":
-        email = request.POST.get("email")
+        subscriber_email = request.POST.get("email")
         # Check if a subscriber with the provided email already exists
-        existing_subscriber = Subscriber.objects.filter(email=email).first()
+        existing_subscriber = Subscriber.objects.filter(email=subscriber_email).first()
         if existing_subscriber:
             messages.error(
-                request, f"A subscriber with the email {email} already exists."
+                request, f"A subscriber with the email {subscriber_email} already exists."
             )
         else:
-            subscriber = Subscriber.objects.create(email=email)
+            subscriber = Subscriber.objects.create(email=subscriber_email)
             subscriber.save()
-            send_email_newsletter_subscription
-            messages.success(request, f"Subscriber with email {email} has been added.")
+            send_email_newsletter_subscription(request, subscriber_email)
     else:
         messages.error(request, f"You cannot access this page")
 
