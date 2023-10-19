@@ -255,7 +255,7 @@ def send_email_newsletter_subscription(request, subscriber_email):
     sender = (settings.EMAIL_HOST_USER,)
     recipient = subscriber_email
     message = get_template(
-        "accounts/includes/newsletter_subscription_email_template.html"
+        "forum/includes/newsletter_subscription_email_template.html"
     ).render(
         {
             "subscriber_email": subscriber_email,
