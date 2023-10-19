@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from accounts.notifications import send_email_newsletter_subscription
 from .models import Post, Comment, TypeOfComment, Subscriber
 from django.contrib.auth.decorators import login_required
 
@@ -57,6 +58,7 @@ def add_subscriber(request):
         else:
             subscriber = Subscriber.objects.create(email=email)
             subscriber.save()
+            send_email_newsletter_subscription
             messages.success(request, f"Subscriber with email {email} has been added.")
     else:
         messages.error(request, f"You cannot access this page")

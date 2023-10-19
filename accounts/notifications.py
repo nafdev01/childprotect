@@ -248,3 +248,32 @@ def send_email_suspicious_alert(request, suspicious_results, search_phrase):
 
     else:
         messages.error(request, f"Email could not be sent to your parent")
+
+
+def send_email_newsletter_subscription(request, subscriber_email):
+    subject = f"Thank You for Subscribing to Our Newsletter"
+    sender = (settings.EMAIL_HOST_USER,)
+    recipient = subscriber_email
+    message = get_template(
+        "accounts/includes/newsletter_subscription_email_template.html"
+    ).render(
+        {
+            "subscriber_email": subscriber_email,
+        }
+    )
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        messages.warning(
+            request,
+            f"Your search was flagged as suspicious and your parent has been alerted",
+        )
+
+    else:
+        messages.error(request, f"Email could not be sent to your parent")
