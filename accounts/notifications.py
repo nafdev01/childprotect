@@ -275,3 +275,32 @@ def send_email_newsletter_subscription(request, subscriber_email):
         )
     else:
         messages.error(request, f"Email could not be sent to subscriber")
+
+
+def send_email_succesful_contact(request, name, email, contact_message, contact_subject):
+    subject = f"Thank You for Contacting Us"
+    sender = settings.EMAIL_HOST_USER
+    recipient = email
+    message = get_template(
+        "forum/includes/contact_successful_email_template.html"
+    ).render(
+        {
+            "name": name,
+            "subject": contact_subject,
+            "message": contact_message,
+        }
+    )
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        messages.success(
+            request, f"Your contact details has been submitted successfully!"
+        )
+    else:
+        messages.error(request, f"Contact details could not be sent to subscriber")

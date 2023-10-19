@@ -80,3 +80,32 @@ class Subscriber(models.Model):
     class Meta:
         verbose_name = "Subscriber"
         verbose_name_plural = "Subscribers"
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    subject = models.CharField(max_length=200)
+    email = models.EmailField()
+    message = models.TextField()
+    responded = models.BooleanField(default=False)
+    contact_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Contact"
+        verbose_name_plural = "Contacts"
+
+
+class ContactResponse(models.Model):
+    contact = models.OneToOneField(Contact, null=True, on_delete=models.CASCADE)
+    responded = models.BooleanField(default=False)
+    responded_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Response to {self.contact}"
+
+    class Meta:
+        verbose_name = "Contact Response"
+        verbose_name_plural = "Contact Responses"

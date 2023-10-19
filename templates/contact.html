@@ -2,57 +2,44 @@
 {% load static %}
 {% load django_bootstrap5 %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}Contact Us{% endblock title %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% block title %}Child Protection Website
-        {% endblock %}
-    </title>
+{% block header %}
 
-    {% block custom_css %}
-    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i&amp;display=swap">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css">
-    <link rel="stylesheet" href="{% static 'assets/css/baguetteBox.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/vanilla-zoom.min.css' %}">
+{% endblock header %}
 
-    {% endblock custom_css %}
-
-</head>
-
-<body>
-
-    {% block header %}
-
-    {% endblock header %}
-
-    {% block content %}
-    <main class="page">
-        <section class="clean-block clean-form dark">
-            <div class="container">
-                <div class="block-heading">
-                    <h2 class="text-info">Contact Us</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in,
-                        mattis vitae leo.</p>
-                </div>
-                <form>
-                    <div class="mb-3"><label class="form-label" for="name">Name</label><input class="form-control"
-                            type="text" id="name" name="name" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="subject">Subject</label><input class="form-control"
-                            type="text" id="subject" name="subject" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control"
-                            type="email" id="email" name="email" data-bs-theme="light"></div>
-                    <div class="mb-3"><label class="form-label" for="message">Message</label><textarea
-                            class="form-control" id="message" name="message" data-bs-theme="light"></textarea></div>
-                    <div class="mb-3"><button class="btn btn-outline-success" type="submit">Send</button></div>
-                </form>
+{% block content %}
+<main class="page">
+    <section class="clean-block clean-form dark">
+        <div class="container">
+            <div class="block-heading text-center">
+                <h2 class="text-info">Get in touch</h2>
+                <p>We're open to any suggestion or just to have a chat!</p>
             </div>
-        </section>
-    </main>
-    {% endblock content %}
+
+            <form method="post" action="{% url 'forum:contact_message' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" for="name">Name</label>
+                    <input class="form-control" type="text" id="name" name="name" data-bs-theme="light">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="subject">Subject</label>
+                    <input class="form-control" type="text" id="subject" name="subject" data-bs-theme="light">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="email">Email</label><input class="form-control" type="email"
+                        id="email" name="email" data-bs-theme="light">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="message">Message</label>
+                    <textarea class="form-control" id="message" name="message" data-bs-theme="light"></textarea>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-outline-success" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock content %}

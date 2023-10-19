@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from accounts.notifications import send_email_newsletter_subscription
-from .models import Post, Comment, TypeOfComment, Subscriber
+from accounts.notifications import (
+    send_email_newsletter_subscription,
+    send_email_succesful_contact,
+)
+from .models import Post, Comment, TypeOfComment, Subscriber, Contact
 from django.contrib.auth.decorators import login_required
 
 
@@ -63,3 +66,22 @@ def add_subscriber(request):
         messages.error(request, f"You cannot access this page")
 
     return redirect("home")
+
+
+def contact_message(request):
+    if request.method == "POST":
+        name = request.POST["name"]
+        subject = request.POST["subject"]
+        email = request.POST["email"]
+        message = request.POST["message"]
+
+        # Save the data to the database using your Contact model
+        contact = Contact.objects.create(
+            name=name, subject=subject, email=email, message=message
+        )
+        contact.save()
+        send_email_succesful_contact(request, name, email, message, subject)
+    else:
+        messages.error(request, f"You cannot access this page")
+
+    return redirect("contact")
