@@ -5,7 +5,7 @@ from .forms import *
 from .notifications import *
 from .models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -14,6 +14,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .models import Confirmation
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 # logout view
@@ -378,3 +379,22 @@ def register_child(request):
     template_name = "registration/child_registration.html"
     context = {"child_form": child_form, "child_profile_form": child_profile_form}
     return render(request, template_name, context)
+
+
+# parent change password
+@parent_required
+def parent_password_change(request):
+    parent = request.user
+
+    if request.method == "POST":
+        form = PasswordChangeForm(parent, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your password was successfully updated!")
+            return redirect("accounts:parent_profile")
+        else:
+            messages.error(request, "Please correct the error(s) below.")
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, "accounts/parent_password_change.html", {"form": form})

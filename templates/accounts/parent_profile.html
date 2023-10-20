@@ -91,8 +91,11 @@
             <div class="row">
                 <div class="col">
                     <div class="card shadow mb-3">
-                        <div class="card-header py-3">
+                        <div class="card-header py-3 d-flex justify-content-between">
                             <p class="text-primary m-0 fw-bold">Your Info</p>
+                            <a class="btn btn-sm btn-warning" href="{% url 'accounts:parent_password_change' %}">
+                                Change Password
+                            </a>
                         </div>
                         <div class="card-body">
                             <form method="post" action="{% url 'accounts:update_parent_info' %}">
