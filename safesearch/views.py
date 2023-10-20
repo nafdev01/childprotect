@@ -1,7 +1,7 @@
 from io import BytesIO
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from accounts.decorators import parent_required, child_required
 from safesearch.forms import *
 from accounts.models import *
 from safesearch.models import *
@@ -23,19 +23,12 @@ from safesearch.models import SearchPhrase
 import csv
 import os
 
-@login_required
-def search(request):
-    # Check if the user is a child
-    if request.user.is_child:
-        child = request.user
-        parent = child.childprofile.parent_profile
 
-    elif request.user.is_parent:
-        messages.error(request, "You need to be a child to access this search engine")
-        return redirect("accounts:parent_dashboard")
-    else:
-        messages.error(request, "You need to be a child to access this search engine")
-        return redirect("home")
+# child search functionality
+@child_required
+def search(request):
+    child = request.user
+    parent = child.childprofile.parent_profile
 
     search_results = []  # Initialize an empty list
 
@@ -102,19 +95,10 @@ def search(request):
     return render(request, template_name, context)
 
 
-@login_required
+# child can see teir search history
+@child_required
 def child_search_history(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.CHILD:
-        child = request.user
-    elif request.user.user_type == User.UserType.PARENT:
-        messages.warning(
-            request, "Redirecting you to all your children's search history"
-        )
-        return redirect("safesearch:parent_search_history")
-    else:
-        messages.error(request, "You need to be a child to access this page")
-        return redirect("home")
+    child = request.user
 
     search_phrases = SearchPhrase.objects.filter(searched_by=child.childprofile)
 
@@ -123,17 +107,10 @@ def child_search_history(request):
     return render(request, template_name, context)
 
 
-@login_required
+# parent can see their childrens history
+@parent_required
 def parent_search_history(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
-        messages.warning(request, "Redirecting you to your search history")
-        return redirect("safesearch:child_search_history")
-    else:
-        messages.error(request, "You need to be a child to access this page")
-        return redirect("home")
+    parent = request.user
 
     search_phrases = SearchPhrase.objects.filter(
         searched_by__parent_profile=parent.parentprofile
@@ -144,17 +121,10 @@ def parent_search_history(request):
     return render(request, template_name, context)
 
 
-@login_required
+# create a banned word
+@parent_required
 def create_banned_word(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
-        messages.warning(request, "You need to be a parent to ban a word")
-        return redirect("safesearch:child_dashboard")
-    else:
-        messages.error(request, "You need to be a child to access this page")
-        return redirect("home")
+    parent = request.user
 
     if request.method == "POST":
         form = BannedWordForm(request.POST)
@@ -171,6 +141,7 @@ def create_banned_word(request):
 
 
 # unban a word
+@parent_required
 def unban_word(request, word_id):
     parent = request.user
     parent = request.user
@@ -201,14 +172,9 @@ def ban_word(request, word_id):
     return redirect("safesearch:banned_words")
 
 
-@login_required
+@parent_required
 def banned_word_list(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user.parentprofile
-    else:
-        messages.error(request, "You need to be a parent to access this page")
-        return redirect("home")
+    parent = request.user.parentprofile
 
     word = request.GET.get("word")
 
@@ -244,17 +210,13 @@ def banned_word_list(request):
     context = {"banned_words": banned_words}
     return render(request, template_name, context)
 
-@login_required
+
+@parent_required
 def default_banned_word_list(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user.parentprofile
-    else:
-        messages.error(request, "You need to be a parent to access this page")
-        return redirect("home")
+    parent = request.user.parentprofile
 
     # Specify the path to your CSV file
-    csv_file_path = os.path.join(settings.STATIC_ROOT, 'banned.csv')
+    csv_file_path = os.path.join(settings.STATIC_ROOT, "banned.csv")
 
     banned_words = []
 
@@ -293,35 +255,19 @@ def default_banned_word_list(request):
     return render(request, template_name, context)
 
 
-@login_required
+@parent_required
 def alert_list(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent_profile = request.user.parentprofile
-    else:
-        messages.error(request, "You need to be a parent to access this page")
-        return redirect("home")
+    parent_profile = request.user.parentprofile
 
     flagged_alerts = FlaggedAlert.objects.filter(reviewed_by=parent_profile)
-    alert_count = FlaggedAlert.objects.filter(
-        flagged_search__search_phrase__searched_by__parent_profile_id=parent_profile.id,
-        been_reviewed=False,
-    ).count()
 
     template_name = ("safesearch/flagged_alerts.html",)
     context = {"alerts": flagged_alerts}
     return render(request, template_name, context)
 
 
-@login_required
+@parent_required
 def review_alert(request, alert_id):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent_profile = request.user.parentprofile
-    else:
-        messages.error(request, "You need to be a parent to access this page")
-        return redirect("home")
-
     alert = FlaggedAlert.objects.get(id=alert_id)
 
     if alert:
@@ -338,6 +284,7 @@ def review_alert(request, alert_id):
     return redirect("safesearch:alert_list")
 
 
+@parent_required
 def add_banned_csv(request):
     if request.method == "POST":
         form = BannedCSVForm(request.POST, request.FILES)
@@ -371,7 +318,7 @@ def add_banned_csv(request):
     return render(request, "safesearch/add_banned_csv.html", {"form": form})
 
 
-@login_required
+@parent_required
 def generate_pdf_report(request, child_id=None):
     # Fetch the child's search history
     if child_id:
@@ -445,13 +392,9 @@ def generate_pdf_report(request, child_id=None):
     return response
 
 
-@login_required
+@child_required
 def create_unban_request(request, banned_word_id):
-    if request.user.user_type == User.UserType.CHILD:
-        child = request.user
-    elif request.user.user_type == User.UserType.PARENT:
-        messages.warning(request, "You need to be a child to create an unban request")
-        return redirect("safesearch:parent_dashboard")
+    child = request.user
 
     try:
         banned_word = BannedWord.banned.get(id=banned_word_id)
@@ -482,13 +425,9 @@ def create_unban_request(request, banned_word_id):
     return redirect("accounts:child_dashboard")
 
 
-@login_required
+@parent_required
 def approve_unban_request(request, unban_request_id):
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
-        messages.warning(request, "You need to be a parent to approve an unban request")
-        return redirect("safesearch:child_dashboard")
+    parent = request.user
 
     try:
         unban_request = UnbanRequest.objects.get(id=unban_request_id)
@@ -516,13 +455,9 @@ def approve_unban_request(request, unban_request_id):
     return redirect("safesearch:unban_requests")
 
 
-@login_required
+@parent_required
 def deny_unban_request(request, unban_request_id):
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
-        messages.warning(request, "You need to be a parent to approve an unban request")
-        return redirect("safesearch:child_dashboard")
+    parent = request.user
 
     try:
         unban_request = UnbanRequest.objects.get(id=unban_request_id)
@@ -550,17 +485,9 @@ def deny_unban_request(request, unban_request_id):
     return redirect("safesearch:unban_requests")
 
 
-@login_required
+@parent_required
 def unban_requests(request):
-    # Check if the user is a child
-    if request.user.user_type == User.UserType.PARENT:
-        parent = request.user
-    elif request.user.user_type == User.UserType.CHILD:
-        messages.error(request, "You need to be a parent to access this page!")
-        return redirect("safesearch:parent_search_history")
-    else:
-        messages.error(request, "You need to be a child to access this page")
-        return redirect("home")
+    parent = request.user
 
     unban_requests = UnbanRequest.objects.filter(
         requested_by__parent_profile__parent_id=parent.id

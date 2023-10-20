@@ -5,10 +5,10 @@ from accounts.notifications import (
     send_email_succesful_contact,
 )
 from .models import Post, Comment, TypeOfComment, Subscriber, Contact
-from django.contrib.auth.decorators import login_required
+from accounts.decorators import parent_required, child_required
 
 
-@login_required
+@parent_required
 def post_detail(request):
     posts = Post.objects.all()
 
@@ -19,7 +19,7 @@ def post_detail(request):
     )
 
 
-@login_required
+@parent_required
 def create_comment(request, post_id=None, comment_id=None):
     if request.method == "POST":
         content = request.POST.get("content")
