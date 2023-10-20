@@ -364,7 +364,22 @@ def register_child(request):
                 send_child_signup_email(request, parent, child)
                 return redirect("accounts:parent_dashboard")
             else:
-                messages.error(request, "There were errors in your form!")
+                # Handle form validation errors for child_form
+                for field, error_messages in child_form.errors.items():
+                    for error_message in error_messages:
+                        messages.error(
+                            request, f"Child Form Error - {field}: {error_message}"
+                        )
+
+                # Handle form validation errors for child_profile_form
+                for field, error_messages in child_profile_form.errors.items():
+                    for error_message in error_messages:
+                        messages.error(
+                            request,
+                            f"Child Profile Form Error - {field}: {error_message}",
+                        )
+
+                return redirect("accounts:register_child")
         except ValidationError as e:
             # Handle form validation errors and display them as part of the response
             messages.error(request, str(e.message))
