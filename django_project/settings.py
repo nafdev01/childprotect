@@ -20,11 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,0.0.0.0").split(",")
 
-ALLOWED_HOSTS = ["*"]
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+
+LOCAL_SERVER = os.getenv("LOCAL_SERVER", "False") == "True"
 
 
 # Application definition
@@ -94,7 +96,6 @@ WSGI_APPLICATION = "django_project.wsgi.application"
 
 
 # Database settings
-
 if DEVELOPMENT_MODE:
     DATABASES = {
         "default": {
