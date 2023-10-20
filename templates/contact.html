@@ -10,36 +10,88 @@
 
 {% block content %}
 <main class="page">
-    <section class="clean-block clean-form dark">
-        <div class="container">
-            <div class="block-heading text-center">
-                <h2 class="text-info">Get in touch</h2>
-                <p>We're open to any suggestion or just to have a chat!</p>
+    <section class="py-2">
+        <div class="container py-2">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h4 class="fw-bold text-success mb-2">Contacts</h4>
+                    <h2 class="fw-bold">How you can reach us</h2>
+                </div>
             </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-4 col-xl-4 d-flex justify-content-center justify-content-xl-start">
+                    <div class="d-flex flex-wrap flex-md-column justify-content-md-start align-items-md-start h-100">
+                        <div class="d-flex align-items-center p-3">
+                            <div
+                                class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block bs-icon bs-icon-md">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div class="px-2">
+                                <h6 class="fw-bold mb-0">Phone</h6>
+                                <p class="text-muted mb-0">+123456789</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center p-3">
+                            <div
+                                class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block bs-icon bs-icon-md">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div class="px-2">
+                                <h6 class="fw-bold mb-0">Email</h6>
+                                <p class="text-muted mb-0">info@example.com</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center p-3">
+                            <div
+                                class="bs-icon-md bs-icon-circle bs-icon-primary shadow d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block bs-icon bs-icon-md">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div class="px-2">
+                                <h6 class="fw-bold mb-0">Location</h6>
+                                <p class="text-muted mb-0">12 Example Street</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-4">
+                    <div>
+                        <form class="p-3 p-xl-4" id="contact-form" method="post" action="{% url 'forum:contact_message' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <input class="form-control" type="text" id="name-1" name="name" placeholder="Name">
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-control" type="text" id="subject-1" name="subject"
+                                    placeholder="Subject">
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-control" type="email" id="email-1" name="email" placeholder="Email">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="message-1" name="message" rows="6"
+                                    placeholder="Message"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-primary shadow d-block w-100" type="submit"
+                                    onclick="contactButtonCircle(this)" id="uploadButton">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-            <form method="post" action="{% url 'forum:contact_message' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label" for="name">Name</label>
-                    <input class="form-control" type="text" id="name" name="name" data-bs-theme="light">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="subject">Subject</label>
-                    <input class="form-control" type="text" id="subject" name="subject" data-bs-theme="light">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="email">Email</label><input class="form-control" type="email"
-                        id="email" name="email" data-bs-theme="light">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="message">Message</label>
-                    <textarea class="form-control" id="message" name="message" data-bs-theme="light"></textarea>
-                </div>
-                <div class="mb-3">
-                    <button class="btn btn-outline-success" type="submit">Send</button>
-                </div>
-            </form>
+            </div>
         </div>
     </section>
 </main>
+
+
+<script type="text/javascript">
+    function contactButtonCircle(el) {
+        uploadButton = document.getElementById("uploadButton")
+        uploadButton.disabled = true;
+        uploadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Sending ...';
+        document.getElementById("contact-form").submit();
+    }
+</script>
+
 {% endblock content %}
