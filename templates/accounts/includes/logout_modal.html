@@ -1,0 +1,23 @@
+<div class="modal fade" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <i class="fa-solid fa-triangle-exclamation fa-shake fa-2xl text-center m-b3 text-warning"
+                        style="height: 50px;"></i>
+                </div>
+                <p class="text-center">Are you sure you want to log out?</p>
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary rounded-pill mx-2" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <a class="btn btn-danger rounded-pill mx-2" role="button" href="{% url 'accounts:logout' %}">
+                        <span><i class="fa-solid fa-right-from-bracket"></i></span>&nbsp;Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

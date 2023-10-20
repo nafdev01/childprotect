@@ -129,14 +129,15 @@
             </button>
 
             {% if user.is_child %}
-            <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" method="get" action="{% url 'safesearch:search' %}">
+            <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" method="get"
+              action="{% url 'safesearch:search' %}">
               <div class="input-group">
                 <input class="bg-light form-control border-0 small" type="search" name="search-query"
-                id="search-query-nav" placeholder="Toto Search ...">
+                  id="search-query-nav" placeholder="Toto Search ...">
                 <button class="btn btn-primary py-0" type="submit">
-                <i class="fas fa-search"></i>
-              </button>
-            </div>
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
             </form>
             {% endif %}
 
@@ -238,7 +239,7 @@
                         id="search-query-nav" placeholder="Toto Search ...">
                       <div class="input-group-append">
                         <button class="btn btn-primary py-0" type="submit">
-                        <i class="fas fa-search"></i>
+                          <i class="fas fa-search"></i>
                         </button>
                       </div>
                     </div>
@@ -293,10 +294,11 @@
                         class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity
                       log</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                    <button class="dropdown-item" id="logoutButton" data-bs-toggle="modal"
+                      data-bs-target="#logoutModal">
                       <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
                       &nbsp;Logout
-                    </a>
+                    </button>
                   </div>
                 </div>
               </li>
@@ -304,6 +306,9 @@
           </div>
         </nav>
         <div class="container-fluid">
+
+          {% include 'accounts/includes/logout_modal.html' %}
+
 
           {% if messages %}
           {% for message in messages %}
