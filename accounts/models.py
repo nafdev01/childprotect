@@ -42,12 +42,14 @@ class User(AbstractUser):
     # The child users manager.
     children = ChildManager()  # Our custom manager.
 
+    @property
     def is_parent(self):
         if self.user_type == User.UserType.PARENT:
             return True
         else:
             return False
 
+    @property
     def is_child(self):
         if self.user_type == User.UserType.CHILD:
             return True

@@ -9,6 +9,7 @@ urlpatterns = [
     # parent urls
     path("login/", views.login_user, name="login"),
     path("parent/register/", views.register_parent, name="register_parent"),
+    path("child/register/", views.register_child, name="register_child"),
     path("parent/dashboard/", views.parent_dashboard, name="parent_dashboard"),
     path("parent/profile/", views.parent_profile, name="parent_profile"),
     path("update_parent_info/", views.update_parent_info, name="update_parent_info"),
@@ -17,8 +18,6 @@ urlpatterns = [
     # email confirmation urls
     path("activate/<uidb64>/<token>/", views.activate, name="activate"),
     # child urls
-    path("child/login/", views.login_child, name="login_child"),
-    path("child/register/", views.register_child, name="register_child"),
     path("child/dashboard/", views.child_dashboard, name="child_dashboard"),
     path("child/profile/", views.child_profile, name="child_profile"),
     path("update_child_info/", views.update_child_info, name="update_child_info"),

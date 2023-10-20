@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from accounts.decorators import parent_required, child_required, guest_required
 from .forms import *
 from .notifications import *
 from .models import User, ParentProfile, ChildProfile, AccountStatus
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import authenticate
-from django.contrib.auth import login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -15,7 +13,6 @@ from django.contrib.auth.tokens import default_token_generator as token_generato
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .models import Confirmation
-from django.contrib.auth.decorators import login_required
 
 
 # logout view
@@ -25,16 +22,9 @@ def logout_view(request):
     return redirect("accounts:login")
 
 
-# parent login view
+# login view
+@guest_required
 def login_user(request):
-    if request.user.is_authenticated:
-        # Redirect to dashboard if the parent is already logged in
-        messages.warning(request, "You are already logged in.")
-        if request.user.is_parent():
-            return redirect("accounts:parent_dashboard")
-        elif request.user.is_child():
-            return redirect("accounts:child_dashboard")
-
     if request.method == "POST":
         # Retrieve username and password from POST data
         username = request.POST.get("username")
@@ -109,12 +99,8 @@ def login_user(request):
 
 
 # View for parent user registration with profile information
+@guest_required
 def register_parent(request):
-    if request.user.is_authenticated:
-        # redirect to dashboard if parent is already logged in
-        messages.warning(request, "You are already logged in as a parent.")
-        return redirect("accounts:parent_dashboard")
-
     if request.method == "POST":
         parent_form = ParentRegistrationForm(request.POST)
 
@@ -181,13 +167,8 @@ def activate(request, uidb64, token):
 
 
 # View for parent user registration with profile information
-@login_required
+@parent_required
 def parent_dashboard(request):
-    if request.user.user_type == User.UserType.CHILD:
-        # redirect to dashboard if parent is already logged in
-        messages.warning(request, "You are already logged in as a child.")
-        return redirect("accounts:child_dashboard")
-
     parent = request.user
     parent_profile = ParentProfile.objects.get(parent=parent)
     children_profiles = parent_profile.childprofile_set.all()
@@ -203,13 +184,8 @@ def parent_dashboard(request):
 
 
 # View for parent user registration with profile information
-@login_required
+@parent_required
 def parent_profile(request):
-    if request.user.user_type == User.UserType.CHILD:
-        # redirect to dashboard if parent is already logged in
-        messages.warning(request, "You are already logged in as a child.")
-        return redirect("accounts:child_dashboard")
-
     parent = request.user
     parent_profile = parent.parentprofile
     children_profiles = parent_profile.childprofile_set.all()
@@ -225,13 +201,8 @@ def parent_profile(request):
 
 
 # View for child profile
-@login_required
+@child_required
 def child_profile(request):
-    if request.user.user_type == User.UserType.PARENT:
-        # redirect to dashboard if parent is already logged in
-        messages.warning(request, "You are already logged in as a parent.")
-        return redirect("accounts:parent_dashboard")
-
     child = request.user
     child_profile = child.childprofile
     parent_profile = child_profile.parent_profile
@@ -247,6 +218,7 @@ def child_profile(request):
 
 
 # update parent details
+@parent_required
 def update_parent_info(request):
     if request.method == "POST":
         # Get the parent's profile instance for the logged-in user
@@ -277,6 +249,7 @@ def update_parent_info(request):
 
 
 # update child details
+@child_required
 def update_child_info(request):
     if request.method == "POST":
         # Get the parent's profile instance for the logged-in user
@@ -299,6 +272,7 @@ def update_child_info(request):
 
 
 # update parent contact info details
+@parent_required
 def update_parent_contacts(request):
     if request.method == "POST":
         # Get the parent's profile instance for the logged-in user
@@ -327,6 +301,7 @@ def update_parent_contacts(request):
 
 
 # update parent profile photo view
+@parent_required
 def update_profile_photo(request):
     if request.method == "POST":
         # Retrieve the current user's parent profile
@@ -350,53 +325,9 @@ def update_profile_photo(request):
     return redirect("accounts:parent_profile")
 
 
-# child login view
-def login_child(request):
-    if request.user.is_authenticated:
-        if request.user.user_type == User.UserType.CHILD:
-            # redirect to dashboard if parent is already logged in
-            messages.warning(request, "You are already logged in as a child.")
-            return redirect("accounts:child_dashboard")
-        elif request.user.user_type == User.UserType.PARENT:
-            # redirect to dashboard if parent is already logged in
-            messages.warning(request, "You are already logged in as a parent.")
-            return redirect("accounts:parent_dashboard")
-
-    if request.method != "POST":
-        form = LoginForm()
-    else:
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-
-            child = authenticate(
-                request,
-                username=username,
-                password=password,
-            )
-
-            if child is not None and child.user_type == User.UserType.CHILD:
-                login(request, child)
-                messages.success(request, "Log In Successful!")
-                send_child_login_email(request)
-                return redirect("accounts:child_dashboard")
-            else:
-                messages.error(request, "Invalid username or password.")
-
-    template_name = "registration/login.html"
-    context = {"child_login_form": form}
-    return render(request, template_name, context)
-
-
 # View for child user registration with profile information
-@login_required
+@child_required
 def child_dashboard(request):
-    if request.user.user_type == User.UserType.PARENT:
-        # redirect to dashboard if parent is already logged in
-        messages.warning(request, "You are already logged in as a parent.")
-        return redirect("accounts:parent_dashboard")
-
     child = request.user
     child_profile = ChildProfile.objects.get(child=child)
 
@@ -407,17 +338,9 @@ def child_dashboard(request):
 
 
 # View for parent user registration with profile information
+@parent_required
 def register_child(request):
-    if request.user.is_authenticated:
-        if request.user.user_type == User.UserType.CHILD:
-            # redirect to dashboard if parent is already logged in
-            messages.warning(request, "You are already logged in as a child.")
-            return redirect("accounts:child_dashboard")
-        else:
-            parent = request.user
-    else:
-        messages.warning(request, "You should be logged in as a parent to add a child.")
-        return redirect("accounts:login")
+    parent = request.user
 
     if request.method == "POST":
         child_form = ChildRegistrationForm(request.POST)
