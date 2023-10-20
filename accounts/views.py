@@ -34,7 +34,7 @@ def login_user(request):
         user_type = request.POST.get("user_type")
 
         if not (username and password and user_type):
-            messages.error(f"Fill in the form fields as required")
+            messages.error(request, f"Fill in the form fields as required")
         elif username and password and user_type:
             try:
                 if user_type == "parent":
