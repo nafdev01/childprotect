@@ -17,18 +17,18 @@
 {% endblock custom_css %}
 
 
-{% block header %}<h1 class="text-center">About us</h1>{% endblock header%}
+{% block header %}<h1 class="text-center display-1">About us</h1>{% endblock header%}
 
 {% block content %}
 <section class="clean-block features">
     <div class="container">
-        <div class="block-heading">
-            <h2 class="text-info">Features</h2>
+        <div class="block-heading text-center">
+            <h2 class="text-success">Features</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis
                 vitae leo.</p>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-5 feature-box"><i class="icon-star icon"></i>
+            <div class="col-md-5 feature-box"><i class="icon-eye icon"></i>
                 <h4>Bootstrap 5</h4>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in,
                     mattis vitae leo.</p>
@@ -47,6 +47,55 @@
                 <h4>All Browser Compatibility</h4>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in,
                     mattis vitae leo.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-3">
+        <div class="row mb-4 mb-lg-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2 class="text-success">Meet The Team</h2>
+                <p class="text-muted">No matter the project, our team can handle it.&nbsp;</p>
+            </div>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 mx-auto" style="max-width: 700px;">
+            <div class="col mb-4">
+                <div class="text-center"><img class="rounded mb-3 fit-cover" width="150" height="150"
+                        src="{% static 'img/meki.jpeg' %}">
+                    <h5 class="fw-bold mb-0"><strong>Patrick Meki</strong></h5>
+                    <small class="text-muted mb-2">
+                        Lorem, ipsum dolor sit amet adipisicing elit. Inventore
+                    </small>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="text-center"><img class="rounded mb-3 fit-cover" width="150" height="150"
+                        src="{% static 'img/klein.jpeg' %}">
+                    <h5 class="fw-bold mb-0"><strong>Klein Rop</strong></h5>
+                    <small class="text-muted mb-2">
+                        Lorem, ipsum dolor sit amet adipisicing elit. Inventore
+                    </small>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="text-center"><img class="rounded mb-3 fit-cover" width="150" height="150"
+                        src="{% static 'img/baha.jpeg' %}">
+                    <h5 class="fw-bold mb-0"><strong>Bahati Moses</strong></h5>
+                    <small class="text-muted mb-2">
+                        Lorem, ipsum dolor sit amet adipisicing elit. Inventore
+                    </small>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="text-center"><img class="rounded mb-3 fit-cover" width="150" height="150"
+                        src="{% static 'img/naftal.jpeg' %}">
+                    <h5 class="fw-bold mb-0"><strong>Naftal Omayio</strong></h5>
+                    <small class="text-muted mb-2">
+                        Lorem, ipsum dolor sit amet adipisicing elit. Inventore
+                    </small>
+                </div>
             </div>
         </div>
     </div>
