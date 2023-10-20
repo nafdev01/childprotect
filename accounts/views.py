@@ -363,6 +363,8 @@ def register_child(request):
                 )
                 send_child_signup_email(request, parent, child)
                 return redirect("accounts:parent_dashboard")
+            else:
+                messages.error(request, "There were errors in your form!")
         except ValidationError as e:
             # Handle form validation errors and display them as part of the response
             messages.error(request, str(e.message))
