@@ -12,6 +12,13 @@ class SearchPhrase(models.Model):
     allowed = models.BooleanField(default=False)
     searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
+    @property
+    def allowed_readable(self):
+        if self.allowed:
+            return "Yes"
+        else:
+            return "No"
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.phrase)
         super(SearchPhrase, self).save(*args, **kwargs)
@@ -79,6 +86,11 @@ class FlaggedSearch(models.Model):
         SearchPhrase, on_delete=models.CASCADE, null=True
     )
     flagged_on = models.DateTimeField(auto_now_add=True)
+    searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
+
+    def save(self, *args, **kwargs):
+        self.searched_by = self.search_phrase.searched_by
+        super(FlaggedSearch, self).save(*args, **kwargs)
 
     @property
     def flagged_words(self):
@@ -173,9 +185,8 @@ class UnbanRequest(models.Model):
     class Meta:
         verbose_name = "Unban Request"
         verbose_name_plural = "Unban Requests"
-        unique_together = ["banned_word","requested_by"]
+        unique_together = ["banned_word", "requested_by"]
         ordering = ["-requested_on"]
-
 
 
 class SuspiciousSearch(models.Model):

@@ -277,7 +277,9 @@ def send_email_newsletter_subscription(request, subscriber_email):
         messages.error(request, f"Email could not be sent to subscriber")
 
 
-def send_email_succesful_contact(request, name, email, contact_message, contact_subject):
+def send_email_succesful_contact(
+    request, name, email, contact_message, contact_subject
+):
     subject = f"Thank You for Contacting Us"
     sender = settings.EMAIL_HOST_USER
     recipient = email
@@ -304,3 +306,28 @@ def send_email_succesful_contact(request, name, email, contact_message, contact_
         )
     else:
         messages.error(request, f"Contact details could not be sent to subscriber")
+
+
+def send_parent_password_change_success_email(request, parent):
+    context_dict = {
+        "parent": parent,
+    }
+    # Retrieve entry by id
+    subject = f"Password Change Succcessful"
+    sender = settings.EMAIL_HOST_USER
+    recipient = parent.email
+    message = get_template(
+        "accounts/includes/parent_password_change_email_template.html"
+    ).render(context_dict)
+    mail = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=sender,
+        to=[recipient],
+        reply_to=[sender],
+    )
+    mail.content_subtype = "html"
+    if mail.send():
+        messages.success(request, "Your password was successfully updated!")
+    else:
+        messages.error(request, f"Password change error")

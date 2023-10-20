@@ -1,0 +1,39 @@
+<!-- all searches child modal -->
+<div class="modal fade" id="flaggedSearchModal{{child_profile.child.get_username}}" tabindex="-1"
+    aria-labelledby="flaggedSearchModal{{child_profile.child.get_username}}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="flaggedSearchModal{{child_profile.child.get_username}}Label">
+                    Flagged Searches
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Search Phrase</th>
+                            <th scope="col">Searched On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for search in flagged_searches %}
+                        <tr>
+                            <th scope="row">{{ search.search_phrase }}</th>
+                            <td>{{ search.flagged_on }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">
+                    See All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

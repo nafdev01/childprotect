@@ -1,0 +1,49 @@
+<!-- all searches child modal -->
+<div class="modal fade" id="allSearchModal{{child_profile.child.get_username}}" tabindex="-1" aria-labelledby="allSearchModal{{child_profile.child.get_username}}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-center" id="allSearchModal{{child_profile.child.get_username}}Label">
+                    Search History
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Search Phrase</th>
+                            <th scope="col">Searched On</th>
+                            <th scope="col">Allowed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for search in all_searches %}
+                        <tr>
+                            <th scope="row">{{ search.phrase }}</th>
+                            <td>{{ search.searched_on }}</td>
+                            <td>
+                                {% if search.allowed %}
+                                <span style="color: green;">
+                                    <i class="fa-solid fa-thumbs-up fa-lg"></i>
+                                </span>
+                                {% else %}
+                                <span style="color: red;">
+                                    <i class="fa-solid fa-thumbs-down fa-lg"></i>
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>

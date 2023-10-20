@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from accounts.decorators import parent_required, child_required, guest_required
-from .forms import *
-from .notifications import *
-from .models import User, ParentProfile, ChildProfile, AccountStatus
+from accounts.forms import *
+from accounts.notifications import *
+from accounts.models import User, ParentProfile, ChildProfile, AccountStatus
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,7 +12,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from .models import Confirmation
+from accounts.models import Confirmation
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 
@@ -391,10 +391,27 @@ def parent_password_change(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, "Your password was successfully updated!")
+            send_parent_password_change_success_email(request, parent)
             return redirect("accounts:parent_profile")
         else:
             messages.error(request, "Please correct the error(s) below.")
     else:
         form = PasswordChangeForm(request.user)
     return render(request, "accounts/parent_password_change.html", {"form": form})
+
+
+# parent view to see childrens information
+@parent_required
+def children_details(request):
+    parent = request.user
+    parent_profile = ParentProfile.objects.get(parent=parent)
+    children_profiles = parent_profile.childprofile_set.all()
+
+    context = {
+        "parent": parent,
+        "children_profiles": children_profiles,
+        "parent_profile": parent_profile,
+    }
+    template_name = "accounts/children_details.html"
+
+    return render(request, template_name, context)

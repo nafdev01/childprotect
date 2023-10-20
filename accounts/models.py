@@ -130,10 +130,19 @@ class ChildProfile(models.Model):
         null=False,
         help_text="Only children beween the ages of 9 and 15 are allowed to register.",
     )
-    account_status = models.CharField(max_length=2, choices=AccountStatus.choices)
+    account_status = models.CharField(
+        max_length=2, choices=AccountStatus.choices, default=AccountStatus.ACTIVE
+    )
     gender = models.CharField(
         max_length=1, choices=ChildGender.choices, default=ChildGender.MALE
     )
+
+    @property
+    def banned(self):
+        if self.account_status == AccountStatus.BANNED:
+            return True
+        else:
+            return False
 
     @property
     def age(self):

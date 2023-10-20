@@ -46,6 +46,12 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:children_details' %}" title="Child Registration">
+              <i class="fa-solid fa-children fa-xl"></i>
+              &nbsp;<span>Children</span>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
               <i class="fa-solid fa-user-plus fa-xl"></i>
               &nbsp;<span>Register a Child</span>
@@ -93,7 +99,6 @@
               &nbsp;<span>Forum</span>
             </a>
           </li>
-
 
           {% elif user.is_child %}
 
