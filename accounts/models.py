@@ -1,11 +1,13 @@
 # accounts/models.py
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.conf import settings
 from datetime import date
+from django.forms import ValidationError
 from django.utils import timezone
 from django.db import models
-import datetime
 
 
 def parent_profile_photo_path(instance, filename):
@@ -123,7 +125,11 @@ class ChildProfile(models.Model):
     parent_profile = models.ForeignKey(
         ParentProfile, on_delete=models.CASCADE, null=True
     )
-    date_of_birth = models.DateField(blank=False, null=False)
+    date_of_birth = models.DateField(
+        blank=False,
+        null=False,
+        help_text="Only children beween the ages of 9 and 15 are allowed to register.",
+    )
     account_status = models.CharField(max_length=2, choices=AccountStatus.choices)
     gender = models.CharField(
         max_length=1, choices=ChildGender.choices, default=ChildGender.MALE
@@ -141,6 +147,15 @@ class ChildProfile(models.Model):
             )
         )
         return age
+
+    def save(self, *args, **kwargs):
+        min_age = 9
+        max_age = 16
+
+        if not min_age <= self.age <= max_age:
+            raise ValidationError(_("Children must be between 9 and 16 years old."))
+
+        super(ChildProfile, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.child.username}'s profile"

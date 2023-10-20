@@ -1,11 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import ChildProfile, User, ParentProfile
-from .widgets import DatePickerInput
+from accounts.models import ChildProfile, User
+from accounts.widgets import DatePickerInput
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
-from django.contrib import messages
 
 
 class ParentRegistrationForm(UserCreationForm):
@@ -29,6 +28,9 @@ class ChildProfileForm(forms.ModelForm):
         fields = ["date_of_birth", "gender"]
         widgets = {
             "date_of_birth": DatePickerInput(),
+        }
+        help_texts = {
+            "date_of_birth": "Only children beween the ages of 9 and 15 are allowed to register.",
         }
 
 

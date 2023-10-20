@@ -13,6 +13,7 @@ from django.contrib.auth.tokens import default_token_generator as token_generato
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from .models import Confirmation
+from django.core.exceptions import ValidationError
 
 
 # logout view
@@ -337,30 +338,38 @@ def child_dashboard(request):
     return render(request, template_name, context)
 
 
-# View for parent user registration with profile information
 @parent_required
 def register_child(request):
     parent = request.user
 
     if request.method == "POST":
-        child_form = ChildRegistrationForm(request.POST)
-        child_profile_form = ChildProfileForm(request.POST)
-        if child_form.is_valid() and child_profile_form.is_valid():
-            child = child_form.save(commit=False)
-            child.user_type = User.UserType.CHILD
-            profile = child_profile_form.save(commit=False)
-            profile.child = child
-            profile.account_status = AccountStatus.ACTIVE
-            profile.parent_profile = parent.parentprofile
-            child.email = parent.email
-            child.save()
-            profile.save()
-            messages.success(
-                request,
-                f"Child {child.get_full_name()} Has Been Registered Successfully",
-            )
-            send_child_signup_email(request, parent, child)
-            return redirect("accounts:parent_dashboard")
+        try:
+            child_form = ChildRegistrationForm(request.POST)
+            child_profile_form = ChildProfileForm(request.POST)
+            if child_form.is_valid() and child_profile_form.is_valid():
+                child = child_form.save(commit=False)
+                child.user_type = User.UserType.CHILD
+                profile = child_profile_form.save(commit=False)
+                profile.child = child
+                profile.account_status = AccountStatus.ACTIVE
+                profile.parent_profile = parent.parentprofile
+                child.email = parent.email
+                child.save()
+                profile.save()
+                messages.success(
+                    request,
+                    f"Child {child.get_full_name()} Has Been Registered Successfully",
+                )
+                send_child_signup_email(request, parent, child)
+                return redirect("accounts:parent_dashboard")
+        except ValidationError as e:
+            # Handle form validation errors and display them as part of the response
+            messages.error(request, str(e.message))
+            return redirect("accounts:register_child")
+        except Exception as e:
+            # Handle other exceptions or errors
+            messages.error(request, "An error occurred during registration.")
+            return redirect("accounts:register_child")
 
     else:
         child_form = ChildRegistrationForm()
