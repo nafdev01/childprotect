@@ -15,6 +15,7 @@ from django.utils.encoding import force_bytes, force_str
 from accounts.models import Confirmation
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
+from datetime import datetime
 
 
 # logout view
@@ -252,7 +253,7 @@ def update_parent_info(request):
 
 # update child details
 @child_required
-def update_child_info(request):
+def update_child_profile(request):
     if request.method == "POST":
         # Get the parent's profile instance for the logged-in user
         child = request.user
@@ -432,3 +433,53 @@ def children_details(request):
     template_name = "accounts/children_details.html"
 
     return render(request, template_name, context)
+
+
+# update child details
+@parent_required
+def update_child_info(request, child_id):
+    if request.method == "POST":
+        try:
+            # Get the parent's profile instance for the logged-in user
+            parent = request.user
+            child = User.children.get(id=child_id)
+            child_profile = child.childprofile
+            # Extract data from the POST request
+            username = request.POST.get("username")
+            first_name = request.POST.get("first_name")
+            last_name = request.POST.get("last_name")
+            gender = request.POST.get("gender")
+            date_of_birth = request.POST.get("date_of_birth")
+
+            date_of_birth = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+
+            # Update the child's info fields with the extracted data
+            child.username = username
+            child.first_name = first_name
+            child.last_name = last_name
+            child.save()
+
+            # Update the child's profile fields with the extracted data
+            child_profile.gender = gender
+            child_profile.date_of_birth = date_of_birth
+            child_profile.save()
+
+            # Update the child's profile fields with the extracted data
+            messages.success(
+                request, f"{child.get_full_name()} info updated successfully."
+            )
+        except ValidationError as e:
+            # Handle form validation errors and display them as part of the response
+            messages.error(request, str(e.message))
+            return redirect("accounts:children_details")
+        except Exception as e:
+            # Handle other exceptions or errors
+            error_message = str(e)  # Get the exception message as a string
+            messages.error(request, error_message)  # Display the exception message
+            print(error_message)  # Display the exception message
+            return redirect("accounts:children_details")
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("accounts:children_details")

@@ -164,23 +164,34 @@
                     <div class="mt-2 c-details text-center">
                         <div class="row">
                             <div class="col-md-6 mt-3">
-                                <div class="card p-2">
-                                    <p class="text-dark h5 underline">Info</p>
-                                    <p class="child-details text-dark">
-                                        {{ child_profile.age }} years old
-                                    </p>
-                                    <p class="child-details text-dark">
-                                        {{ child_profile.get_gender_display }}
-                                    </p>
-                                    <p class="child-details text-dark">
-                                        {% if child_profile.child.last_login %}
-                                        <span>
-                                            Last active {{ child_profile.child.last_login|timesince }} ago
-                                        </span>
-                                        {% else %}
-                                        <span>Not logged in yet</span>
-                                        {% endif %}
-                                    </p>
+                                <div class="card m-2">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <p class="text-dark h5 underline">Info</p>
+                                        <button class="btn btn-sm btn-outline-dark rounded-circle"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#updateChildModal{{child_profile.child.get_username}}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                    </div>
+                                    {% include 'accounts/includes/update_child_info_modal.html' %}
+                                    <div class="card-body">
+                                        <p class="child-details text-dark">
+                                            {{ child_profile.age }} years old
+                                        </p>
+                                        <p class="child-details text-dark">
+                                            {{ child_profile.get_gender_display }}
+                                        </p>
+                                        <p class="child-details text-dark">
+                                            {% if child_profile.child.last_login %}
+                                            <span>
+                                                Last active {{ child_profile.child.last_login|timesince }} ago
+                                            </span>
+                                            {% else %}
+                                            <span>Not logged in yet</span>
+                                            {% endif %}
+                                        </p>
+
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6 mt-3">
@@ -188,7 +199,7 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item child-details">
                                         <button type="button" class="more-btn info-btn" data-bs-toggle="modal"
-                                            data-bs-target="#allSearchModal{{child_profile.child.get_username}}">
+                                            data-bs-target="#updateChildModal{{child_profile.child.get_username}}">
                                             {{ child_profile.searchphrase_set.all.count }} total searches
                                         </button>
                                         {% all_child_searches child_profile.id %}

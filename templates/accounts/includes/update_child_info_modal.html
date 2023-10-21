@@ -1,0 +1,82 @@
+<!-- all searches child modal -->
+<div class="modal fade" id="updateChildModal{{child_profile.child.get_username}}" tabindex="-1"
+    aria-labelledby="updateChildModal{{child_profile.child.get_username}}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-center" id="updateChildModal{{child_profile.child.get_username}}Label">
+                    Update {{ child_profile.child.get_full_name }}'s' Info
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                {% with child_profile.child as child %}
+                <form method="post" action="{% url 'accounts:update_child_info' child.id %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="username">
+                                    <strong>Username</strong>
+                                </label>
+                                <input class="form-control" type="text" id="username" placeholder="user.name"
+                                    name="username" value="{{ child.username }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="first_name">
+                                    <strong>First Name</strong>
+                                </label>
+                                <input class="form-control" type="text" id="first_name" placeholder="John"
+                                    name="first_name" value="{{ child.first_name }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="last_name">
+                                    <strong>Last Name</strong>
+                                </label>
+                                <input class="form-control" type="text" id="last_name" placeholder="Doe"
+                                    name="last_name" value="{{ child.last_name }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="gender"><strong>Gender</strong></label>
+                                <select class="form-select" id="gender" name="gender">
+                                    {% with child_profile.gender as gender %}
+                                    {% for choice in child_profile.ChildGender.choices %}
+                                    <option value="{{ choice.0 }}" {% if choice.0 is gender %} selected {% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                    {% endfor %}
+                                    {% endwith %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" for="date_of_birth">
+                            Date of Birth
+                        </label>
+                        <input class="form-control" type="date" value="{{ child_profile.date_of_birth|date:'Y-m-d' }}"
+                            id="date_of_birth" name="date_of_birth">
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-warning" type="submit">Update Info</button>
+                    </div>
+                </form>
+                {% endwith %}
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
