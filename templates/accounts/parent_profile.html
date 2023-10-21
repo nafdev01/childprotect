@@ -37,7 +37,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{% url 'accounts:update_profile_photo' %}" method="post"
+                                    <form action="{% url 'update_profile_photo' %}" method="post"
                                         id="photoForm" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <label class="form-label" for="profile_photo">Select New Photo</label>
@@ -77,7 +77,7 @@
                     {% endfor %}
                     {% else %}
                     <p>No children registered yet</p>
-                    <a class="btn btn-outline-info" href="{% url 'accounts:register_child' %}"
+                    <a class="btn btn-outline-info" href="{% url 'register_child' %}"
                         title="Child Registration">
                         <i class="fa-solid fa-user-plus fa-lg"></i>
                         <span>&nbsp;Register a Child</span>
@@ -93,12 +93,12 @@
                     <div class="card shadow mb-3">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <p class="text-primary m-0 fw-bold">Your Info</p>
-                            <a class="btn btn-sm btn-warning" href="{% url 'accounts:parent_password_change' %}">
+                            <a class="btn btn-sm btn-warning" href="{% url 'parent_password_change' %}">
                                 Change Password
                             </a>
                         </div>
                         <div class="card-body">
-                            <form method="post" action="{% url 'accounts:update_parent_info' %}">
+                            <form method="post" action="{% url 'update_parent_info' %}">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col">
@@ -159,7 +159,7 @@
                             <p class="text-primary m-0 fw-bold">Contact Details</p>
                         </div>
                         <div class="card-body">
-                            <form action="{% url 'accounts:update_parent_contacts' %}" method="post">
+                            <form action="{% url 'update_parent_contacts' %}" method="post">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label" for="address">

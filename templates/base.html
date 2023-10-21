@@ -40,19 +40,19 @@
           {% if user.is_parent %}
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:parent_dashboard' %}" title="Dashboard">
+            <a class="nav-link" href="{% url 'home' %}" title="Dashboard">
               <i class="fa-solid fa-house fa-xl"></i>
               &nbsp;<span>Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:children_details' %}" title="Child Registration">
+            <a class="nav-link" href="{% url 'children_details' %}" title="Child Registration">
               <i class="fa-solid fa-children fa-xl"></i>
               &nbsp;<span>Children</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'accounts:register_child' %}" title="Child Registration">
+            <a class="nav-link" href="{% url 'register_child' %}" title="Child Registration">
               <i class="fa-solid fa-user-plus fa-xl"></i>
               &nbsp;<span>Register a Child</span>
             </a>
@@ -103,7 +103,7 @@
           {% elif user.is_child %}
 
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'accounts:child_dashboard' %}" title="Dashboard">
+            <a class=" nav-link" href="{% url 'home' %}" title="Dashboard">
               <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
             </a>
           </li>
@@ -276,7 +276,7 @@
 
                     {% if request.user.is_parent %}
 
-                    <a class="dropdown-item position-relative" href="{% url 'accounts:parent_profile' %}">
+                    <a class="dropdown-item position-relative" href="{% url 'parent_profile' %}">
                       <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
                       {% update_profile request.user as update_profile %}
                       {% if update_profile %}
@@ -287,7 +287,7 @@
                     </a>
 
                     {% elif request.user.is_child %}
-                    <a class="dropdown-item" href="{% url 'accounts:child_profile' %}"><i
+                    <a class="dropdown-item" href="{% url 'child_profile' %}"><i
                         class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
                     </a>
                     {% endif %}

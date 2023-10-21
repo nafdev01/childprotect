@@ -22,7 +22,7 @@ from datetime import datetime
 def logout_view(request):
     messages.success(request, "You have logged out successfully!")
     logout(request)
-    return redirect("accounts:login")
+    return redirect("login")
 
 
 # login view
@@ -46,7 +46,7 @@ def login_user(request):
                             request,
                             f"Please confirm your email at {parent.email[:5]}**************{parent.email[-5:]} before attempting to log in",
                         )
-                        return redirect(reverse("accounts:login"))
+                        return redirect(reverse("login"))
                     else:
                         parent = authenticate(
                             request,
@@ -62,7 +62,7 @@ def login_user(request):
                             # send_parent_login_email(request)
                             messages.success(request, "Parent Log In Successful!")
                             # send_parent_login_email(request)
-                            return redirect("accounts:parent_dashboard")
+                            return redirect("home")
                         else:
                             messages.error(
                                 request, "Invalid parent username or password."
@@ -76,7 +76,7 @@ def login_user(request):
                             request,
                             f"Your account is inactive",
                         )
-                        return redirect(reverse("accounts:login"))
+                        return redirect(reverse("login"))
                     else:
                         child = authenticate(
                             request,
@@ -88,7 +88,7 @@ def login_user(request):
                             login(request, child)
                             messages.success(request, "Child Log In Successful!")
                             send_child_login_email(request)
-                            return redirect("accounts:child_dashboard")
+                            return redirect("home")
                         else:
                             messages.error(
                                 request, "Invalid child username or password."
@@ -132,7 +132,7 @@ def register_parent(request):
                 "Your account has been created successfully! Please check your email to confirm your email address and activate your account.",
             )
             send_parent_signup_confirm_email(request, parent, token_dict)
-            return redirect("accounts:login")
+            return redirect("login")
 
     else:
         parent_form = ParentRegistrationForm()
@@ -166,22 +166,33 @@ def activate(request, uidb64, token):
             "Activation link is invalid.",
         )
 
-    return redirect("accounts:login")
+    return redirect("login")
 
 
-# View for parent user registration with profile information
-@parent_required
-def parent_dashboard(request):
-    parent = request.user
-    parent_profile = ParentProfile.objects.get(parent=parent)
-    children_profiles = parent_profile.childprofile_set.all()
+def home(request):
+    if not request.user.is_authenticated:
+        context = {
+            "section": "home",
+        }
+        template_name = "home.html"
 
-    context = {
-        "parent": parent,
-        "children_profiles": children_profiles,
-        "parent_profile": parent_profile,
-    }
-    template_name = "accounts/parent_dashboard.html"
+    elif request.user.is_parent:
+        parent = request.user
+        parent_profile = ParentProfile.objects.get(parent=parent)
+        children_profiles = parent_profile.childprofile_set.all()
+
+        context = {
+            "parent": parent,
+            "children_profiles": children_profiles,
+            "parent_profile": parent_profile,
+        }
+        template_name = "accounts/parent_dashboard.html"
+    elif request.user.is_child:
+        child = request.user
+        child_profile = ChildProfile.objects.get(child=child)
+
+        context = {"child": child, "child_profile": child_profile}
+        template_name = "accounts/child_dashboard.html"
 
     return render(request, template_name, context)
 
@@ -248,7 +259,7 @@ def update_parent_info(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("accounts:parent_profile")
+    return redirect("parent_profile")
 
 
 # update child details
@@ -271,7 +282,7 @@ def update_child_profile(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("accounts:child_profile")
+    return redirect("child_profile")
 
 
 # update parent contact info details
@@ -300,7 +311,7 @@ def update_parent_contacts(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("accounts:parent_profile")
+    return redirect("parent_profile")
 
 
 # update parent profile photo view
@@ -325,19 +336,7 @@ def update_profile_photo(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("accounts:parent_profile")
-
-
-# View for child user registration with profile information
-@child_required
-def child_dashboard(request):
-    child = request.user
-    child_profile = ChildProfile.objects.get(child=child)
-
-    context = {"child": child, "child_profile": child_profile}
-    template_name = "accounts/child_dashboard.html"
-
-    return render(request, template_name, context)
+    return redirect("parent_profile")
 
 
 @parent_required
@@ -363,7 +362,7 @@ def register_child(request):
                     f"Child {child.get_full_name()} Has Been Registered Successfully",
                 )
                 send_child_signup_email(request, parent, child)
-                return redirect("accounts:parent_dashboard")
+                return redirect("home")
             else:
                 # Handle form validation errors for child_form
                 for field, error_messages in child_form.errors.items():
@@ -380,15 +379,15 @@ def register_child(request):
                             f"Child Profile Form Error - {field}: {error_message}",
                         )
 
-                return redirect("accounts:register_child")
+                return redirect("register_child")
         except ValidationError as e:
             # Handle form validation errors and display them as part of the response
             messages.error(request, str(e.message))
-            return redirect("accounts:register_child")
+            return redirect("register_child")
         except Exception as e:
             # Handle other exceptions or errors
             messages.error(request, "An error occurred during registration.")
-            return redirect("accounts:register_child")
+            return redirect("register_child")
 
     else:
         child_form = ChildRegistrationForm()
@@ -410,7 +409,7 @@ def parent_password_change(request):
             user = form.save()
             update_session_auth_hash(request, user)
             send_parent_password_change_success_email(request, parent)
-            return redirect("accounts:parent_profile")
+            return redirect("parent_profile")
         else:
             messages.error(request, "Please correct the error(s) below.")
     else:
@@ -471,15 +470,15 @@ def update_child_info(request, child_id):
         except ValidationError as e:
             # Handle form validation errors and display them as part of the response
             messages.error(request, str(e.message))
-            return redirect("accounts:children_details")
+            return redirect("children_details")
         except Exception as e:
             # Handle other exceptions or errors
             error_message = str(e)  # Get the exception message as a string
             messages.error(request, error_message)  # Display the exception message
             print(error_message)  # Display the exception message
-            return redirect("accounts:children_details")
+            return redirect("children_details")
 
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("accounts:children_details")
+    return redirect("children_details")

@@ -12,7 +12,7 @@
             <div class="modal-body">
 
                 {% with child_profile.child as child %}
-                <form method="post" action="{% url 'accounts:update_child_info' child.id %}">
+                <form method="post" action="{% url 'update_child_info' child.id %}">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col">

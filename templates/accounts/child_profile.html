@@ -28,7 +28,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{% url 'accounts:update_profile_photo' %}" method="post"
+                                    <form action="{% url 'update_profile_photo' %}" method="post"
                                         id="avatarForm" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <label class="form-label" for="profile_photo">Select New Photo</label>
@@ -124,7 +124,7 @@
                             <p class="text-primary m-0 fw-bold">Your Info</p>
                         </div>
                         <div class="card-body">
-                            <form method="post" action="{% url 'accounts:update_child_profile' %}">
+                            <form method="post" action="{% url 'update_child_profile' %}">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col">
@@ -176,7 +176,7 @@
                             <p class="text-primary m-0 fw-bold">Parent Contact Details</p>
                         </div>
                         <div class="card-body">
-                            <form action="{% url 'accounts:update_parent_contacts' %}" method="post">
+                            <form action="{% url 'update_parent_contacts' %}" method="post">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label" for="address"><strong>Address</strong></label>

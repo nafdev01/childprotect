@@ -31,7 +31,7 @@
                     <div class="col-md-6 col-xl-4">
                         <div class="card">
                             <div class="card-body text-center d-flex flex-column align-items-center">
-                                <form method="post" data-bs-theme="light" action="{% url 'accounts:login' %}">
+                                <form method="post" data-bs-theme="light" action="{% url 'login' %}">
                                     {% csrf_token %}
                                     <div class="mb-3"><input class="form-control" type="text" name="username"
                                             placeholder="Parent Username">
@@ -67,7 +67,7 @@
                     <div class="col-md-6 col-xl-4">
                         <div class="card">
                             <div class="card-body text-center d-flex flex-column align-items-center">
-                                <form method="post" data-bs-theme="light" action="{% url 'accounts:login' %}">
+                                <form method="post" data-bs-theme="light" action="{% url 'login' %}">
                                     {% csrf_token %}
                                     <div class="mb-3">
                                         <input class="form-control" type="text" name="username"
@@ -95,7 +95,7 @@
     </div>
     <p class="text-muted text-center">
         Don't have an account?&nbsp;
-        <a href="{% url 'accounts:register_parent' %}">
+        <a href="{% url 'register_parent' %}">
             Sign Up as a Parent
         </a>
     </p>

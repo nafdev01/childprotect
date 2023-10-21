@@ -49,16 +49,16 @@
 
                 {% if not request.user.is_authenticated %}
                 <div class="mx-auto">
-                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'accounts:login' %}">
+                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'login' %}">
                         Log in
                     </a>
-                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'accounts:register_parent' %}">
+                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'register_parent' %}">
                         Sign up
                     </a>
                 </div>
                 {% else %}
                 <div class="mx-auto">
-                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'accounts:logout' %}">
+                    <a class="btn btn-outline-success shadow" role="button" href="{% url 'logout' %}">
                         Log Out
                     </a>
                 </div>

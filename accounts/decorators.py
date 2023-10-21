@@ -15,7 +15,7 @@ def parent_required(view_func):
                     "Only parents are allowed to access this page. If you are a parent, please log in with your parent account.",
                 )
                 return redirect(
-                    "accounts:child_dashboard"
+                    "home"
                 )  # Replace with the actual URL name of the child dashboard view.
         else:
             # User is not authenticated, redirect to the login view.
@@ -24,7 +24,7 @@ def parent_required(view_func):
                 "You need to log in as a parent to access this page. If you do not have a parent account, please sign up.",
             )
             return redirect(
-                "accounts:login"
+                "login"
             )  # Replace with the actual URL name of the login view.
 
     return wrapper
@@ -43,7 +43,7 @@ def child_required(view_func):
                     "Only children are allowed to access this page. If you are a child, please log in with your child account.",
                 )
                 return redirect(
-                    "accounts:parent_dashboard"
+                    "home"
                 )  # Replace with the actual URL name of the parent dashboard view.
         else:
             # User is not authenticated, redirect to the login view.
@@ -52,7 +52,7 @@ def child_required(view_func):
                 "You need to log in as a child to access this page. If you don't have a child account, please request your parent sign you up.",
             )
             return redirect(
-                "accounts:login"
+                "login"
             )  # Replace with the actual URL name of the login view.
 
     return wrapper
@@ -70,7 +70,7 @@ def guest_required(view_func):
                 "You are already logged in as a parent. If you want to access the guest page, please log out first.",
             )
             return redirect(
-                "accounts:parent_dashboard"
+                "home"
             )  # Replace with the actual URL name of the parent dashboard view.
         else:
             # User is authenticated but is a child, redirect to the child dashboard view.
@@ -79,7 +79,7 @@ def guest_required(view_func):
                 "You are already logged in as a child. If you want to access the guest page, please log out first.",
             )
             return redirect(
-                "accounts:child_dashboard"
+                "home"
             )  # Replace with the actual URL name of the child dashboard view.
 
     return wrapper

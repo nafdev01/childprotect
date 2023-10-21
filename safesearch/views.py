@@ -412,7 +412,7 @@ def create_unban_request(request, banned_word_id):
             return redirect("safesearch:child_search_history")
     except BannedWord.DoesNotExist:
         messages.error(request, f"Banned word does not exist")
-        return redirect("accounts:child_search_history")
+        return redirect("child_search_history")
 
     unban_request = UnbanRequest(
         banned_word=banned_word, requested_by=child.childprofile
@@ -422,7 +422,7 @@ def create_unban_request(request, banned_word_id):
         request,
         f"You have submitted an unban request for the word {banned_word.word} successfully",
     )
-    return redirect("accounts:child_dashboard")
+    return redirect("home")
 
 
 @parent_required
