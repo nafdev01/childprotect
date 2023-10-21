@@ -88,14 +88,18 @@ TEMPLATES = [
     },
 ]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+
+if not LOCAL_SERVER:
+    from .cdn.conf import *
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 
 WSGI_APPLICATION = "django_project.wsgi.application"
@@ -160,8 +164,6 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-if not LOCAL_SERVER:
-    from .cdn.conf import *  # noqa
 
 # media files
 MEDIA_URL = "/media/"
