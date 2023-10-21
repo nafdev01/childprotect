@@ -158,11 +158,11 @@ class ChildProfile(models.Model):
         return age
 
     def save(self, *args, **kwargs):
-        min_age = 9
-        max_age = 16
+        min_age = 6
+        max_age = 17
 
         if not min_age <= self.age <= max_age:
-            raise ValidationError(_("Children must be between 9 and 16 years old."))
+            raise ValidationError(_(f"Children must be between {min_age} and {max_age} years old."))
 
         super(ChildProfile, self).save(*args, **kwargs)
 
