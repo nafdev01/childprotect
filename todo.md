@@ -1,6 +1,7 @@
- - filtering urls and desciptions as well
- - filter django_user_agents
- - optimize alerts
- - open results in popup page
- - rate limiting for logins
- - rate limiting for banned words
+ - optimize alerts.
+ - rate limiting for logins.
+ - rate limiting for banned words.
+ - ban sites by url.
+ - child can report word or site.
+ - customize child profile.
+ - add periodic pop ups on child page. 
