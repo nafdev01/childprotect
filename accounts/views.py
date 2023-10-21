@@ -14,7 +14,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from accounts.models import Confirmation
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from datetime import datetime
 
 
@@ -480,5 +480,36 @@ def update_child_info(request, child_id):
 
     else:
         messages.error(request, "You don't have access to this page")
+
+    return redirect("children_details")
+
+
+# parent change password
+@parent_required
+def update_child_password(request, child_id):
+    parent = request.user
+    child = User.children.get(id=child_id)
+
+    if request.method == "POST":
+        try:
+            form = SetPasswordForm(child, request.POST)
+            if form.is_valid():
+                user = form.save()
+                messages.success(
+                    request, f"{child.get_full_name()} password changed successfully"
+                )
+            else:
+                # Handle form validation errors for child_form
+                for field, error_messages in form.errors.items():
+                    error_list = list()
+                    for error_message in error_messages:
+                        error_list.append(error_message)
+                
+                error_message = "".join(error_list).lower().replace("the", "this")
+                
+                messages.error(request, f"Password Form Error - {error_message.title()}")
+
+        except Exception as e:
+            messages.error(request, f"{e}")
 
     return redirect("children_details")

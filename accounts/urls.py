@@ -33,6 +33,11 @@ urlpatterns = [
         views.update_child_info,
         name="update_child_info",
     ),
+    path(
+        "update_child_password/<int:child_id>/",
+        views.update_child_password,
+        name="update_child_password",
+    ),
     # auth urls
     path("logout/", views.logout_view, name="logout"),
     path(

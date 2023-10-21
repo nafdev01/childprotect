@@ -1,6 +1,7 @@
 <!-- all searches child modal -->
 <div class="modal fade" id="updateChildModal{{child_profile.child.get_username}}" tabindex="-1"
-    aria-labelledby="updateChildModal{{child_profile.child.get_username}}Label" aria-hidden="true">
+    aria-labelledby="updateChildModal{{child_profile.child.get_username}}Label" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -66,16 +67,76 @@
                         <input class="form-control" type="date" value="{{ child_profile.date_of_birth|date:'Y-m-d' }}"
                             id="date_of_birth" name="date_of_birth">
                     </div>
-                    <div class="mb-3">
-                        <button class="btn btn-warning" type="submit">Update Info</button>
+                    <div class="mb-3 d-flex justify-content-evenly">
+                        <button class="btn btn-sm btn-primary" type="submit">
+                            Update Info
+                        </button>
+                        <button class="btn btn-sm btn-warning"
+                            data-bs-target="#updatePasswordModal{{child_profile.child.get_username}}"
+                            data-bs-toggle="modal" type="button">
+                            Change Password
+                        </button>
                     </div>
                 </form>
                 {% endwith %}
-
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="updatePasswordModal{{child_profile.child.get_username}}" tabindex="-1" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div>
+                    <h5 class="text-center text-dark" id="updatePasswordModal{{child_profile.child.get_username}}Label">
+                        Update {{ child_profile.child.get_full_name }}'s' Password
+                    </h5>
+                </div>
+
+                {% with child_profile.child as child %}
+                <form method="post" action="{% url 'update_child_password' child.id %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label" for="last_name">
+                                    <strong>Password</strong>
+                                </label>
+                                <input class="form-control" type="password" id="last_name" name="new_password1">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label" for="last_name">
+                                    <strong>Confirm Password</strong>
+                                </label>
+                                <input class="form-control" type="password" id="last_name" name="new_password2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 d-flex justify-content-evenly">
+                        <button class="btn btn-sm btn-warning"
+                            data-bs-target="#updateChildModal{{child_profile.child.get_username}}"
+                            data-bs-toggle="modal" type="button">
+                            <span>
+                                <i class="fa-solid fa-right-from-bracket fa-rotate-180">
+                                </i>
+                            </span>
+                            <span>Back</span>
+                        </button>
+                        <button class="btn btn-sm btn-success" type="submit">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+                {% endwith %}
             </div>
         </div>
     </div>
