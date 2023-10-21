@@ -24,13 +24,17 @@
                             <th scope="row">{{ search.phrase }}</th>
                             <td>{{ search.searched_on }}</td>
                             <td>
-                                {% if search.allowed %}
+                                {% if search.get_search_status_display == "Safe" %}
                                 <span style="color: green;">
-                                    <i class="fa-solid fa-thumbs-up fa-lg"></i>
+                                    <i class="fa-solid fa-flag fa-lg"></i>
                                 </span>
-                                {% else %}
+                                {% elif search.get_search_status_display == "Suspicious" %}
+                                <span style="color: orange;">
+                                    <i class="fa-solid fa-flag fa-lg"></i>
+                                </span>
+                                {% elif search.get_search_status_display == "Flagged" %}
                                 <span style="color: red;">
-                                    <i class="fa-solid fa-thumbs-down fa-lg"></i>
+                                    <i class="fa-solid fa-flag fa-lg"></i>
                                 </span>
                                 {% endif %}
                             </td>

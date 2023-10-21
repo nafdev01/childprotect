@@ -4,8 +4,8 @@ from .models import FlaggedAlert, SearchPhrase, BannedWord, FlaggedSearch, Flagg
 
 @admin.register(SearchPhrase)
 class SearchPhraseAdmin(admin.ModelAdmin):
-    list_display = ("phrase", "allowed")
-    list_filter = ("allowed",)
+    list_display = ("phrase", "search_status")
+    list_filter = ("search_status",)
 
 
 @admin.register(BannedWord)

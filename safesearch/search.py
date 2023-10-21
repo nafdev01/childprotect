@@ -87,10 +87,3 @@ def get_results(api_key, custom_search_engine_id, query, parent):
     else:
         print(f"Error: {response.status_code}")
         return None
-
-
-def get_allowed(value):
-    if value:
-        return "Yes"
-    else:
-        return "No"

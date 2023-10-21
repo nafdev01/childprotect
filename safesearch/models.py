@@ -5,19 +5,24 @@ from accounts.models import ChildProfile, ParentProfile
 from django.utils import timezone
 
 
+# choices for reasons for a ban
+class SearchStatus(models.TextChoices):
+    SAFE = "SF", "Safe"
+    SUSPICIOUS = "SP", "Suspicious"
+    FLAGGED = "FL", "Flagged"
+
+
 class SearchPhrase(models.Model):
     searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
     phrase = models.CharField(max_length=256)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
-    allowed = models.BooleanField(default=False)
-    searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
+    search_status = models.CharField(
+        max_length=2,
+        choices=SearchStatus.choices,
+        default=SearchStatus.SAFE,
+    )
 
-    @property
-    def allowed_readable(self):
-        if self.allowed:
-            return "Yes"
-        else:
-            return "No"
+    searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.phrase)

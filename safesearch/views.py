@@ -12,7 +12,6 @@ from django.conf import settings
 from safesearch.search import (
     get_results,
     word_is_banned,
-    get_allowed,
 )
 from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from django.utils import timezone
@@ -44,10 +43,15 @@ def search(request):
                     flagged_words.append(word)
                     safe = False
 
+            if safe:
+                search_status = SearchStatus.SAFE
+            else:
+                search_status = SearchStatus.FLAGGED
+
             search_phrase = SearchPhrase(
                 searched_by=child.childprofile,
                 phrase=search_query,
-                allowed=safe,
+                search_status=search_status,
             )
             search_phrase.save()
 
@@ -84,6 +88,13 @@ def search(request):
                     parent,
                 )
                 if len(suspicious_results) >= 2:
+                    suspicious_search = SuspiciousSearch(
+                        search_phrase=search_phrase,
+                        flagged_results=len(suspicious_results),
+                    )
+                    suspicious_search.save()
+                    search_phrase.search_status = SearchStatus.SUSPICIOUS
+                    search_phrase.save()
                     send_email_suspicious_alert(
                         request, suspicious_results, search_phrase
                     )
@@ -338,7 +349,7 @@ def generate_pdf_report(request, child_id=None):
     doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
 
     # Create a list to hold the table data
-    data = [["Searched By", "Search Phrase", "Searched On", "Allowed"]]
+    data = [["Searched By", "Search Phrase", "Searched On", "Search Status"]]
 
     # Populate the data list with search history
     for entry in child_search_history:
@@ -347,7 +358,7 @@ def generate_pdf_report(request, child_id=None):
                 entry.searched_by.child.get_full_name(),
                 entry.phrase,
                 entry.searched_on.strftime("%Y-%m-%d %H:%M:%S"),
-                get_allowed(entry.allowed),
+                entry.get_search_status_display(),
             ]
         )
 

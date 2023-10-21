@@ -20,11 +20,7 @@
             <td>{{ search_phrase.phrase }}</td>
             <td>{{ search_phrase.searched_on }}</td>
             <td>
-                {% if search_phrase.allowed %}
-                Yes
-                {% else %}
-                No
-                {% endif %}
+                {{ search_phrase.get_search_status_display }}
             </td>
             <td>
                 {% if search_phrase.flaggedsearch %}
