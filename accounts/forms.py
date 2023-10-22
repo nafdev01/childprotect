@@ -59,3 +59,9 @@ class LoginForm(AuthenticationForm):
                     )
 
         return self.cleaned_data
+
+
+class ChildAvatarForm(forms.ModelForm):
+    class Meta:
+        model = ChildProfile
+        fields = ["avatar"]

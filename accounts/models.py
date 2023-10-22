@@ -13,12 +13,12 @@ import os
 
 def parent_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f"parents/{instance.parent.username}/profile_photo/{filename[:6]}"
+    return f"children/{instance.parent.username}/profile_photo/{filename[:6]}"
 
 
 def child_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f"children/{instance.child.username}/avatar/{filename[:6]}"
+    return f"parents/{instance.child.username}/profile_photo/{filename[:6]}"
 
 
 class ParentManager(UserManager):
