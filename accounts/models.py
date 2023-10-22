@@ -74,7 +74,7 @@ class ParentProfile(models.Model):
         MALE = "M", "Male"
         FEMALE = "F", "Female"
 
-    parent = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    parent = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     gender = models.CharField(
@@ -137,7 +137,7 @@ class ChildProfile(models.Model):
         MALE = "M", "Male"
         FEMALE = "F", "Female"
 
-    child = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    child = models.OneToOneField(User, on_delete=models.CASCADE)
     parent_profile = models.ForeignKey(
         ParentProfile, on_delete=models.CASCADE, null=True
     )
