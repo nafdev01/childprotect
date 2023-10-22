@@ -122,6 +122,26 @@
     .text2 {
         color: #a5aec0
     }
+
+    /* HIDE RADIO */
+    [type=radio] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* IMAGE STYLES */
+    [type=radio]+img {
+        cursor: pointer;
+        border-radius: 100%;
+        padding: 10%;
+    }
+
+    /* CHECKED STYLES */
+    [type=radio]:checked+img {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
 </style>
 {% endblock custom_css %}
 
@@ -140,11 +160,23 @@
                 <div class="card p-3 mb-2">
                     <div class="d-flex justify-content-between">
                         <div class="d-flex flex-row align-items-center">
-                            <div class="icon">
+                            <button class="icon p-1 position-relative btn" data-bs-toggle="modal"
+                                data-bs-target="#avatarModal{{child_profile.id}}">
+                                {% if child_profile.avatar %}
+                                <img class="rounded-circle m-2 img-fluid" src="{{ child_profile.avatar.url }}">
+                                {% else %}
+                                <img class="rounded-circle m-2 img-fluid p-1"
+                                    src="{% static 'avatars/child.png' %}">
+                                {% endif %}
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-warning">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
 
-                                <img class="rounded-circle mb-2 mt-2 w-50 h-50" src="{% static 'avatars/child.png' %}">
+                            </button>
+                            {% include 'accounts/includes/avatar_change_modal.html' with profile=child_profile %}
 
-                            </div>
                             <div class="ms-2">
                                 <h5 class="mb-0 text-dark">
                                     {{ child_profile.child.get_full_name }}
@@ -232,4 +264,19 @@
     </div>
 </section>
 
-{% endblock %}
+{% endblock content %}
+
+{% block custom_js %}
+<script>
+    function updateAvatar(profile_id) {
+
+        var formName = "avatarForm" + profile_id
+        // Get a reference to the form element
+        var form = document.getElementById(formName);
+
+        // Submit the form
+        form.submit();
+    }
+
+</script>
+{% endblock custom_js %}

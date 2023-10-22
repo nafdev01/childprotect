@@ -19,8 +19,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from datetime import datetime
 from django.core.files import File
-from django.core.files.storage import default_storage
-from urllib.request import urlretrieve
+from django.contrib.auth.decorators import login_required
 
 
 # logout view
@@ -523,7 +522,7 @@ def update_child_password(request, child_id):
 
 
 # update child avatar view
-@child_required
+@login_required
 def update_avatar(request, child_id):
     if request.method == "POST":
         child = User.children.get(id=child_id)
@@ -543,7 +542,7 @@ def update_avatar(request, child_id):
         }
 
         if avatar not in avatar_options.keys():
-            messages.error(request, "Avatar name error in form")
+            messages.error(request, f"Avatar name error in form --- {avatar}")
         else:
             # Generate a temporary file path for the avatar
 
@@ -560,4 +559,7 @@ def update_avatar(request, child_id):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("child_profile")
+    if request.user.is_parent:
+        return redirect("children_details")
+    elif request.user.is_child:
+        return redirect("child_profile")

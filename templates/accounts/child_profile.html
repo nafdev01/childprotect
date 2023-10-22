@@ -43,7 +43,7 @@
                     {% endif %}
 
                     <div class="mb-3">
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#avatarModal">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#avatarModal{{profile.id}}">
                             Change Avatar
                         </button>
                     </div>
@@ -218,9 +218,11 @@
 
 {% block custom_js %}
 <script>
-    function updateAvatar() {
+    function updateAvatar(profile_id) {
+
+        var formName = "avatarForm" + profile_id
         // Get a reference to the form element
-        var form = document.getElementById("avatarForm");
+        var form = document.getElementById(formName);
 
         // Submit the form
         form.submit();

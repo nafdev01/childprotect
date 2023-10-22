@@ -1,17 +1,17 @@
 {% load static %}
 <!-- Modal -->
-<div class="modal fade" id="avatarModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    aria-labelledby="avatarModalLabel" aria-hidden="true">
+<div class="modal fade" id="avatarModal{{profile.id}}" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="avatarModal{{profile.id}}Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-body">
                 <div>
-                    <h1 class="modal-title fs-5" id="avatarModalLabel">
-                        Change Avatar
+                    <h1 class="modal-title fs-5" id="avatarModal{{profile.id}}Label">
+                        Change Avatar for @{{ profile.child.get_username }}
                     </h1>
                 </div>
                 <div>
-                    <form action="{% url 'update_avatar' profile.child.id %}" method="post" id="avatarForm"
+                    <form action="{% url 'update_avatar' profile.child.id %}" method="post" id="avatarForm{{ profile.id }}"
                         enctype="multipart/form-data">
 
                         {% csrf_token %}
@@ -67,7 +67,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-primary" onclick="updateAvatar()">
+                <button type="button" class="btn btn-primary" onclick="updateAvatar('{{profile.id}}')">
                     Change Avatar
                 </button>
             </div>
