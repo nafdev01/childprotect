@@ -46,7 +46,7 @@ urlpatterns = [
         name="parent_password_change",
     ),
     path(
-        "update_avatar/",
+        "update_avatar/<int:child_id>",
         views.update_avatar,
         name="update_avatar",
     ),

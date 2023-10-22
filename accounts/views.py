@@ -523,10 +523,10 @@ def update_child_password(request, child_id):
 
 # update child avatar view
 @child_required
-def update_avatar(request):
+def update_avatar(request, child_id):
     if request.method == "POST":
         # Retrieve the current user's parent profile
-        child = request.user
+        child = User.children.get(id=child_id)
         child_profile = ChildProfile.objects.get(child=child)
 
         # Handle the uploaded photo
@@ -551,11 +551,11 @@ def update_avatar(request):
             avatar_path = os.path.join(settings.STATIC_ROOT, avatar_options.get(avatar))
 
             # Copy the avatar image to the temporary file
-            with open(avatar_path, 'rb') as source_file:
+            with open(avatar_path, "rb") as source_file:
                 temp_file.write(source_file.read())
 
             # Update the profile photo
-            with open(temp_file.name, 'rb') as avatar_file:
+            with open(temp_file.name, "rb") as avatar_file:
                 child_profile.avatar = File(avatar_file)
                 child_profile.save()
                 messages.success(request, "Avatar updated successfully.")

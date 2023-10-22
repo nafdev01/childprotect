@@ -121,16 +121,6 @@ class AccountStatus(models.TextChoices):
     BANNED = "BN", "Banned"
 
 
-AVATAR_OPTIONS = {
-    "avatar1": "static/avatars/avatar1.jpg",
-    "avatar2": "static/avatars/avatar2.jpg",
-    "avatar3": "static/avatars/avatar3.jpg",
-    "avatar4": "static/avatars/avatar4.jpg",
-    "avatar5": "static/avatars/avatar5.jpg",
-    "avatar6": "static/avatars/avatar6.jpg",
-}
-
-
 class ChildProfile(models.Model):
     # choices for child gender
     class ChildGender(models.TextChoices):

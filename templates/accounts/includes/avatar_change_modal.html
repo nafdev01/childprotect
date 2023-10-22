@@ -11,7 +11,7 @@
                     </h1>
                 </div>
                 <div>
-                    <form action="{% url 'update_avatar' %}" method="post" id="avatarForm"
+                    <form action="{% url 'update_avatar' profile.child.id %}" method="post" id="avatarForm"
                         enctype="multipart/form-data">
 
                         {% csrf_token %}
