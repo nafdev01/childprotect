@@ -144,7 +144,7 @@
                                 {% if child_profile.avatar %}
                                 <img class="rounded-circle mb-2 mt-2 img-fluid p-1" src="{{ child_profile.avatar.url }}">
                                 {% else %}
-                                <img class="rounded-circle mb-2 mt-2 img-fluid p-1" src="{% static 'avatars/child.png' %}">
+                                <span><i class="fa-solid fa-person"></i></span>
                                 {% endif %}            
                             </div>
                             <div class="ms-2">
