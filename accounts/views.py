@@ -546,22 +546,15 @@ def update_avatar(request, child_id):
             messages.error(request, "Avatar name error in form")
         else:
             # Generate a temporary file path for the avatar
-            temp_file = tempfile.NamedTemporaryFile(delete=False)
 
             # Construct the full path to the selected avatar
-            avatar_path = os.path.join(settings.STATIC_ROOT, avatar_options.get(avatar))
+            avatar_path = os.path.join(settings.MEDIA_ROOT, avatar_options.get(avatar))
+            print(f"FILE PATH: {avatar_path}")
 
             # Copy the avatar image to the temporary file
-            with open(avatar_path, 'rb') as source_file:
-                temp_file.write(source_file.read())
-
-            # Update the profile photo
-            with open(temp_file.name, 'rb') as avatar_file:
+            with open(avatar_path, "rb") as avatar_file:
                 child_profile.avatar = File(avatar_file)
                 child_profile.save()
-
-            # Close and remove the temporary file
-            os.remove(temp_file.name)
 
             messages.success(request, "Avatar updated successfully.")
     else:

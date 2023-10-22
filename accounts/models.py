@@ -18,7 +18,7 @@ def parent_profile_photo_path(instance, filename):
 
 def child_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f"parents/{instance.child.username}/profile_photo/{filename[:6]}"
+    return f"parents/{instance.child.username}/profile_photo/{filename[-9:]}"
 
 
 class ParentManager(UserManager):
