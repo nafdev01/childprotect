@@ -8,11 +8,17 @@ from datetime import date
 from django.forms import ValidationError
 from django.utils import timezone
 from django.db import models
+import os
 
 
 def parent_profile_photo_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f"user_{instance.parent.username}/profile_photo/{filename[:6]}"
+    return f"parents/{instance.parent.username}/profile_photo/{filename[:6]}"
+
+
+def child_profile_photo_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return f"children/{instance.child.username}/avatar/{filename[:6]}"
 
 
 class ParentManager(UserManager):
@@ -115,6 +121,16 @@ class AccountStatus(models.TextChoices):
     BANNED = "BN", "Banned"
 
 
+AVATAR_OPTIONS = {
+    "avatar1": "static/avatars/avatar1.jpg",
+    "avatar2": "static/avatars/avatar2.jpg",
+    "avatar3": "static/avatars/avatar3.jpg",
+    "avatar4": "static/avatars/avatar4.jpg",
+    "avatar5": "static/avatars/avatar5.jpg",
+    "avatar6": "static/avatars/avatar6.jpg",
+}
+
+
 class ChildProfile(models.Model):
     # choices for child gender
     class ChildGender(models.TextChoices):
@@ -135,6 +151,12 @@ class ChildProfile(models.Model):
     )
     gender = models.CharField(
         max_length=1, choices=ChildGender.choices, default=ChildGender.MALE
+    )
+
+    avatar = models.ImageField(
+        upload_to=child_profile_photo_path,
+        blank=True,
+        null=True,
     )
 
     @property
@@ -162,7 +184,9 @@ class ChildProfile(models.Model):
         max_age = 17
 
         if not min_age <= self.age <= max_age:
-            raise ValidationError(_(f"Children must be between {min_age} and {max_age} years old."))
+            raise ValidationError(
+                _(f"Children must be between {min_age} and {max_age} years old.")
+            )
 
         super(ChildProfile, self).save(*args, **kwargs)
 

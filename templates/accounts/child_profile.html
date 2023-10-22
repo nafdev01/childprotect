@@ -1,8 +1,31 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Profile{% endblock %}
 
-{% block custom_css %}{% endblock custom_css %}
+{% block custom_css %}
+<style>
+    /* HIDE RADIO */
+    [type=radio] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* IMAGE STYLES */
+    [type=radio]+img {
+        cursor: pointer;
+        border-radius: 100%;
+        padding: 10%;
+    }
+
+    /* CHECKED STYLES */
+    [type=radio]:checked+img {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+</style>
+{% endblock custom_css %}
 
 {% block content %}
 <div class="container-fluid">
@@ -10,45 +33,19 @@
     <div class="row mb-3">
         <div class="col-lg-4">
             <div class="card mb-3">
-                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
-                        src="{{ profile.photo.url }}" width="160" height="160">
+                <div class="card-body text-center shadow">
+                    {% if profile.avatar %}
+                    <img class="rounded-circle mb-2 mt-2 w-50 h-50" src="{{ profile.avatar.url }}">
+                    {% else %}
+                    <img class="rounded-circle mb-2 mt-2 w-50 h-50" src="{% static 'avatars/child.png' %}">
+                    {% endif %}
+
                     <div class="mb-3">
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#avatarModal">Change Avatar</button>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#avatarModal">
+                            Change Avatar
+                        </button>
                     </div>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="avatarModalLabel">Modal title</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{% url 'update_profile_photo' %}" method="post"
-                                        id="avatarForm" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <label class="form-label" for="profile_photo">Select New Photo</label>
-                                        <input type="file" class="form-control" id="profile_photo"
-                                            name="profile_photo" />
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" onclick="updateAvatar()">
-                                        Save changes
-                                    </button>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
+                    {% include 'accounts/includes/avatar_change_modal.html' %}
                 </div>
             </div>
             <div class="card shadow mb-4">

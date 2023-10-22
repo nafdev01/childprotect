@@ -45,4 +45,9 @@ urlpatterns = [
         views.parent_password_change,
         name="parent_password_change",
     ),
+    path(
+        "update_avatar/",
+        views.update_avatar,
+        name="update_avatar",
+    ),
 ]

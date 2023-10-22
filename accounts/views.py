@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from accounts.decorators import parent_required, child_required, guest_required
@@ -16,6 +17,9 @@ from accounts.models import Confirmation
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from datetime import datetime
+from django.core.files import File
+from django.core.files.storage import default_storage
+import tempfile
 
 
 # logout view
@@ -504,12 +508,62 @@ def update_child_password(request, child_id):
                     error_list = list()
                     for error_message in error_messages:
                         error_list.append(error_message)
-                
+
                 error_message = "".join(error_list).lower().replace("the", "this")
-                
-                messages.error(request, f"Password Form Error - {error_message.title()}")
+
+                messages.error(
+                    request, f"Password Form Error - {error_message.title()}"
+                )
 
         except Exception as e:
             messages.error(request, f"{e}")
 
     return redirect("children_details")
+
+
+# update child avatar view
+@child_required
+def update_avatar(request):
+    if request.method == "POST":
+        # Retrieve the current user's parent profile
+        child = request.user
+        child_profile = ChildProfile.objects.get(child=child)
+
+        # Handle the uploaded photo
+        avatar = request.POST.get("avatar")
+
+        avatar_options = {
+            "avatar1": "avatars/avatar1.png",
+            "avatar2": "avatars/avatar2.png",
+            "avatar3": "avatars/avatar3.png",
+            "avatar4": "avatars/avatar4.png",
+            "avatar5": "avatars/avatar5.png",
+            "avatar6": "avatars/avatar6.png",
+        }
+
+        if avatar not in avatar_options.keys():
+            messages.error(request, "Avatar name error in form")
+        else:
+            # Generate a temporary file path for the avatar
+            temp_file = tempfile.NamedTemporaryFile(delete=False)
+
+            # Construct the full path to the selected avatar
+            avatar_path = os.path.join(settings.STATIC_ROOT, avatar_options.get(avatar))
+
+            # Copy the avatar image to the temporary file
+            with open(avatar_path, 'rb') as source_file:
+                temp_file.write(source_file.read())
+
+            # Update the profile photo
+            with open(temp_file.name, 'rb') as avatar_file:
+                child_profile.avatar = File(avatar_file)
+                child_profile.save()
+                messages.success(request, "Avatar updated successfully.")
+
+            # Close and remove the temporary file
+            os.remove(temp_file.name)
+
+    else:
+        messages.error(request, "You don't have access to this page")
+
+    return redirect("child_profile")
