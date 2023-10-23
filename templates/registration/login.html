@@ -4,6 +4,16 @@
 
 {% block title %}Login{% endblock %}
 
+{% block custom_css %}
+<style>
+    .toggle-password-icon {
+        position: absolute;
+        top: 20%;
+        right: 5%;
+    }
+</style>
+{% endblock custom_css %}
+
 {% block header %}<h1 class="text-center">Login</h1>{% endblock header%}
 
 {% block content %}
@@ -36,18 +46,16 @@
                                     <div class="mb-3"><input class="form-control" type="text" name="username"
                                             placeholder="Parent Username">
                                     </div>
-                                    <div class="mb-3"><input class="form-control" type="password" name="password"
-                                            id="id_password" placeholder="Password">
+                                    <div class="mb-3 position-relative">
+                                        <input class="form-control" type="password" name="password" id="id_password"
+                                            placeholder="Password">
+                                        <span class="toggle-password-icon"
+                                            onclick="togglePasswordVisibility('login',this)"
+                                            class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-dark">
+                                            <i class="fa-regular fa-eye fa-lg"></i>
+                                        </span>
                                     </div>
                                     <input type="hidden" id="parent_field" name="user_type" value="parent">
-
-                                    <div class="form-check m-2">
-                                        <input class="form-check-input" type="checkbox" value="" id="showPasswordBox"
-                                            onclick="togglePasswordVisibility('login',this);">
-                                        <label class="form-check-label" for="showPassBox">
-                                            Show Password
-                                        </label>
-                                    </div>
 
                                     <div class="mb-3">
                                         <button class="btn btn-success shadow d-block w-100" type="submit">
@@ -73,9 +81,14 @@
                                         <input class="form-control" type="text" name="username"
                                             placeholder="Child Username">
                                     </div>
-                                    <div class="mb-3">
-                                        <input class="form-control" type="password" name="password"
+                                    <div class="mb-3 position-relative">
+                                        <input class="form-control" type="password" name="password" id="id_pass"
                                             placeholder="Password">
+                                        <span class="toggle-password-icon"
+                                            onclick="togglePasswordVisibility('login',this)"
+                                            class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-dark">
+                                            <i class="fa-regular fa-eye fa-lg"></i>
+                                        </span>
                                     </div>
                                     <input type="hidden" id="child_field" name="user_type" value="child">
 

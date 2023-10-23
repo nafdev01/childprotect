@@ -6,6 +6,19 @@
 
 {% block custom_css %}
 <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+<style>
+    #toggle-cpassword-icon {
+        position: absolute;
+        top: 40%;
+        right: 2%;
+    }
+
+    #toggle-password-icon {
+        position: absolute;
+        top: 27%;
+        right: 2%;
+    }
+</style>
 {% endblock custom_css %}
 
 {% block header %}<h1 class="text-center">Register as a Parent</h1>{% endblock header%}
@@ -13,17 +26,50 @@
 {% block content %}
 <section class="container justify-content-center">
     <form class="mb-3" method="post" enctype="multipart/form-data">
-        {% bootstrap_form parent_form %}
-
-        {% csrf_token %}
-        <div class="form-check m-2">
-            <input class="form-check-input" type="checkbox" value="" id="showPasswordBox"
-                onclick="togglePasswordVisibility('signup',this);">
-            <label class="form-check-label" for="showPassBox">
-                Show Password
-            </label>
+        <div class="mb-3">
+            <label class="form-label" for="id_username">Username</label>
+            <input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus
+                class="form-control" placeholder="Username" required aria-describedby="id_username_helptext"
+                id="id_username">
+            <div class="form-text">
+                Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+            </div>
         </div>
-
+        <div class="mb-3">
+            <label class="form-label" for="id_email">Email address</label>
+            <input type="email" name="email" maxlength="254" class="form-control" placeholder="Email address"
+                id="id_email">
+        </div>
+        <div class="mb-3 position-relative">
+            <label class="form-label" for="id_password1">Password</label>
+            <input type="password" name="password1" autocomplete="new-password" class="form-control"
+                placeholder="Password" required aria-describedby="id_password1_helptext" id="id_password1">
+            <span id="toggle-password-icon" onclick="togglePasswordVisibility('signup',this, 'theFirst')"
+                class="rounded-pill">
+                <i class="fa-regular fa-eye fa-lg"></i>
+            </span>
+            <div class="form-text">
+                <ul>
+                    <li>Your password can’t be too similar to your other personal information.</li>
+                    <li>Your password must contain at least 8 characters.</li>
+                    <li>Your password can’t be a commonly used password.</li>
+                    <li>Your password can’t be entirely numeric.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mb-3 position-relative">
+            <label class="form-label" for="id_password2">Password confirmation</label>
+            <input type="password" name="password2" autocomplete="new-password" class="form-control"
+                placeholder="Password confirmation" required aria-describedby="id_password2_helptext" id="id_password2">
+            <span id="toggle-cpassword-icon" onclick="togglePasswordVisibility('signup',this, 'theSecond')"
+                class="rounded-pill">
+                <i class="fa-regular fa-eye fa-lg"></i>
+            </span>
+            <div class="form-text">
+                Enter the same password as before, for verification.
+            </div>
+        </div>
+        {% csrf_token %}
         <input class="btn btn-outline-success" type="submit" value="Register as a Parent">
     </form>
 </section>
