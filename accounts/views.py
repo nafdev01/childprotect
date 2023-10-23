@@ -539,6 +539,9 @@ def update_avatar(request, child_id):
             "avatar4": "avatars/avatar4.png",
             "avatar5": "avatars/avatar5.png",
             "avatar6": "avatars/avatar6.png",
+            "avatar7": "avatars/avatar7.png",
+            "avatar8": "avatars/avatar8.png",
+            "avatar9": "avatars/avatar9.png",
         }
 
         if avatar not in avatar_options.keys():

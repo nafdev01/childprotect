@@ -11,8 +11,8 @@
                     </h1>
                 </div>
                 <div>
-                    <form action="{% url 'update_avatar' profile.child.id %}" method="post" id="avatarForm{{ profile.id }}"
-                        enctype="multipart/form-data">
+                    <form action="{% url 'update_avatar' profile.child.id %}" method="post"
+                        id="avatarForm{{ profile.id }}" enctype="multipart/form-data">
 
                         {% csrf_token %}
 
@@ -59,6 +59,28 @@
                                         alt="avatar{{ forloop.counter }}">
                                 </label>
                             </div>
+                            <div class="col-md-5 col-lg-4 col-sm-5">
+                                <label>
+                                    <input type="radio" name="avatar" value="avatar7">
+                                    <img class="img-fluid" src="{% static 'avatars/avatar7.png' %}"
+                                        alt="avatar{{ forloop.counter }}">
+                                </label>
+                            </div>
+                            <div class="col-md-5 col-lg-4 col-sm-5">
+                                <label>
+                                    <input type="radio" name="avatar" value="avatar8">
+                                    <img class="img-fluid" src="{% static 'avatars/avatar8.png' %}"
+                                        alt="avatar{{ forloop.counter }}">
+                                </label>
+                            </div>
+                            <div class="col-md-5 col-lg-4 col-sm-5">
+                                <label>
+                                    <input type="radio" name="avatar" value="avatar9">
+                                    <img class="img-fluid" src="{% static 'avatars/avatar9.png' %}"
+                                        alt="avatar{{ forloop.counter }}">
+                                </label>
+                            </div>
+
                         </div>
                     </form>
                 </div>
