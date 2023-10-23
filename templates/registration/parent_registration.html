@@ -9,14 +9,14 @@
 <style>
     #toggle-cpassword-icon {
         position: absolute;
-        top: 40%;
-        right: 2%;
+        top: 55%;
+        right: 3%;
     }
 
     #toggle-password-icon {
         position: absolute;
-        top: 27%;
-        right: 2%;
+        top: 55%;
+        right: 3%;
     }
 </style>
 {% endblock custom_css %}
@@ -40,14 +40,16 @@
             <input type="email" name="email" maxlength="254" class="form-control" placeholder="Email address"
                 id="id_email">
         </div>
-        <div class="mb-3 position-relative">
-            <label class="form-label" for="id_password1">Password</label>
-            <input type="password" name="password1" autocomplete="new-password" class="form-control"
-                placeholder="Password" required aria-describedby="id_password1_helptext" id="id_password1">
-            <span id="toggle-password-icon" onclick="togglePasswordVisibility('signup',this, 'theFirst')"
-                class="rounded-pill">
-                <i class="fa-regular fa-eye fa-lg"></i>
-            </span>
+        <div class="mb-3">
+            <div class=" position-relative">
+                <label class="form-label" for="id_password1">Password</label>
+                <input type="password" name="password1" autocomplete="new-password" class="form-control"
+                    placeholder="Password" required aria-describedby="id_password1_helptext" id="id_password1">
+                <span id="toggle-password-icon" onclick="togglePasswordVisibility('signup',this, 'theFirst')"
+                    class="rounded-pill">
+                    <i class="fa-regular fa-eye fa-lg"></i>
+                </span>
+            </div>
             <div class="form-text">
                 <ul>
                     <li>Your password can’t be too similar to your other personal information.</li>
@@ -57,14 +59,17 @@
                 </ul>
             </div>
         </div>
-        <div class="mb-3 position-relative">
-            <label class="form-label" for="id_password2">Password confirmation</label>
-            <input type="password" name="password2" autocomplete="new-password" class="form-control"
-                placeholder="Password confirmation" required aria-describedby="id_password2_helptext" id="id_password2">
-            <span id="toggle-cpassword-icon" onclick="togglePasswordVisibility('signup',this, 'theSecond')"
-                class="rounded-pill">
-                <i class="fa-regular fa-eye fa-lg"></i>
-            </span>
+        <div class="mb-3">
+            <div class=" position-relative">
+                <label class="form-label" for="id_password2">Password confirmation</label>
+                <input type="password" name="password2" autocomplete="new-password" class="form-control"
+                    placeholder="Password confirmation" required aria-describedby="id_password2_helptext"
+                    id="id_password2">
+                <span id="toggle-cpassword-icon" onclick="togglePasswordVisibility('signup',this, 'theSecond')"
+                    class="rounded-pill">
+                    <i class="fa-regular fa-eye fa-lg"></i>
+                </span>
+            </div>
             <div class="form-text">
                 Enter the same password as before, for verification.
             </div>
