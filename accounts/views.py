@@ -566,3 +566,6 @@ def update_avatar(request, child_id):
         return redirect("children_details")
     elif request.user.is_child:
         return redirect("child_profile")
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
