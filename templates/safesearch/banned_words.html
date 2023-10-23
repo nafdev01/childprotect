@@ -5,79 +5,142 @@
 {% block title %}Banned Words{% endblock title %}
 
 {% block header %}
-<h1>
-    <center>List of Banned Words</center>
+<h1 class="text-center">
+    List of Banned Words
 </h1>
 {% endblock header %}
 
 {% block content %}
-<div class="d-flex justify-content-center mx-auto">
-    <form class="d-inline-block mx-auto" method="get" action="{% url 'safesearch:banned_words' %}">
-        <div class="input-group">
-            <input class="bg-light form-control border-0 small" type="search" placeholder="Search for Banned Word"
-                name="word">
-            <button class="btn btn-primary py-0" type="submit">
-                <i class="fas fa-search"></i>
-            </button>
+<div class="container-fluid">
+    <h3 class="text-dark mb-4">Team</h3>
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-md-6 text-nowrap">
+                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                        <form id="per_page-form" class="d-inline-block mx-auto" method="get"
+                            action="{% url 'safesearch:banned_words' %}">
+                            <label class="form-label">Show&nbsp;
+                                <select class="d-inline-block form-select form-select-sm" name="per_page"
+                                    onchange="perPageSubmit()">
+                                    <option value="10" selected="">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>&nbsp;
+                            </label>
+                            <input id="per_page-name" class="d-none type=" search" name="word"
+                                value="{{ request.GET.word }}">
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-md-end dataTables_filter" id="dataTable_filter">
+                        <form class="d-inline-block mx-auto" method="get" action="{% url 'safesearch:banned_words' %}"
+                            onsubmit="wordSubmit(this)">
+                            <div class="input-group">
+                                <input class="bg-light form-control border-0 small" type="search"
+                                    placeholder="Search for Banned Word" name="word" id="word-in-word">
+                                <select id="word-per_page" class="d-none form-select form-select-sm" name="per_page">
+                                    <option value="10" selected="">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>&nbsp;
+                                <button class="btn btn-primary py-0" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
+        <div class="card-body">
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                <table class="table my-0" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Office</th>
+                            <th>Age</th>
+                            <th>Start date</th>
+                            <th>Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% if banned_words %}
+                        {% for banned_word in banned_words %}
+                        <tr>
+                            <td>{{ banned_word.word }}</td>
+                            <td>{{ banned_word.get_reason_display }}</td>
+                            <td>{{ banned_word.date_added }}</td>
+                            <td>{{ banned_word.date_updated }}</td>
+                            <td>
+                                {% if banned_word.is_banned %}
+                                <a class="btn btn-warning" href="{% url 'safesearch:unban_word' banned_word.id %}">
+                                    Unban
+                                </a>
+                                {% else %}
+                                <a class="btn btn-danger" href="{% url 'safesearch:ban_word' banned_word.id %}">
+                                    Ban
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        {% if request.GET.word %}
+                        <p>The word isnt in database</p>
+                        {% else %}
+                        <p>You have no banned words yet</p>
+                        {% endif %}
+                        {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+            {% include "safesearch/includes/pagination.html" with page=banned_words %}
+        </div>
+    </div>
 </div>
 
-<div class="container">
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
-        Ban a Word
-    </a>
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:banned_words_default' %}" title="Ban a Word">
-        View default banned words
-    </a>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Word</th>
-                <th scope="col">Reason</th>
-                <th scope="col">Added On</th>
-                <th scope="col">Updated On</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% if banned_words %}
-            {% for banned_word in banned_words %}
-            <tr>
-                <td>{{ banned_word.word }}</td>
-                <td>{{ banned_word.get_reason_display }}</td>
-                <td>{{ banned_word.date_added }}</td>
-                <td>{{ banned_word.date_updated }}</td>
-                <td>
-                    {% if banned_word.is_banned %}
-                    <a class="btn btn-warning" href="{% url 'safesearch:unban_word' banned_word.id %}">
-                        Unban
-                    </a>
-                    {% else %}
-                    <a class="btn btn-danger" href="{% url 'safesearch:ban_word' banned_word.id %}">
-                        Ban
-                    </a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            {% if request.GET.word %}
-            <p>The word isnt in database</p>
-            {% else %}
-            <p>You have no banned words yet</p>
-            {% endif %}
-            {% endif %}
 
 
+{% block custom_js %}
+<script>
+    function perPageSubmit() {
+        // Get the <select> element by its name
+        var selectElement = document.querySelector('select[name="per_page"]');
 
-        </tbody>
+        // Get the selected value
+        var selectedValue = selectElement.value;
 
-    </table>
+        // Get the form element containing the <select>
+        var perPageSelect = document.getElementById('per_page-form');
+        var perPageName = document.getElementById("per_page-name")
 
-</div>
-{% include "safesearch/includes/pagination.html" with page=banned_words %}
+        // Submit the form
+        perPageSelect.submit();
+    }
+</script>
+
+<script>
+    function wordSubmit(formElement) {
+        // Get the <select> element by its name
+        var word = document.getElementById('word-in-word');
+        var perPage = '{{ request.GET.per_page }}';
+
+        // Get the selected value
+        var wordPerPage = document.getElementById("word-per_page")
+        wordPerPage.value = perPage
+        
+        // Submit the form
+        formElement.submit();
+    }
+</script>
+
+{% endblock custom_js %}
 
 {% endblock content %}

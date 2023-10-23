@@ -188,6 +188,7 @@ def banned_word_list(request):
     parent = request.user.parentprofile
 
     word = request.GET.get("word")
+    per_page = request.GET.get("per_page")
 
     if word:
         banned_words_list = BannedWord.objects.filter(
@@ -198,9 +199,14 @@ def banned_word_list(request):
             banned_by=parent,
         )
 
-    # Pagination with 20 banned words per page
-    paginator = Paginator(banned_words_list, 20)
-    page_number = request.GET.get("page", 1)
+    if per_page:
+        # Pagination with 20 banned words per page
+        paginator = Paginator(banned_words_list, int(per_page))
+        page_number = request.GET.get("page", 1)
+    else:
+        # Pagination with custom banned words per page
+        paginator = Paginator(banned_words_list, 20)
+        page_number = request.GET.get("page", 1)
 
     # Try to open the page
     try:
