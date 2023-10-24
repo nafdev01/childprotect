@@ -18,12 +18,10 @@
     content="Child Safe Search uses advanced filters to protect kids from harmful online content. Parents receive notifications for concerning searches and can ban or unban keywords, fostering communication.">
   <script
     type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Child Protect","url":"https://childprotect.tech"}</script>
-  <link rel="icon" type="image/png" sizes="16x16"
-    href="{% static 'favicon-16x16.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}"
     media="(prefers-color-scheme: dark)">
-  <link rel="icon" type="image/png" sizes="32x32"
-    href="{% static 'favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}"
     media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="{% static 'assets1/bootstrap/css/bootstrap.min.css' %}">
@@ -33,16 +31,11 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{% static 'css/silverBox.min.css' %}">
   <script src="{% static 'js/silverBox.min.js' %}"></script>
-  <style>
-    .banned-link {
-      display: none;
-    }
-  </style>
 </head>
 
 <body id="page-top">
   <div id="wrapper">
-    <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-success p-0 navbar-dark">
+    <nav class="navbar align-items-start sidebar sidebar-dark accordion p-0" style="background-color: #009E60;">
       <div class="container-fluid d-flex flex-column p-0"><a
           class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
           <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
@@ -72,37 +65,31 @@
             </a>
           </li>
           <li class="nav-item">
-            <button class="nav-link" onclick="toggleBannedLinks()" id="banned-link-toggle">
-              <i class="fa-solid fa-flag fa-xl"></i>
-              &nbsp;<span>Banned Words</span>
-            </button>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link banned-link" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
+            <a class="nav-link banned-link" href="{% url 'create_banned_word' %}" title="Ban a Word">
               <i class="fa-solid fa-ban fa-xl"></i>
               &nbsp;<span>Ban a word</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link banned-link" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+            <a class="nav-link banned-link" href="{% url 'add_banned_csv' %}" title="Ban a Word">
               <i class="fa-solid fa-upload fa-xl"></i>
               &nbsp;<span>Add CSV of Banned Words</span>
             </a>
           </li>
           <li class="nav-item banned-link">
-            <a class=" nav-link" href="{% url 'safesearch:banned_words' %}" title="List of Banned Words">
+            <a class=" nav-link" href="{% url 'banned_words' %}" title="List of Banned Words">
               <i class="fa-solid fa-flag fa-xl"></i>
               &nbsp;<span>List of Banned Words</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:parent_search_history' %}" title="View Search History">
+            <a class=" nav-link" href="{% url 'search_history' %}" title="View Search History">
               <i class="fa-solid fa-clock-rotate-left fa-xl"></i>
               &nbsp;<span>Search History</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:unban_requests' %}" title="View Unban Requests">
+            <a class=" nav-link" href="{% url 'unban_requests' %}" title="View Unban Requests">
               <i class="fa-solid fa-toggle-on fa-xl"></i>
               &nbsp;<span>Unban Requests</span>
             </a>
@@ -122,21 +109,21 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:search' %}" title="View Children Search History">
+            <a class=" nav-link" href="{% url 'search' %}" title="View Children Search History">
               <i class="fa-solid fa-magnifying-glass fa-xl"></i><span>Search</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class=" nav-link" href="{% url 'safesearch:child_search_history' %}" title="View Search History">
-              <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search
-                History</span>
+            <a class=" nav-link" href="{% url 'search_history' %}" title="View Search History">
+              <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
             </a>
           </li>
           {% endif %}
 
         </ul>
-        <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle"
-            type="button"></button></div>
+        <div class="text-center d-none d-md-inline">
+          <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button>
+        </div>
       </div>
     </nav>
     <div class="d-flex flex-column" id="content-wrapper">
@@ -144,12 +131,12 @@
         <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light">
           <div class="container-fluid">
             <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button">
-              <i class="fas fa-bars"></i>
+              <i class="fa fa-bars" style="color: #009E60;"></i>
             </button>
 
             {% if user.is_child %}
             <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" method="get"
-              action="{% url 'safesearch:search' %}">
+              action="{% url 'search' %}">
               <div class="input-group">
                 <input class="bg-light form-control border-0 small" type="search" name="search-query"
                   id="search-query-nav" placeholder="Toto Search ...">
@@ -200,7 +187,7 @@
                     </a>
                     {% endfor %}
 
-                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'safesearch:alert_list' %}">
+                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'alert_list' %}">
                       Show All Alerts
                     </a>
                   </div>
@@ -241,7 +228,7 @@
                     </a>
                     {% endfor %}
 
-                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'safesearch:alert_list' %}">
+                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'alert_list' %}">
                       Show All Alerts
                     </a>
                   </div>
@@ -251,7 +238,7 @@
               <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false"
                   data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
                 <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                  <form class="me-auto navbar-search w-100" method="get" action="{% url 'safesearch:search' %}">
+                  <form class="me-auto navbar-search w-100" method="get" action="{% url 'search' %}">
                     {% csrf_token %}
                     <div class="input-group">
                       <input class="bg-light form-control border-0 small" type="search" name="search-query"
@@ -290,7 +277,7 @@
 
                     {% if request.user.is_parent %}
 
-                    <a class="dropdown-item position-relative" href="{% url 'parent_profile' %}">
+                    <a class="dropdown-item position-relative" href="{% url 'profile' %}">
                       <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
                       {% update_profile request.user as update_profile %}
                       {% if update_profile %}
@@ -301,7 +288,7 @@
                     </a>
 
                     {% elif request.user.is_child %}
-                    <a class="dropdown-item" href="{% url 'child_profile' %}"><i
+                    <a class="dropdown-item" href="{% url 'profile' %}"><i
                         class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile
                     </a>
                     {% endif %}
@@ -398,9 +385,11 @@
           {% endfor %}
           {% endif %}
 
-          {% block header %}
+          <div class="container">
+            {% block header %}
 
-          {% endblock header %}
+            {% endblock header %}
+          </div>
 
           {% block content %}
 

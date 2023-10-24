@@ -86,11 +86,29 @@ class ParentProfile(models.Model):
         null=True,
     )
 
-    @classmethod
-    def create(cls, parent):
-        parent_profile = cls(parent=parent)
-        # do something with the book
-        return parent_profile
+    @property
+    def completion_percentage(self):
+        # Define the fields to be checked for completion
+        profile_fields = [
+            self.phone_number,
+            self.address,
+            self.gender,
+            self.photo,
+            self.childprofile_set.exists(),
+        ]
+
+        # Calculate the number of completed fields
+        completed_fields = sum(1 for field in profile_fields if field)
+
+        # Calculate the percentage of completion
+        if len(profile_fields) > 0:
+            completion_percentage = (completed_fields / len(profile_fields)) * 100
+        else:
+            completion_percentage = (
+                100  # Profile is considered complete if there are no fields to complete
+            )
+
+        return int(completion_percentage)
 
     @property
     def unreviewed_alerts(self):

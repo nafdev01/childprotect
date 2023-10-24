@@ -31,7 +31,7 @@
 
                                     {% if banned_word.flagged_word.is_banned %}
                                     <a class="btn btn-sm btn-warning"
-                                        href="{% url 'safesearch:create_unban_request' banned_word.flagged_word.id %}">
+                                        href="{% url 'create_unban_request' banned_word.flagged_word.id %}">
                                         Request Unban
                                     </a>
                                     {% else %}

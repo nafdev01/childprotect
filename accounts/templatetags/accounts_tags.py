@@ -32,7 +32,7 @@ def all_child_searches(childprofile_id):
     return {
         "all_searches": all_searches,
         "username": childprofile.child.get_username(),
-        "child_profile": childprofile,
+        "profile": childprofile,
     }
 
 
@@ -43,7 +43,7 @@ def flagged_child_searches(childprofile_id):
     return {
         "flagged_searches": flagged_searches,
         "username": childprofile.child.get_username(),
-        "child_profile": childprofile,
+        "profile": childprofile,
     }
 
 
@@ -54,5 +54,5 @@ def child_unban_requests(childprofile_id):
     return {
         "unban_requests": unban_requests,
         "username": childprofile.child.get_username(),
-        "child_profile": childprofile,
+        "profile": childprofile,
     }

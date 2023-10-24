@@ -116,7 +116,7 @@ def register_parent(request):
             parent.user_type = User.UserType.PARENT
             parent.is_active = False
             parent.save()
-            parent_profile = ParentProfile.create(parent=parent)
+            parent_profile = ParentProfile.objects.create(parent=parent)
             parent_profile.save()
 
             # Create a confirmation token
@@ -174,7 +174,13 @@ def activate(request, uidb64, token):
 
 
 def home(request):
-    if request.user.is_parent:
+    if not request.user.is_authenticated:
+        context = {
+            "section": "home",
+        }
+        template_name = "home.html"
+
+    elif request.user.is_parent:
         parent = request.user
         parent_profile = ParentProfile.objects.get(parent=parent)
         children_profiles = parent_profile.childprofile_set.all()
@@ -182,54 +188,52 @@ def home(request):
         context = {
             "parent": parent,
             "children_profiles": children_profiles,
-            "parent_profile": parent_profile,
+            "profile": parent_profile,
         }
         template_name = "accounts/parent_dashboard.html"
     elif request.user.is_child:
         child = request.user
         child_profile = ChildProfile.objects.get(child=child)
 
-        context = {"child": child, "child_profile": child_profile}
+        context = {"child": child, "profile": child_profile}
         template_name = "accounts/child_dashboard.html"
     else:
         context = {
             "section": "home",
         }
         template_name = "home.html"
-        
+
     return render(request, template_name, context)
 
 
 # View for parent user registration with profile information
-@parent_required
-def parent_profile(request):
-    parent = request.user
-    parent_profile = parent.parentprofile
-    children_profiles = parent_profile.childprofile_set.all()
+@login_required
+def profile(request):
+    if request.user.is_parent:
+        parent = request.user
+        parent_profile = parent.parentprofile
+        children_profiles = parent_profile.childprofile_set.all()
 
-    context = {
-        "parent": parent,
-        "children_profiles": children_profiles,
-        "profile": parent_profile,
-    }
-    template_name = "accounts/parent_profile.html"
+        context = {
+            "parent": parent,
+            "profile": parent_profile,
+            "children_profiles": children_profiles,
+        }
+        template_name = "accounts/parent_profile.html"
+    elif request.user.is_child:
+        child = request.user
+        child_profile = child.childprofile
+        parent_profile = child_profile.parent_profile
 
-    return render(request, template_name, context)
-
-
-# View for child profile
-@child_required
-def child_profile(request):
-    child = request.user
-    child_profile = child.childprofile
-    parent_profile = child_profile.parent_profile
-
-    context = {
-        "child": child,
-        "profile": child_profile,
-        "parent_profile": parent_profile,
-    }
-    template_name = "accounts/child_profile.html"
+        context = {
+            "child": child,
+            "profile": child_profile,
+            "profile": parent_profile,
+        }
+        template_name = "accounts/child_profile.html"
+    else:
+        messages.error(request, "You don't have access to this page")
+        return redirect("home")
 
     return render(request, template_name, context)
 
@@ -262,7 +266,7 @@ def update_parent_info(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("parent_profile")
+    return redirect("profile")
 
 
 # update child details
@@ -285,7 +289,7 @@ def update_child_profile(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("child_profile")
+    return redirect("profile")
 
 
 # update parent contact info details
@@ -314,7 +318,7 @@ def update_parent_contacts(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("parent_profile")
+    return redirect("profile")
 
 
 # update parent profile photo view
@@ -339,7 +343,7 @@ def update_profile_photo(request):
     else:
         messages.error(request, "You don't have access to this page")
 
-    return redirect("parent_profile")
+    return redirect("profile")
 
 
 @parent_required
@@ -412,7 +416,7 @@ def parent_password_change(request):
             user = form.save()
             update_session_auth_hash(request, user)
             send_parent_password_change_success_email(request, parent)
-            return redirect("parent_profile")
+            return redirect("profile")
         else:
             messages.error(request, "Please correct the error(s) below.")
     else:
@@ -430,7 +434,7 @@ def children_details(request):
     context = {
         "parent": parent,
         "children_profiles": children_profiles,
-        "parent_profile": parent_profile,
+        "profile": parent_profile,
     }
     template_name = "accounts/children_details.html"
 
@@ -564,7 +568,7 @@ def update_avatar(request, child_id):
     if request.user.is_parent:
         return redirect("children_details")
     elif request.user.is_child:
-        return redirect("child_profile")
+        return redirect("profile")
 
 
 def custom_404(request, exception):

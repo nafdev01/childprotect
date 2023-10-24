@@ -11,13 +11,13 @@
 {% endblock header %}
 
 {% block content %}
-<a class="btn btn-secondary m-3" href="{% url 'safesearch:banned_words' %}" title="Ban a Word">
+<a class="btn btn-secondary m-3" href="{% url 'banned_words' %}" title="Ban a Word">
     List of Banned Words
 </a>
 
 <br><br>
 
-<a class="btn btn-secondary m-3" href="{% url 'safesearch:add_banned_csv' %}" title="Ban a Word">
+<a class="btn btn-secondary m-3" href="{% url 'add_banned_csv' %}" title="Ban a Word">
     Add a banned csv file
 </a>
 

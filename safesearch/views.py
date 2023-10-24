@@ -21,6 +21,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from safesearch.models import SearchPhrase
 import csv
 import os
+from django.contrib.auth.decorators import login_required
 
 
 # child search functionality
@@ -78,7 +79,7 @@ def search(request):
                     flagged_word.save()
 
                 send_email_flagged_alert(request, flagged_words, search_phrase)
-                return redirect("safesearch:child_search_history")
+                return redirect("search_history")
 
             else:
                 search_results, suspicious_results = get_results(
@@ -107,27 +108,24 @@ def search(request):
 
 
 # child can see teir search history
-@child_required
-def child_search_history(request):
-    child = request.user
+@login_required
+def search_history(request):
+    if request.user.is_child:
+        child = request.user
+        search_phrases = SearchPhrase.objects.filter(searched_by=child.childprofile)
+        template_name = "safesearch/child_search_history.html"
 
-    search_phrases = SearchPhrase.objects.filter(searched_by=child.childprofile)
+    elif request.user.is_parent:
+        parent = request.user
+        search_phrases = SearchPhrase.objects.filter(
+            searched_by__parent_profile=parent.parentprofile
+        )
+        template_name = "safesearch/parent_search_history.html"
 
-    template_name = "safesearch/child_search_history.html"
-    context = {"search_phrases": search_phrases}
-    return render(request, template_name, context)
+    else:
+        messages.error(request, "You don't have access to the search history page")
+        return redirect("home")
 
-
-# parent can see their childrens history
-@parent_required
-def parent_search_history(request):
-    parent = request.user
-
-    search_phrases = SearchPhrase.objects.filter(
-        searched_by__parent_profile=parent.parentprofile
-    )
-
-    template_name = "safesearch/parent_search_history.html"
     context = {"search_phrases": search_phrases}
     return render(request, template_name, context)
 
@@ -144,7 +142,7 @@ def create_banned_word(request):
             banned_word.banned_by = parent.parentprofile
             banned_word.save()
             messages.success(request, f"You have banned the word {banned_word}")
-            return redirect("safesearch:banned_words")
+            return redirect("banned_words")
     else:
         form = BannedWordForm()
 
@@ -165,7 +163,7 @@ def unban_word(request, word_id):
     messages.success(request, f"You have unbanned the word {banned_word}")
 
     # Redirect to a success page or the word list
-    return redirect("safesearch:banned_words")
+    return redirect("banned_words")
 
 
 # ban a word
@@ -180,7 +178,7 @@ def ban_word(request, word_id):
     messages.success(request, f"You have banned the word {banned_word}")
 
     # Redirect to a success page or the word list
-    return redirect("safesearch:banned_words")
+    return redirect("banned_words")
 
 
 @parent_required
@@ -298,7 +296,7 @@ def review_alert(request, alert_id):
     else:
         messages.error(request, "Alert not reviewed. Error occurred")
 
-    return redirect("safesearch:alert_list")
+    return redirect("alert_list")
 
 
 @parent_required
@@ -329,7 +327,7 @@ def add_banned_csv(request):
             messages.success(
                 request, "Successfully uploaded banned words from csv file"
             )
-            return redirect("safesearch:banned_words")
+            return redirect("banned_words")
     else:
         form = BannedCSVForm()
     return render(request, "safesearch/add_banned_csv.html", {"form": form})
@@ -340,11 +338,11 @@ def generate_pdf_report(request, child_id=None):
     # Fetch the child's search history
     if child_id:
         child = User.children.get(id=child_id)
-        child_search_history = SearchPhrase.objects.filter(
+        search_history = SearchPhrase.objects.filter(
             searched_by__child_id=child_id
         )
     else:
-        child_search_history = SearchPhrase.objects.filter(
+        search_history = SearchPhrase.objects.filter(
             searched_by__parent_profile__parent_id=request.user.id
         )
 
@@ -358,7 +356,7 @@ def generate_pdf_report(request, child_id=None):
     data = [["Searched By", "Search Phrase", "Searched On", "Search Status"]]
 
     # Populate the data list with search history
-    for entry in child_search_history:
+    for entry in search_history:
         data.append(
             [
                 entry.searched_by.child.get_full_name(),
@@ -426,10 +424,10 @@ def create_unban_request(request, banned_word_id):
                 request,
                 f"You have already submitted an unban request for this word ({banned_word}).",
             )
-            return redirect("safesearch:child_search_history")
+            return redirect("search_history")
     except BannedWord.DoesNotExist:
         messages.error(request, f"Banned word does not exist")
-        return redirect("child_search_history")
+        return redirect("search_history")
 
     unban_request = UnbanRequest(
         banned_word=banned_word, requested_by=child.childprofile
@@ -451,10 +449,10 @@ def approve_unban_request(request, unban_request_id):
         banned_word = BannedWord.banned.get(id=unban_request.banned_word.id)
     except UnbanRequest.DoesNotExist:
         messages.error(request, f"Unban request does not exist")
-        return redirect("safesearch:unban_requests")
+        return redirect("unban_requests")
     except BannedWord.DoesNotExist:
         messages.error(request, f"No banned word matches your request")
-        return redirect("safesearch:unban_requests")
+        return redirect("unban_requests")
 
     unban_request.been_reviewed = True
     unban_request.approved = True
@@ -469,7 +467,7 @@ def approve_unban_request(request, unban_request_id):
         f"You have approved the unban request by your child {unban_request.requested_by.child} and unbanned the word {banned_word.word}",
     )
 
-    return redirect("safesearch:unban_requests")
+    return redirect("unban_requests")
 
 
 @parent_required
@@ -481,10 +479,10 @@ def deny_unban_request(request, unban_request_id):
         banned_word = BannedWord.objects.get(id=unban_request.banned_word.id)
     except UnbanRequest.DoesNotExist:
         messages.error(request, f"Unban request does not exist")
-        return redirect("safesearch:unban_requests")
+        return redirect("unban_requests")
     except BannedWord.DoesNotExist:
         messages.error(request, f"No banned word matches your request")
-        return redirect("safesearch:unban_requests")
+        return redirect("unban_requests")
 
     unban_request.been_reviewed = True
     unban_request.approved = False
@@ -499,7 +497,7 @@ def deny_unban_request(request, unban_request_id):
         f"You have denied the unban request by your child {unban_request.requested_by.child} to unban the word {banned_word.word}",
     )
 
-    return redirect("safesearch:unban_requests")
+    return redirect("unban_requests")
 
 
 @parent_required

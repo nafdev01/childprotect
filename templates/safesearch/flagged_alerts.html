@@ -41,11 +41,11 @@
                 <td>{{ alert.flagged_on }}</td>
                 <td>
                     {% if alert.been_reviewed %}
-                    <a href="{% url 'safesearch:review_alert' alert.pk %}" class="btn btn-sm btn-warning disabled">
+                    <a href="{% url 'review_alert' alert.pk %}" class="btn btn-sm btn-warning disabled">
                         Reviewed
                     </a>
                     {% else %}
-                    <a href="{% url 'safesearch:review_alert' alert.pk %}" class="btn btn-sm btn-warning">
+                    <a href="{% url 'review_alert' alert.pk %}" class="btn btn-sm btn-warning">
                         Review Alert
                     </a>
                     {% endif %}

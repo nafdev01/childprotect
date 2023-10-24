@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-center mx-auto">
-    <form class="d-inline-block mx-auto" method="get" action="{% url 'safesearch:banned_words' %}">
+    <form class="d-inline-block mx-auto" method="get" action="{% url 'banned_words' %}">
         <div class="input-group">
             <input class="bg-light form-control border-0 small" type="search" placeholder="Search for Banned Word"
                 name="word">
@@ -24,10 +24,10 @@
 </div>
 
 <div class="container">
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:create_banned_word' %}" title="Ban a Word">
+    <a class="btn btn-sm btn-success m-3" href="{% url 'create_banned_word' %}" title="Ban a Word">
         Ban a Word
     </a>
-    <a class="btn btn-sm btn-success m-3" href="{% url 'safesearch:banned_words_default' %}" title="Ban a Word">
+    <a class="btn btn-sm btn-success m-3" href="{% url 'banned_words_default' %}" title="Ban a Word">
         View default banned words
     </a>
 
@@ -52,11 +52,11 @@
                 <td>{{ banned_word.date_updated }}</td>
                 <td>
                     {% if banned_word.is_banned %}
-                    <a class="btn btn-warning" href="{% url 'safesearch:unban_word' banned_word.id %}">
+                    <a class="btn btn-warning" href="{% url 'unban_word' banned_word.id %}">
                         Unban
                     </a>
                     {% else %}
-                    <a class="btn btn-danger" href="{% url 'safesearch:ban_word' banned_word.id %}">
+                    <a class="btn btn-danger" href="{% url 'ban_word' banned_word.id %}">
                         Ban
                     </a>
                     {% endif %}

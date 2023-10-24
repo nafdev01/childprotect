@@ -31,11 +31,11 @@
                 <td>{{ unban_request.requested_on }}</td>
                 <td>
                     {% if unban_request.approved %}
-                    <a class="btn btn-warning btn-sm" href="{% url 'safesearch:deny_unban_request' unban_request.id %}">
+                    <a class="btn btn-warning btn-sm" href="{% url 'deny_unban_request' unban_request.id %}">
                         Deny
                     </a>
                     {% else %}
-                    <a class="btn btn-warning btn-sm" href="{% url 'safesearch:approve_unban_request' unban_request.id %}">
+                    <a class="btn btn-warning btn-sm" href="{% url 'approve_unban_request' unban_request.id %}">
                         Approve
                     </a>
                     {% endif %}
