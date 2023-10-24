@@ -231,7 +231,7 @@ def profile(request):
         context = {
             "child": child,
             "profile": child_profile,
-            "profile": parent_profile,
+            "parent_profile": parent_profile,
         }
         template_name = "accounts/child_profile.html"
     else:
