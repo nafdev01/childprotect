@@ -94,7 +94,6 @@ class ParentProfile(models.Model):
             self.address,
             self.gender,
             self.photo,
-            self.childprofile_set.exists(),
         ]
 
         # Calculate the number of completed fields
