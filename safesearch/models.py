@@ -24,6 +24,26 @@ class SearchPhrase(models.Model):
 
     searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
+    def search_status_counts(parent_profile):
+        safe = SearchPhrase.objects.filter(
+            searched_by__parent_profile=parent_profile, search_status=SearchStatus.SAFE
+        ).count()
+        suspicious = SearchPhrase.objects.filter(
+            searched_by__parent_profile=parent_profile,
+            search_status=SearchStatus.SUSPICIOUS,
+        ).count()
+        flagged = SearchPhrase.objects.filter(
+            searched_by__parent_profile=parent_profile,
+            search_status=SearchStatus.FLAGGED,
+        ).count()
+
+        search_counts = {
+            "safe": safe,
+            "suspicious": suspicious,
+            "flagged": flagged,
+        }
+        return search_counts
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.phrase)
         super(SearchPhrase, self).save(*args, **kwargs)

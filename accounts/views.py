@@ -21,6 +21,8 @@ from datetime import datetime
 from django.core.files import File
 from django.contrib.auth.decorators import login_required
 
+from safesearch.models import SearchPhrase
+
 
 # logout view
 def logout_view(request):
@@ -184,11 +186,13 @@ def home(request):
         parent = request.user
         parent_profile = ParentProfile.objects.get(parent=parent)
         children_profiles = parent_profile.childprofile_set.all()
+        search_counts = SearchPhrase.search_status_counts(parent_profile)
 
         context = {
             "parent": parent,
             "children_profiles": children_profiles,
             "profile": parent_profile,
+            "search_counts": search_counts,
         }
         template_name = "accounts/parent_dashboard.html"
     elif request.user.is_child:
@@ -213,7 +217,6 @@ def profile(request):
         parent = request.user
         parent_profile = parent.parentprofile
         children_profiles = parent_profile.childprofile_set.all()
-
         context = {
             "parent": parent,
             "profile": parent_profile,

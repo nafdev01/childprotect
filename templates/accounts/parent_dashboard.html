@@ -10,8 +10,7 @@
 {% block header %}
 <div class="d-sm-flex justify-content-between align-items-center mb-4">
     <h3 class="text-dark mb-0">Dashboard</h3>
-    <a class="btn btn-sm d-none d-sm-inline-block" role="button"
-        href="{% url 'generate_children_pdf_report' %}"
+    <a class="btn btn-sm d-none d-sm-inline-block" role="button" href="{% url 'generate_children_pdf_report' %}"
         style="background-color: #009E60;color:white;border-color: #009E60;">
         <i class="fas fa-download fa-sm text-white-50"></i>&nbsp;Generate Report
     </a>
@@ -111,7 +110,7 @@
         <div class="col-lg-7 col-xl-8">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="text-primary fw-bold m-0">Earnings Overview</h6>
+                    <h6 class="text-primary fw-bold m-0">Children Activity</h6>
                     <div class="dropdown no-arrow">
                         <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false"
                             data-bs-toggle="dropdown" type="button">
@@ -139,7 +138,7 @@
         <div class="col-lg-5 col-xl-4">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="text-primary fw-bold m-0">Revenue Sources</h6>
+                    <h6 class="text-primary fw-bold m-0">Children Search Stats</h6>
                     <div class="dropdown no-arrow">
                         <button class="btn btn-link btn-sm dropdown-toggle" aria-expanded="false"
                             data-bs-toggle="dropdown" type="button">
@@ -159,13 +158,13 @@
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas
-                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Direct&quot;,&quot;Social&quot;,&quot;Referral&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#1cc88a&quot;,&quot;#36b9cc&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[&quot;50&quot;,&quot;30&quot;,&quot;15&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}}}">
+                            data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Safe&quot;,&quot;Suspicious&quot;,&quot;Flagged&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;green&quot;,&quot;yellow&quot;,&quot;red&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[&quot;{{search_counts.safe}}&quot;,&quot;{{search_counts.suspicious}}&quot;,&quot;{{search_counts.flagged}}&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}}}">
                         </canvas>
                     </div>
                     <div class="text-center small mt-4">
-                        <span class="me-2"><i class="fas fa-circle text-primary"></i>&nbsp;Direct</span>
-                        <span class="me-2"><i class="fas fa-circle text-success"></i>&nbsp;Social</span>
-                        <span class="me-2"><i class="fas fa-circle text-info"></i>&nbsp;Refferal</span>
+                        <span class="me-2"><i class="fas fa-circle" style="color: green;"></i>&nbsp;Safe</span>
+                        <span class="me-2"><i class="fas fa-circle" style="color: yellow;"></i>&nbsp;Suspicious</span>
+                        <span class="me-2"><i class="fas fa-circle" style="color: red;"></i>&nbsp;Flagged</span>
                     </div>
                 </div>
             </div>
@@ -268,4 +267,28 @@
     </div>
 </div>
 
+
 {% endblock content %}
+
+
+{% block custom_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var chrt = document.getElementById("chartId").getContext("2d");
+    var chartId = new Chart(chrt, {
+        type: 'pie',
+        data: {
+            labels: ["Safe", "Suspicious", "Flagged"],
+            datasets: [{
+                label: "online tutorial subjects",
+                data: [20, 40, 13],
+                backgroundColor: ['green', 'yellow', 'red'],
+                hoverOffset: 5
+            }],
+        },
+        options: {
+            responsive: true,
+        },
+    });
+</script>
+{% endblock custom_js %}
