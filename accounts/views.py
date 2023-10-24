@@ -174,13 +174,7 @@ def activate(request, uidb64, token):
 
 
 def home(request):
-    if not request.user.is_authenticated:
-        context = {
-            "section": "home",
-        }
-        template_name = "home.html"
-
-    elif request.user.is_parent:
+    if request.user.is_parent:
         parent = request.user
         parent_profile = ParentProfile.objects.get(parent=parent)
         children_profiles = parent_profile.childprofile_set.all()
@@ -197,7 +191,12 @@ def home(request):
 
         context = {"child": child, "child_profile": child_profile}
         template_name = "accounts/child_dashboard.html"
-
+    else:
+        context = {
+            "section": "home",
+        }
+        template_name = "home.html"
+        
     return render(request, template_name, context)
 
 
@@ -567,5 +566,6 @@ def update_avatar(request, child_id):
     elif request.user.is_child:
         return redirect("child_profile")
 
+
 def custom_404(request, exception):
-    return render(request, '404.html', status=404)
+    return render(request, "404.html", status=404)
