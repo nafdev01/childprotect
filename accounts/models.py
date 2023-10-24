@@ -92,7 +92,8 @@ class ParentProfile(models.Model):
         profile_fields = [
             self.phone_number,
             self.address,
-            self.gender,
+            self.parent.first_name,
+            self.parent.last_name,
             self.photo,
         ]
 
