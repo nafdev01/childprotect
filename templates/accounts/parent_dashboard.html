@@ -159,6 +159,9 @@
                         <div class="swiper-wrapper">
                             {% for child_profile in children_profiles %}
                             <div class="swiper-slide">
+                                <div class="text-center">
+                                    <small class="fw-bolder text-dark">{{ child_profile.child.get_full_name }}'s Usage Stats</small>
+                                </div>
                                 {% last_seven_dates child_profile as last_seven_dates %}
                                 <div class="chart-area">
                                     <canvas
