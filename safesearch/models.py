@@ -177,9 +177,9 @@ class FlaggedAlert(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        self.reviewed_by = self.flagged_search.search_phrase.searched_by.parent_profile
-        self.searched_by = self.flagged_search.search_phrase.searched_by
-        self.flagged_on = self.flagged_search.flagged_on
+        self.reviewed_by = self.flagged_search.searched_by.parent_profile
+        self.searched_by = self.flagged_search.searched_by
+        self.flagged_on = self.flagged_search.searched_on
         super(FlaggedAlert, self).save(*args, **kwargs)
 
     def __str__(self):
