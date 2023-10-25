@@ -61,11 +61,10 @@
                 <table class="table my-0" id="dataTable">
                     <thead>
                         <tr>
-                            <th>Position</th>
-                            <th>Office</th>
-                            <th>Age</th>
-                            <th>Start date</th>
-                            <th>Salary</th>
+                            <th>Word</th>
+                            <th>Reason</th>
+                            <th>Searched On</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,7 +75,6 @@
                             <td>{{ banned_word.word }}</td>
                             <td>{{ banned_word.get_reason_display }}</td>
                             <td>{{ banned_word.date_added }}</td>
-                            <td>{{ banned_word.date_updated }}</td>
                             <td>
                                 {% if banned_word.is_banned %}
                                 <a class="btn btn-warning" href="{% url 'unban_word' banned_word.id %}">

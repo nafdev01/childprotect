@@ -165,8 +165,7 @@
                                 {% if child_profile.avatar %}
                                 <img class="rounded-circle m-2 img-fluid" src="{{ child_profile.avatar.url }}">
                                 {% else %}
-                                <img class="rounded-circle m-2 img-fluid p-1"
-                                    src="{% static 'avatars/child.png' %}">
+                                <img class="rounded-circle m-2 img-fluid p-1" src="{% static 'avatars/child.png' %}">
                                 {% endif %}
                                 <span
                                     class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-warning">
@@ -189,8 +188,12 @@
                                 {% if child_profile.banned %}
                                 <i class="fa-solid fa-ban fa-2xl" style="color: #e20303;"></i>
                                 {% else %}
-                                <i class="fa-solid fa-circle-check fa-2xl" style="color: #00cf23;"></i>
+                                <button class="btn" data-bs-toggle="modal"
+                                    data-bs-target="#showChildStatsModal{{child_profile.id}}">
+                                    <i class="fa-solid fa-chart-line fa-xl" style="color: #00cf23;"></i>
+                                </button>
                                 {% endif %}
+                                {% include 'accounts/includes/show_child_stats_modal.html' %}
                             </span>
                         </div>
                     </div>

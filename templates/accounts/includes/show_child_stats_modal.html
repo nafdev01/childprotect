@@ -1,0 +1,36 @@
+{% load static %}
+{% load accounts_tags %}
+
+<!-- Modal -->
+<div class="modal fade" id="showChildStatsModal{{child_profile.id}}" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false" aria-labelledby="showChildStatsModal{{child_profile.id}}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div>
+                    {% last_seven_dates child_profile as last_seven_dates %}
+                    <div class="chart-area">
+                        <canvas
+                            data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[
+                    {% for date in last_seven_dates.keys %}
+                        &quot;{{date}}&quot;
+                        {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                    ],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Search Count&quot;,&quot;fill&quot;:true,&quot;data&quot;:[
+                        {% for ammount in last_seven_dates.values %}
+                        &quot;{{ammount}}&quot;
+                        {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                        ],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgba(78, 115, 223, 1)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;],&quot;drawOnChartArea&quot;:false},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;2&quot;],&quot;zeroLineBorderDash&quot;:[&quot;2&quot;]},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;fontStyle&quot;:&quot;normal&quot;,&quot;padding&quot;:20}}]}}}">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
