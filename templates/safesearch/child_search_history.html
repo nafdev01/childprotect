@@ -23,7 +23,7 @@
                 {{ search_phrase.get_search_status_display }}
             </td>
             <td>
-                {% if search_phrase.flaggedsearch %}
+                {% if search_phrase.is_flagged %}
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary"
                     data-bs-toggle="modal"

@@ -62,10 +62,9 @@ def search(request):
                     f"You searched for the banned words { ','.join(flagged_words)}",
                 )
 
-                flagged_search = FlaggedSearch(search_phrase=search_phrase)
-                flagged_search.save()
+                flagged_search = search_phrase
 
-                flagged_alert = FlaggedAlert(flagged_search=flagged_search)
+                flagged_alert = FlaggedAlert(flagged_search=search_phrase)
                 flagged_alert.save()
 
                 for flagged_word in flagged_words:

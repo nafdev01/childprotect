@@ -242,7 +242,7 @@
                                     <li class="list-group-item child-details">
                                         <button type="button" class="more-btn danger-btn" data-bs-toggle="modal"
                                             data-bs-target="#flaggedSearchModal{{child_profile.child.get_username}}">
-                                            {{ child_profile.flaggedsearch_set.all.count }} flagged searches
+                                            {{ child_profile.flagged_searches }} flagged searches
                                         </button>
                                         {% flagged_child_searches child_profile.id %}
                                     </li>

@@ -7,8 +7,7 @@
                 <h1 class="modal-title fs-5" id="illegalSearchModal{{search_phrase.id}}Label">
                     Search: {{ search_phrase }}
                 </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div>
@@ -23,7 +22,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for banned_word in search_phrase.flaggedsearch.flaggedword_set.all %}
+                            {% for banned_word in search_phrase.flaggedword_set.all %}
                             <tr>
                                 <td>{{ banned_word.flagged_word }}</td>
                                 <td>{{ banned_word.flagged_word.get_reason_display }}</td>
@@ -49,8 +48,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"
-                    data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>

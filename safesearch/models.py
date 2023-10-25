@@ -61,6 +61,16 @@ class SearchPhrase(models.Model):
         }
         return search_counts
 
+    def flagged_searches(self):
+        self.flagged.all()
+
+    @property
+    def is_flagged(self):
+        if self.search_status == SearchStatus.FLAGGED:
+            return True
+        else:
+            return False
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.phrase)
         super(SearchPhrase, self).save(*args, **kwargs)
@@ -123,28 +133,12 @@ class BannedWord(models.Model):
         ordering = ["word"]
 
 
-class FlaggedSearch(models.Model):
-    search_phrase = models.OneToOneField(
-        SearchPhrase, on_delete=models.CASCADE, null=True
-    )
-    flagged_on = models.DateTimeField(auto_now_add=True)
-    searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
-
-    def save(self, *args, **kwargs):
-        self.searched_by = self.search_phrase.searched_by
-        super(FlaggedSearch, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.search_phrase.phrase
-
-    class Meta:
-        verbose_name = "Flagged Search"
-        verbose_name_plural = "Flagged Searches "
-
-
 class FlaggedWord(models.Model):
     flagged_search = models.ForeignKey(
-        FlaggedSearch, on_delete=models.CASCADE, null=True
+        SearchPhrase,
+        on_delete=models.CASCADE,
+        null=True,
+        limit_choices_to={"search_status": SearchStatus.FLAGGED},
     )
     flagged_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
 
@@ -167,7 +161,11 @@ class FlaggedAlert(models.Model):
         def get_queryset(self):
             return super().get_queryset().filter(been_reviewed=False)
 
-    flagged_search = models.OneToOneField(FlaggedSearch, on_delete=models.CASCADE)
+    flagged_search = models.OneToOneField(
+        SearchPhrase,
+        on_delete=models.CASCADE,
+        limit_choices_to={"search_status": SearchStatus.FLAGGED},
+    )
     flagged_on = models.DateTimeField(null=True, editable=False)
     searched_by = models.ForeignKey(
         ChildProfile, null=True, editable=False, on_delete=models.CASCADE

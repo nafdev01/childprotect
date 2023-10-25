@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FlaggedAlert, SearchPhrase, BannedWord, FlaggedSearch, FlaggedWord
+from .models import FlaggedAlert, SearchPhrase, BannedWord, FlaggedWord
 
 
 @admin.register(SearchPhrase)
@@ -13,12 +13,6 @@ class BannedWordAdmin(admin.ModelAdmin):
     list_display = ("word", "reason", "date_added", "date_updated")
     list_filter = ("reason",)
     search_fields = ["word"]
-
-
-@admin.register(FlaggedSearch)
-class FlaggedSearchAdmin(admin.ModelAdmin):
-    list_display = ("search_phrase", "flagged_on")
-    list_filter = ("flagged_on",)
 
 
 @admin.register(FlaggedWord)

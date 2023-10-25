@@ -1,7 +1,7 @@
 from django import template
 from datetime import datetime, timedelta
 from accounts.models import ChildProfile, ParentProfile, User
-from safesearch.models import SearchPhrase, FlaggedSearch, SearchStatus, UnbanRequest
+from safesearch.models import SearchPhrase, UnbanRequest
 from django.utils import timezone
 
 register = template.Library()
