@@ -1,6 +1,6 @@
 from django import template
-from datetime import datetime, timedelta
-from accounts.models import ChildProfile, ParentProfile, User
+from datetime import timedelta
+from accounts.models import ChildProfile, ParentProfile
 from safesearch.models import SearchPhrase, UnbanRequest
 from django.utils import timezone
 
@@ -60,7 +60,7 @@ def child_unban_requests(childprofile_id):
 
 
 @register.simple_tag
-def last_seven_dates(user, user_type):
+def last_seven_dates(child_profile):
     try:
         # Create a list to store the last 7 dates
         today = timezone.now().date()
@@ -74,25 +74,21 @@ def last_seven_dates(user, user_type):
 
         dates.reverse()
 
-        if user_type == "parent":
-            parent_profile = ParentProfile.objects.get(parent=user)
-            # Get today's date
-
-            for date in dates:
-                date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
-                    searched_by__parent_profile=parent_profile,
-                    searched_on__date=date,
-                ).count()
-        elif user_type == "child":
-            child_profile = ChildProfile.objects.get(child=user)
-            # Get today's date
-
-            for date in dates:
-                date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
-                    searched_by=child_profile,
-                    searched_on__date=date,
-                ).count()
-
+        for date in dates:
+            date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
+                searched_by=child_profile,
+                searched_on__date=date,
+            ).count()
         return date_dict
-    except ParentProfile.DoesNotExist:
+
+    except ChildProfile.DoesNotExist:
+        return 0
+
+
+@register.simple_tag
+def child_flagged_searches(child_profile):
+    try:
+        flagged_searches = SearchPhrase.flagged.filter(searched_by=child_profile)
+        return flagged_searches.count()
+    except ChildProfile.DoesNotExist:
         return 0

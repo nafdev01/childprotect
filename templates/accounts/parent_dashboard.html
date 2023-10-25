@@ -159,7 +159,7 @@
                         <div class="swiper-wrapper">
                             {% for child_profile in children_profiles %}
                             <div class="swiper-slide">
-                                {% last_seven_dates child_profile.child "child" as update_profile %}
+                                {% last_seven_dates child_profile as last_seven_dates %}
                                 <div class="chart-area">
                                     <canvas
                                         data-bss-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[

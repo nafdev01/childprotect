@@ -171,9 +171,7 @@
                                 <span
                                     class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-warning">
                                     <i class="fa-solid fa-pen-to-square"></i>
-                                    <span class="visually-hidden">unread messages</span>
                                 </span>
-
                             </button>
                             {% include 'accounts/includes/avatar_change_modal.html' with profile=child_profile %}
 
@@ -242,7 +240,7 @@
                                     <li class="list-group-item child-details">
                                         <button type="button" class="more-btn danger-btn" data-bs-toggle="modal"
                                             data-bs-target="#flaggedSearchModal{{child_profile.child.get_username}}">
-                                            {{ child_profile.flagged_searches }} flagged searches
+                                            {% child_flagged_searches child_profile %} flagged searches
                                         </button>
                                         {% flagged_child_searches child_profile.id %}
                                     </li>
