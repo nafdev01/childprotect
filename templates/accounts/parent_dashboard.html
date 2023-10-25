@@ -95,8 +95,8 @@
                                     <span>Pending Requests</span>
                                 </div>
                                 <div class="text-dark fw-bold h5 mb-0">
-                                    {% if parentprofile.unreviewed_unban_requests > 0 %}
-                                    <span>{{ unreviewed }}</span>
+                                    {% if profile.unreviewed_unban_requests > 0 %}
+                                    <span>{{ profile.unreviewed_unban_requests }}</span>
                                     {% else %}
                                     <span>0</span>
                                     {% endif %}
