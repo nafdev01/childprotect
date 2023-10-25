@@ -60,13 +60,10 @@ def child_unban_requests(childprofile_id):
 
 
 @register.simple_tag
-def last_seven_dates(parent):
+def last_seven_dates(user, user_type):
     try:
-        parent_profile = ParentProfile.objects.get(parent=parent)
-        # Get today's date
-        today = timezone.now().date()
-
         # Create a list to store the last 7 dates
+        today = timezone.now().date()
         dates = [today]
         date_dict = dict()
 
@@ -77,11 +74,24 @@ def last_seven_dates(parent):
 
         dates.reverse()
 
-        for date in dates:
-            date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
-                searched_by__parent_profile=parent_profile,
-                searched_on__date=date,
-            ).count()
+        if user_type == "parent":
+            parent_profile = ParentProfile.objects.get(parent=user)
+            # Get today's date
+
+            for date in dates:
+                date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
+                    searched_by__parent_profile=parent_profile,
+                    searched_on__date=date,
+                ).count()
+        elif user_type == "child":
+            child_profile = ChildProfile.objects.get(child=user)
+            # Get today's date
+
+            for date in dates:
+                date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
+                    searched_by=child_profile,
+                    searched_on__date=date,
+                ).count()
 
         return date_dict
     except ParentProfile.DoesNotExist:
