@@ -8,8 +8,8 @@
 {% block custom_css %}
 <style>
     .swiper {
-        width: auto;
-        height: auto;
+        width: 100%;
+        height: 100%;
     }
 
     .swiper-slide {
@@ -26,6 +26,36 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .autoplay-progress {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        z-index: 10;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--swiper-theme-color);
+    }
+
+    .autoplay-progress svg {
+        --progress: 0;
+        position: absolute;
+        left: 0;
+        top: 0px;
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+        stroke-width: 4px;
+        stroke: var(--swiper-theme-color);
+        fill: none;
+        stroke-dashoffset: calc(125.6 * (1 - var(--progress)));
+        stroke-dasharray: 125.6;
+        transform: rotate(-90deg);
     }
 </style>
 
@@ -158,9 +188,10 @@
                     <div class="swiper mySwiper">
                         <div class="swiper-wrapper">
                             {% for child_profile in children_profiles %}
-                            <div class="swiper-slide">
+                            <div class="swiper-slide p-5">
                                 <div class="text-center">
-                                    <small class="fw-bolder text-dark">{{ child_profile.child.get_full_name }}'s Usage Stats</small>
+                                    <small class="fw-bolder text-dark">{{ child_profile.child.get_full_name }}'s Usage
+                                        Stats</small>
                                 </div>
                                 {% last_seven_dates child_profile as last_seven_dates %}
                                 <div class="chart-area">
@@ -189,6 +220,13 @@
                         </div>
                         <div class="swiper-button-next"></div>
                         <div class="swiper-button-prev"></div>
+                        <div class="swiper-scrollbar"></div>
+                        <div class="autoplay-progress">
+                            <svg viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="20"></circle>
+                            </svg>
+                            <span></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -235,15 +273,33 @@
 {% block custom_js %}
 <!-- Initialize Swiper -->
 <script>
+    const progressCircle = document.querySelector(".autoplay-progress svg");
+    const progressContent = document.querySelector(".autoplay-progress span");
     var swiper = new Swiper(".mySwiper", {
-        pagination: {
-            el: ".swiper-pagination",
-            type: "progressbar",
+        loop: true,
+        centeredSlides: true,
+        effect: "flip",
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false
+        },
+        scrollbar: {
+            el: ".swiper-scrollbar",
+            hide: false,
         },
         navigation: {
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
         },
+        keyboard: {
+            enabled: true,
+        },
+        on: {
+            autoplayTimeLeft(s, time, progress) {
+                progressCircle.style.setProperty("--progress", 1 - progress);
+                progressContent.textContent = `${Math.ceil(time / 1000)}s`;
+            }
+        }
     });
 </script>
 
