@@ -1,7 +1,8 @@
 from django import template
+from datetime import datetime, timedelta
 from accounts.models import ChildProfile, ParentProfile, User
-from safesearch.models import SearchPhrase, FlaggedSearch, UnbanRequest
-
+from safesearch.models import SearchPhrase, FlaggedSearch, SearchStatus, UnbanRequest
+from django.utils import timezone
 
 register = template.Library()
 
@@ -56,3 +57,32 @@ def child_unban_requests(childprofile_id):
         "username": childprofile.child.get_username(),
         "profile": childprofile,
     }
+
+
+@register.simple_tag
+def last_seven_dates(parent):
+    try:
+        parent_profile = ParentProfile.objects.get(parent=parent)
+        # Get today's date
+        today = timezone.now().date()
+
+        # Create a list to store the last 7 dates
+        dates = [today]
+        date_dict = dict()
+
+        # Calculate the last 7 dates, including today
+        for i in range(1, 7):
+            previous_date = today - timedelta(days=i)
+            dates.append(previous_date)
+
+        dates.reverse()
+
+        for date in dates:
+            date_dict[f"{date.strftime('%A')}"] = SearchPhrase.objects.filter(
+                searched_by__parent_profile=parent_profile,
+                searched_on__date=date,
+            ).count()
+
+        return date_dict
+    except ParentProfile.DoesNotExist:
+        return 0
