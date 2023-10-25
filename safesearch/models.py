@@ -13,6 +13,18 @@ class SearchStatus(models.TextChoices):
 
 
 class SearchPhrase(models.Model):
+    class FlaggedSearchManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(search_status=SearchStatus.FLAGGED)
+
+    class SuspiciousSearchManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(search_status=SearchStatus.SUSPICIOUS)
+
+    class SafeSearchManager(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(search_status=SearchStatus.SAFE)
+
     searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
     phrase = models.CharField(max_length=256)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
@@ -21,6 +33,11 @@ class SearchPhrase(models.Model):
         choices=SearchStatus.choices,
         default=SearchStatus.SAFE,
     )
+
+    objects = models.Manager()
+    flagged = FlaggedSearchManager()
+    suspicious = SuspiciousSearchManager()
+    safe = SafeSearchManager()
 
     searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
@@ -116,11 +133,6 @@ class FlaggedSearch(models.Model):
     def save(self, *args, **kwargs):
         self.searched_by = self.search_phrase.searched_by
         super(FlaggedSearch, self).save(*args, **kwargs)
-
-    @property
-    def flagged_words(self):
-        words = self.flaggedword_set.all()
-        return words
 
     def __str__(self):
         return self.search_phrase.phrase

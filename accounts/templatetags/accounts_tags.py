@@ -33,18 +33,18 @@ def all_child_searches(childprofile_id):
     return {
         "all_searches": all_searches,
         "username": childprofile.child.get_username(),
-        "profile": childprofile,
+        "child_profile": childprofile,
     }
 
 
 @register.inclusion_tag("accounts/includes/flagged_child_searches_modal.html")
 def flagged_child_searches(childprofile_id):
     childprofile = ChildProfile.objects.get(id=childprofile_id)
-    flagged_searches = FlaggedSearch.objects.filter(searched_by=childprofile)
+    flagged_searches = SearchPhrase.flagged.filter(searched_by=childprofile)
     return {
         "flagged_searches": flagged_searches,
         "username": childprofile.child.get_username(),
-        "profile": childprofile,
+        "child_profile": childprofile,
     }
 
 
@@ -55,7 +55,7 @@ def child_unban_requests(childprofile_id):
     return {
         "unban_requests": unban_requests,
         "username": childprofile.child.get_username(),
-        "profile": childprofile,
+        "child_profile": childprofile,
     }
 
 
