@@ -13,6 +13,8 @@ class SearchStatus(models.TextChoices):
 
 
 class SearchPhrase(models.Model):
+    """Model for Search Instances"""
+
     class FlaggedSearchManager(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(search_status=SearchStatus.FLAGGED)
@@ -84,8 +86,9 @@ class SearchPhrase(models.Model):
         ordering = ["searched_on"]
 
 
-# choices for reasons for a ban
 class BanReason(models.TextChoices):
+    """Choices for Reasons A Word was Banned"""
+
     INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
     OBSCENITIES_AND_PROFANITY = "OP", "Obscenities and Profanity"
     VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
@@ -94,6 +97,8 @@ class BanReason(models.TextChoices):
 
 # class for a banned word
 class BannedWord(models.Model):
+    """Model for Banned Words"""
+
     class BannedManager(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(is_banned=True)
@@ -134,6 +139,8 @@ class BannedWord(models.Model):
 
 
 class FlaggedWord(models.Model):
+    """Model for Flagged Word in Flagged Searches"""
+
     flagged_search = models.ForeignKey(
         SearchPhrase,
         on_delete=models.CASCADE,
@@ -153,6 +160,8 @@ class FlaggedWord(models.Model):
 
 
 class FlaggedAlert(models.Model):
+    """Model for Alerts Created during Flagged Searches"""
+
     class ReviewedManager(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(been_reviewed=True)
@@ -192,6 +201,8 @@ class FlaggedAlert(models.Model):
 
 
 class UnbanRequest(models.Model):
+    """Model for Children Requesting a Banned Word be Unbanned"""
+
     class ReviewedManager(models.Manager):
         def get_queryset(self):
             return super().get_queryset().filter(been_reviewed=True)
@@ -222,19 +233,3 @@ class UnbanRequest(models.Model):
         verbose_name_plural = "Unban Requests"
         unique_together = ["banned_word", "requested_by"]
         ordering = ["-requested_on"]
-
-
-class SuspiciousSearch(models.Model):
-    search_phrase = models.ForeignKey(SearchPhrase, on_delete=models.CASCADE)
-    flagged_results = models.PositiveIntegerField(editable=False)
-    been_reviewed = models.BooleanField(default=False)
-    reviewed_on = models.DateTimeField(null=True)
-    seen_by_child = models.BooleanField(default=False)
-    seen_on = models.DateTimeField(null=True)
-
-    def __str__(self):
-        return f"Suspicious search {self.search_phrase}"
-
-    class Meta:
-        verbose_name = "Suspicious Search"
-        verbose_name_plural = "Suspicious Searches"

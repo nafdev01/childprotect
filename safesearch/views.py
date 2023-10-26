@@ -88,11 +88,6 @@ def search(request):
                     parent,
                 )
                 if len(suspicious_results) >= 2:
-                    suspicious_search = SuspiciousSearch(
-                        search_phrase=search_phrase,
-                        flagged_results=len(suspicious_results),
-                    )
-                    suspicious_search.save()
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
                     search_phrase.save()
                     send_email_suspicious_alert(
@@ -337,9 +332,7 @@ def generate_pdf_report(request, child_id=None):
     # Fetch the child's search history
     if child_id:
         child = User.children.get(id=child_id)
-        search_history = SearchPhrase.objects.filter(
-            searched_by__child_id=child_id
-        )
+        search_history = SearchPhrase.objects.filter(searched_by__child_id=child_id)
     else:
         search_history = SearchPhrase.objects.filter(
             searched_by__parent_profile__parent_id=request.user.id
