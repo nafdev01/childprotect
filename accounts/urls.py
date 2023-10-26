@@ -10,8 +10,8 @@ urlpatterns = [
     path("login/", views.login_user, name="login"),
     path("parent/register/", views.register_parent, name="register_parent"),
     path("child/register/", views.register_child, name="register_child"),
-    path("parent/profile/", views.profile, name="profile"),
-    path("parent/children_details/", views.children_details, name="children_details"),
+    path("profile/", views.profile, name="profile"),
+    path("children_details/", views.children_details, name="children_details"),
     path("update_parent_info/", views.update_parent_info, name="update_parent_info"),
     path(
         "update_parent_contacts/",
