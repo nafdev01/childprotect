@@ -1,8 +1,6 @@
 # accounts/models.py
-import os
 from datetime import date
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -11,22 +9,26 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+# parent profile photo save path
 def parent_profile_photo_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return f"parents/{instance.parent.username}/profile_photo/{filename[:6]}"
 
 
+# child profile photo save  path
 def child_profile_photo_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return f"children/{instance.child.username}/avatar/{filename[-9:]}"
 
 
 class ParentManager(UserManager):
+    """Custom Parent Manager"""
+
     def get_queryset(self):
         return super().get_queryset().filter(user_type=User.UserType.PARENT)
 
 
 class ChildManager(UserManager):
+    """Custom Parent Manager"""
+
     def get_queryset(self):
         return super().get_queryset().filter(user_type=User.UserType.CHILD)
 
@@ -69,6 +71,8 @@ class User(AbstractUser):
 
 
 class ParentProfile(models.Model):
+    """Parent Profile Model"""
+
     # choices for parent gender
     class ParentGender(models.TextChoices):
         MALE = "M", "Male"
@@ -141,6 +145,8 @@ class AccountStatus(models.TextChoices):
 
 
 class ChildProfile(models.Model):
+    """Child Profile Model"""
+
     # choices for child gender
     class ChildGender(models.TextChoices):
         MALE = "M", "Male"
@@ -207,6 +213,8 @@ class ChildProfile(models.Model):
 
 
 class Confirmation(models.Model):
+    """Parent Email Verification Model"""
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
