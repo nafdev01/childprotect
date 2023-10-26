@@ -73,6 +73,7 @@ class ParentProfile(models.Model):
     class ParentGender(models.TextChoices):
         MALE = "M", "Male"
         FEMALE = "F", "Female"
+        OTHER = "O", "Other"
 
     parent = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
