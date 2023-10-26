@@ -225,7 +225,7 @@ def default_banned_word_list(request):
     parent = request.user.parentprofile
 
     # Specify the path to your CSV file
-    csv_file_path = os.path.join(settings.STATIC_ROOT, "banned.csv")
+    csv_file_path = os.path.join(settings.MEDIA_ROOT, "default_banned.csv")
 
     banned_words = []
 
