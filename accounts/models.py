@@ -2,6 +2,7 @@
 from datetime import date
 
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import ValidationError
@@ -226,13 +227,25 @@ class Confirmation(models.Model):
 
     @property
     def expired(self):
-        if self.expires_on is not None:
-            # Compare the current time with 'expires_on'
-            return self.expires_on <= timezone.now()
-        return False
+        # Compare the current time with 'expires_on'
+        if self.expires_on <= timezone.now():
+            return True
+        else:
+            return False
 
     def __str__(self):
         return f"{self.user.username}'s profile"
+
+    def regenerate_token(self):
+        # Generate a new token
+        new_token = token_generator.make_token(self.user)
+
+        # Update the token and expiration time
+        self.token = new_token
+        self.expires_on = timezone.now() + timezone.timedelta(minutes=30)
+        self.save()
+
+        return self.token
 
     class Meta:
         ordering = ["user"]

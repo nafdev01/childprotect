@@ -3,12 +3,10 @@ import tempfile
 from datetime import datetime
 
 from django.contrib import messages
-from django.contrib.auth import (authenticate, login, logout,
-                                 update_session_auth_hash)
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
-from django.contrib.auth.tokens import \
-    default_token_generator as token_generator
+from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -19,8 +17,13 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from accounts.decorators import child_required, guest_required, parent_required
 from accounts.forms import *
-from accounts.models import (AccountStatus, ChildProfile, Confirmation,
-                             ParentProfile, User)
+from accounts.models import (
+    AccountStatus,
+    ChildProfile,
+    Confirmation,
+    ParentProfile,
+    User,
+)
 from accounts.notifications import *
 from safesearch.models import SearchPhrase
 
@@ -124,14 +127,17 @@ def register_parent(request):
 
             # Create a confirmation token
             token = token_generator.make_token(parent)
-            Confirmation.objects.create(user=parent, token=token)
+            confirmation = Confirmation(user=parent, token=token)
+            confirmation.expires_on = timezone.now() + timezone.timedelta(minutes=5)
+            confirmation.save()
+
             current_site = get_current_site(request)
             token_dict = {
                 "protocol": request.scheme,
                 "parent": parent,
                 "domain": current_site.domain,
                 "uid": urlsafe_base64_encode(force_bytes(parent.pk)),
-                "token": token,
+                "token": confirmation.token,
             }
 
             messages.success(
@@ -150,25 +156,36 @@ def register_parent(request):
 
 
 # activate parent account after email confirmation
+@guest_required
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         parent = User.parents.get(pk=uid)
+        confirmation = Confirmation.objects.get(token=token)
 
         # check parent email verification token
         if token_generator.check_token(parent, token):
-            parent.is_active = True
-            parent.save()
-            messages.success(
-                request,
-                "Account activated successfully! You can now login.",
-            )
-            send_parent_signup_confirmation_success_email(request, parent)
+            if confirmation.expired:
+                messages.error(
+                    request,
+                    "Account activation token has expired! Please regenerate a new one!",
+                )
+                return redirect("verification_expired", parent_id=parent.id)
+            else:
+                parent.is_active = True
+                parent.save()
+                messages.success(
+                    request,
+                    "Account activated successfully! You can now login.",
+                )
+                send_parent_signup_confirmation_success_email(request, parent)
         else:
             messages.error(
                 request,
                 "Activation link is invalid.",
             )
+            return redirect("verification_expired", parent_id=parent.id)
+
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         messages.error(
             request,
@@ -176,6 +193,54 @@ def activate(request, uidb64, token):
         )
 
     return redirect("login")
+
+
+@guest_required
+def verification_expired(request, parent_id):
+    parent = User.parents.get(id=parent_id)
+    user_email = f"{parent.email[:4]}********{parent.email[-9:]}"
+
+    template_name = "accounts/verification_expired.html"
+    context = {"user_email": user_email}
+    return render(request, template_name, context)
+
+
+@guest_required
+def regenerate_token(request):
+    if request.method == "POST":
+        try:
+            parent_email = request.POST.get("parent-email")
+            parent = User.parents.get(email=parent_email)
+
+            # Create a confirmation token
+            confirmation = Confirmation.objects.get(user=parent)
+            new_token = confirmation.regenerate_token()
+            current_site = get_current_site(request)
+            token_dict = {
+                "protocol": request.scheme,
+                "parent": parent,
+                "domain": current_site.domain,
+                "uid": urlsafe_base64_encode(force_bytes(parent.pk)),
+                "token": new_token,
+            }
+
+            messages.success(
+                request,
+                "Account activation email has been resent and is only valid for 5 mins!",
+            )
+            send_parent_signup_confirm_email(request, parent, token_dict)
+        except Exception as e:
+            print(e)
+            messages.error(
+                request,
+                f"{e}",
+            )
+
+        return redirect("login")
+    else:
+        template_name = "accounts/regenerate_token.html"
+        context = {"section": "regenerate_email"}
+        return render(request, template_name, context)
 
 
 # child registration view

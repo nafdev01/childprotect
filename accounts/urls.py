@@ -23,6 +23,16 @@ urlpatterns = [
     ),
     # email confirmation urls
     path("activate/<uidb64>/<token>/", views.activate, name="activate"),
+    path(
+        "verification_expired/<int:parent_id>/",
+        views.verification_expired,
+        name="verification_expired",
+    ),
+    path(
+        "regenerate_token/",
+        views.regenerate_token,
+        name="regenerate_token",
+    ),
     # child urls
     path(
         "update_child_profile/", views.update_child_profile, name="update_child_profile"
