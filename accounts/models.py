@@ -1,14 +1,14 @@
 # accounts/models.py
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.db import models
-from django.conf import settings
+import os
 from datetime import date
+
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.forms import ValidationError
 from django.utils import timezone
-from django.db import models
-import os
+from django.utils.translation import gettext_lazy as _
 
 
 def parent_profile_photo_path(instance, filename):

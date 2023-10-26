@@ -1,8 +1,9 @@
 # safesearch/models,py
 from django.db import models
-from django.utils.text import slugify
-from accounts.models import ChildProfile, ParentProfile
 from django.utils import timezone
+from django.utils.text import slugify
+
+from accounts.models import ChildProfile, ParentProfile
 
 
 # choices for reasons for a ban

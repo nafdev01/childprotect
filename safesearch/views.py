@@ -1,27 +1,25 @@
-from io import BytesIO
-from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from accounts.decorators import parent_required, child_required
-from safesearch.forms import *
-from accounts.models import *
-from safesearch.models import *
-from django.db.models import Q
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.contrib import messages
-from django.conf import settings
-from safesearch.search import (
-    get_results,
-    word_is_banned,
-)
-from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
-from django.utils import timezone
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from safesearch.models import SearchPhrase
 import csv
 import os
+from io import BytesIO
+
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import landscape, letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+
+from accounts.decorators import child_required, parent_required
+from accounts.models import *
+from accounts.notifications import (send_email_flagged_alert,
+                                    send_email_suspicious_alert)
+from safesearch.forms import *
+from safesearch.models import *
+from safesearch.search import get_results, word_is_banned
 
 
 # child search functionality
@@ -175,6 +173,7 @@ def ban_word(request, word_id):
     return redirect("banned_words")
 
 
+# parents banned words list
 @parent_required
 def banned_word_list(request):
     parent = request.user.parentprofile
@@ -220,6 +219,7 @@ def banned_word_list(request):
     return render(request, template_name, context)
 
 
+# show words from our default banned words list
 @parent_required
 def default_banned_word_list(request):
     parent = request.user.parentprofile
@@ -264,6 +264,7 @@ def default_banned_word_list(request):
     return render(request, template_name, context)
 
 
+# list of flagged alerts
 @parent_required
 def alert_list(request):
     parent_profile = request.user.parentprofile
@@ -275,6 +276,7 @@ def alert_list(request):
     return render(request, template_name, context)
 
 
+# mark flagged alert as reviewed
 @parent_required
 def review_alert(request, alert_id):
     alert = FlaggedAlert.objects.get(id=alert_id)
@@ -293,6 +295,7 @@ def review_alert(request, alert_id):
     return redirect("alert_list")
 
 
+# uploaded csv file with words to be banned
 @parent_required
 def add_banned_csv(request):
     if request.method == "POST":
@@ -399,6 +402,7 @@ def generate_pdf_report(request, child_id=None):
     return response
 
 
+# child requests a word be unbanned
 @child_required
 def create_unban_request(request, banned_word_id):
     child = request.user
@@ -432,6 +436,7 @@ def create_unban_request(request, banned_word_id):
     return redirect("home")
 
 
+# deny unban request
 @parent_required
 def approve_unban_request(request, unban_request_id):
     parent = request.user
@@ -462,6 +467,7 @@ def approve_unban_request(request, unban_request_id):
     return redirect("unban_requests")
 
 
+# deny unban request view
 @parent_required
 def deny_unban_request(request, unban_request_id):
     parent = request.user
@@ -492,10 +498,12 @@ def deny_unban_request(request, unban_request_id):
     return redirect("unban_requests")
 
 
+# unban request list view
 @parent_required
 def unban_requests(request):
     parent = request.user
 
+    # retrieve unban requests from the database
     unban_requests = UnbanRequest.objects.filter(
         requested_by__parent_profile__parent_id=parent.id
     )

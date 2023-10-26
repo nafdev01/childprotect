@@ -1,26 +1,27 @@
 import os
 import tempfile
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from accounts.decorators import parent_required, child_required, guest_required
-from accounts.forms import *
-from accounts.notifications import *
-from accounts.models import User, ParentProfile, ChildProfile, AccountStatus
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import default_token_generator as token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from accounts.models import Confirmation
-from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from datetime import datetime
-from django.core.files import File
-from django.contrib.auth.decorators import login_required
 
+from django.contrib import messages
+from django.contrib.auth import (authenticate, login, logout,
+                                 update_session_auth_hash)
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.contrib.auth.tokens import \
+    default_token_generator as token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
+from django.core.files import File
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
+from accounts.decorators import child_required, guest_required, parent_required
+from accounts.forms import *
+from accounts.models import (AccountStatus, ChildProfile, Confirmation,
+                             ParentProfile, User)
+from accounts.notifications import *
 from safesearch.models import SearchPhrase
 
 
@@ -35,7 +36,7 @@ def logout_view(request):
 @guest_required
 def login_user(request):
     if request.method == "POST":
-        # Retrieve username and password from POST data
+        # Retrieve username and password  and user_type from POST data
         username = request.POST.get("username")
         password = request.POST.get("password")
         user_type = request.POST.get("user_type")
@@ -47,6 +48,7 @@ def login_user(request):
                 if user_type == "parent":
                     parent = User.parents.get(username=username)
 
+                    # parent authentication and verification
                     if not parent.is_active:
                         messages.error(
                             request,
@@ -65,15 +67,14 @@ def login_user(request):
                             and parent.user_type == User.UserType.PARENT
                         ):
                             login(request, parent)
-                            # send_parent_login_email(request)
                             messages.success(request, "Parent Log In Successful!")
-                            # send_parent_login_email(request)
                             return redirect("home")
                         else:
                             messages.error(
                                 request, "Invalid parent username or password."
                             )
 
+                # child authentication and verification
                 elif user_type == "child":
                     child = User.children.get(username=username)
 
@@ -153,6 +154,8 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         parent = User.parents.get(pk=uid)
+
+        # check parent email verification token
         if token_generator.check_token(parent, token):
             parent.is_active = True
             parent.save()
@@ -175,13 +178,76 @@ def activate(request, uidb64, token):
     return redirect("login")
 
 
+# child registration view
+@parent_required
+def register_child(request):
+    parent = request.user
+
+    if request.method == "POST":
+        try:
+            child_form = ChildRegistrationForm(request.POST)
+            child_profile_form = ChildProfileForm(request.POST)
+            if child_form.is_valid() and child_profile_form.is_valid():
+                child = child_form.save(commit=False)
+                child.user_type = User.UserType.CHILD
+                profile = child_profile_form.save(commit=False)
+                profile.child = child
+                profile.account_status = AccountStatus.ACTIVE
+                profile.parent_profile = parent.parentprofile
+                child.email = parent.email
+                child.save()
+                profile.save()
+                messages.success(
+                    request,
+                    f"Child {child.get_full_name()} Has Been Registered Successfully",
+                )
+                send_child_signup_email(request, parent, child)
+                return redirect("home")
+            else:
+                # Handle form validation errors for child_form
+                for field, error_messages in child_form.errors.items():
+                    for error_message in error_messages:
+                        messages.error(
+                            request, f"Child Form Error - {field}: {error_message}"
+                        )
+
+                # Handle form validation errors for child_profile_form
+                for field, error_messages in child_profile_form.errors.items():
+                    for error_message in error_messages:
+                        messages.error(
+                            request,
+                            f"Child Profile Form Error - {field}: {error_message}",
+                        )
+
+                return redirect("register_child")
+        except ValidationError as e:
+            # Handle form validation errors and display them as part of the response
+            messages.error(request, str(e.message))
+            return redirect("register_child")
+        except Exception as e:
+            # Handle other exceptions or errors
+            messages.error(request, "An error occurred during registration.")
+            return redirect("register_child")
+
+    else:
+        child_form = ChildRegistrationForm()
+        child_profile_form = ChildProfileForm()
+
+    template_name = "registration/child_registration.html"
+    context = {"child_form": child_form, "child_profile_form": child_profile_form}
+    return render(request, template_name, context)
+
+
+# dashboard and homepage view
 def home(request):
+    # if guest user show the home page
     if not request.user.is_authenticated:
         context = {
             "section": "home",
         }
         template_name = "home.html"
 
+    # if user is a parent show the parent dahsboard
     elif request.user.is_parent:
         parent = request.user
         parent_profile = ParentProfile.objects.get(parent=parent)
@@ -195,6 +261,8 @@ def home(request):
             "search_counts": search_counts,
         }
         template_name = "accounts/parent_dashboard.html"
+
+    # if user is a child show the child dahsboard
     elif request.user.is_child:
         child = request.user
         child_profile = ChildProfile.objects.get(child=child)
@@ -210,7 +278,7 @@ def home(request):
     return render(request, template_name, context)
 
 
-# View for parent user registration with profile information
+# View for parent and child profiles
 @login_required
 def profile(request):
     if request.user.is_parent:
@@ -272,29 +340,6 @@ def update_parent_info(request):
     return redirect("profile")
 
 
-# update child details
-@child_required
-def update_child_profile(request):
-    if request.method == "POST":
-        # Get the parent's profile instance for the logged-in user
-        child = request.user
-        child_profile = child.childprofile
-        # Extract data from the POST request
-        username = request.POST.get("username")
-
-        # Update the parent's info fields with the extracted data
-        child.username = username
-        child.save()
-
-        # Update the parent's profile fields with the extracted data
-        messages.success(request, "Child info updated successfully.")
-
-    else:
-        messages.error(request, "You don't have access to this page")
-
-    return redirect("profile")
-
-
 # update parent contact info details
 @parent_required
 def update_parent_contacts(request):
@@ -349,63 +394,27 @@ def update_profile_photo(request):
     return redirect("profile")
 
 
-@parent_required
-def register_child(request):
-    parent = request.user
-
+# update child details
+@child_required
+def update_child_profile(request):
     if request.method == "POST":
-        try:
-            child_form = ChildRegistrationForm(request.POST)
-            child_profile_form = ChildProfileForm(request.POST)
-            if child_form.is_valid() and child_profile_form.is_valid():
-                child = child_form.save(commit=False)
-                child.user_type = User.UserType.CHILD
-                profile = child_profile_form.save(commit=False)
-                profile.child = child
-                profile.account_status = AccountStatus.ACTIVE
-                profile.parent_profile = parent.parentprofile
-                child.email = parent.email
-                child.save()
-                profile.save()
-                messages.success(
-                    request,
-                    f"Child {child.get_full_name()} Has Been Registered Successfully",
-                )
-                send_child_signup_email(request, parent, child)
-                return redirect("home")
-            else:
-                # Handle form validation errors for child_form
-                for field, error_messages in child_form.errors.items():
-                    for error_message in error_messages:
-                        messages.error(
-                            request, f"Child Form Error - {field}: {error_message}"
-                        )
+        # Get the parent's profile instance for the logged-in user
+        child = request.user
 
-                # Handle form validation errors for child_profile_form
-                for field, error_messages in child_profile_form.errors.items():
-                    for error_message in error_messages:
-                        messages.error(
-                            request,
-                            f"Child Profile Form Error - {field}: {error_message}",
-                        )
+        # Extract data from the POST request
+        username = request.POST.get("username")
 
-                return redirect("register_child")
-        except ValidationError as e:
-            # Handle form validation errors and display them as part of the response
-            messages.error(request, str(e.message))
-            return redirect("register_child")
-        except Exception as e:
-            # Handle other exceptions or errors
-            messages.error(request, "An error occurred during registration.")
-            return redirect("register_child")
+        # Update the parent's info fields with the extracted data
+        child.username = username
+        child.save()
+
+        # Update the parent's profile fields with the extracted data
+        messages.success(request, "Child info updated successfully.")
 
     else:
-        child_form = ChildRegistrationForm()
-        child_profile_form = ChildProfileForm()
+        messages.error(request, "You don't have access to this page")
 
-    template_name = "registration/child_registration.html"
-    context = {"child_form": child_form, "child_profile_form": child_profile_form}
-    return render(request, template_name, context)
+    return redirect("profile")
 
 
 # parent change password
@@ -432,6 +441,8 @@ def parent_password_change(request):
 def children_details(request):
     parent = request.user
     parent_profile = ParentProfile.objects.get(parent=parent)
+
+    # get parent's children
     children_profiles = parent_profile.childprofile_set.all()
 
     context = {
@@ -453,14 +464,16 @@ def update_child_info(request, child_id):
             parent = request.user
             child = User.children.get(id=child_id)
             child_profile = child.childprofile
+
             # Extract data from the POST request
             username = request.POST.get("username")
             first_name = request.POST.get("first_name")
             last_name = request.POST.get("last_name")
             gender = request.POST.get("gender")
-            date_of_birth = request.POST.get("date_of_birth")
+            raw_date_of_birth = request.POST.get("date_of_birth")
 
-            date_of_birth = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+            # format date of birth field
+            date_of_birth = datetime.strptime(raw_date_of_birth, "%Y-%m-%d").date()
 
             # Update the child's info fields with the extracted data
             child.username = username
@@ -472,8 +485,6 @@ def update_child_info(request, child_id):
             child_profile.gender = gender
             child_profile.date_of_birth = date_of_birth
             child_profile.save()
-
-            # Update the child's profile fields with the extracted data
             messages.success(
                 request, f"{child.get_full_name()} info updated successfully."
             )
@@ -483,9 +494,8 @@ def update_child_info(request, child_id):
             return redirect("children_details")
         except Exception as e:
             # Handle other exceptions or errors
-            error_message = str(e)  # Get the exception message as a string
-            messages.error(request, error_message)  # Display the exception message
-            print(error_message)  # Display the exception message
+            error_message = str(e)
+            messages.error(request, error_message)
             return redirect("children_details")
 
     else:
@@ -515,6 +525,7 @@ def update_child_password(request, child_id):
                     for error_message in error_messages:
                         error_list.append(error_message)
 
+                # change 'the' in error messages to 'this'
                 error_message = "".join(error_list).lower().replace("the", "this")
 
                 messages.error(
@@ -531,13 +542,14 @@ def update_child_password(request, child_id):
 @login_required
 def update_avatar(request, child_id):
     if request.method == "POST":
+        # Retrieve the childs profile
         child = User.children.get(id=child_id)
-        # Retrieve the current user's parent profile
         child_profile = ChildProfile.objects.get(child=child)
 
-        # Handle the uploaded photo
+        # Handle the selected avatar
         avatar = request.POST.get("avatar")
 
+        # define avatar options images
         avatar_options = {
             "avatar1": "avatars/avatar1.png",
             "avatar2": "avatars/avatar2.png",
@@ -553,13 +565,11 @@ def update_avatar(request, child_id):
         if avatar not in avatar_options.keys():
             messages.error(request, f"Avatar name error in form --- {avatar}")
         else:
-            # Generate a temporary file path for the avatar
-
             # Construct the full path to the selected avatar
             avatar_path = os.path.join(settings.MEDIA_ROOT, avatar_options.get(avatar))
             print(f"FILE PATH: {avatar_path}")
 
-            # Copy the avatar image to the temporary file
+            # save the selected avatar image
             with open(avatar_path, "rb") as avatar_file:
                 child_profile.avatar = File(avatar_file)
                 child_profile.save()
@@ -574,5 +584,6 @@ def update_avatar(request, child_id):
         return redirect("profile")
 
 
+# custom 404 view
 def custom_404(request, exception):
     return render(request, "404.html", status=404)
