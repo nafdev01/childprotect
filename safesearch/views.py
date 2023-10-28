@@ -8,15 +8,18 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape, letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 from accounts.decorators import child_required, parent_required
 from accounts.models import *
-from accounts.notifications import (send_email_flagged_alert,
-                                    send_email_suspicious_alert)
+from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from safesearch.forms import *
 from safesearch.models import *
 from safesearch.search import get_results, word_is_banned
@@ -122,23 +125,69 @@ def search_history(request):
     return render(request, template_name, context)
 
 
-# create a banned word
+# create banned word view
+@method_decorator(parent_required, name="dispatch")
+class BannedWordCreateView(CreateView):
+    model = BannedWord
+    form_class = BannedWordForm
+    template_name = "safesearch/banned_word_create.html"
+
+    def form_valid(self, form):
+        # Override this method to customize behavior when the form is valid.
+        # You can perform additional actions here if needed.
+        banned_word = form.save(commit=False)
+        banned_word.banned_by = self.request.user.parentprofile
+        banned_word.save()
+        messages.success(self.request, f"You have banned the word {banned_word}")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context["csv_form"] = BannedCSVForm()
+        return context
+
+    def get_success_url(self):
+        return reverse("create_banned_word")
+
+
+# uploaded csv file with words to be banned
 @parent_required
-def create_banned_word(request):
-    parent = request.user
-
+def add_banned_csv(request):
     if request.method == "POST":
-        form = BannedWordForm(request.POST)
+        form = BannedCSVForm(request.POST, request.FILES)
         if form.is_valid():
-            banned_word = form.save(commit=False)
-            banned_word.banned_by = parent.parentprofile
-            banned_word.save()
-            messages.success(request, f"You have banned the word {banned_word}")
+            csv_file = form.cleaned_data["csv_file"]
+            # Process the CSV file and add banned words to the database
+            if csv_file:
+                decoded_file = csv_file.read().decode("utf-8")
+                csv_data = csv.reader(decoded_file.splitlines(), delimiter=",")
+                for row in csv_data:
+                    for word in row:
+                        if (
+                            not BannedWord.objects.filter(
+                                word=word.strip(),
+                                banned_by=request.user.parentprofile,
+                            )
+                            and word != ""
+                        ):
+                            banned_word = BannedWord(
+                                banned_by=request.user.parentprofile,
+                                word=word.strip(),
+                                reason=BanReason.INAPPROPRIATE_CONTENT,
+                            )
+                            banned_word.save()
+            messages.success(
+                request, "Successfully uploaded banned words from csv file"
+            )
             return redirect("banned_words")
+        else:
+            messages.error(f"There was an error uploading the form")
     else:
-        form = BannedWordForm()
+        messages.error(f"You don't have access to this page")
 
-    return render(request, "safesearch/banned_word_create.html", {"form": form})
+    return redirect("create_banned_word")
 
 
 # unban a word
@@ -265,15 +314,15 @@ def default_banned_word_list(request):
 
 
 # list of flagged alerts
-@parent_required
-def alert_list(request):
-    parent_profile = request.user.parentprofile
+@method_decorator(parent_required, name="dispatch")
+class FlaggedAlertListView(ListView):
+    model = FlaggedAlert
+    template_name = "safesearch/flagged_alerts.html"
+    context_object_name = "alerts"
 
-    flagged_alerts = FlaggedAlert.objects.filter(reviewed_by=parent_profile)
-
-    template_name = ("safesearch/flagged_alerts.html",)
-    context = {"alerts": flagged_alerts}
-    return render(request, template_name, context)
+    def get_queryset(self):
+        parent_profile = self.request.user.parentprofile
+        return FlaggedAlert.objects.filter(reviewed_by=parent_profile)
 
 
 # mark flagged alert as reviewed
@@ -293,41 +342,6 @@ def review_alert(request, alert_id):
         messages.error(request, "Alert not reviewed. Error occurred")
 
     return redirect("alert_list")
-
-
-# uploaded csv file with words to be banned
-@parent_required
-def add_banned_csv(request):
-    if request.method == "POST":
-        form = BannedCSVForm(request.POST, request.FILES)
-        if form.is_valid():
-            csv_file = form.cleaned_data["csv_file"]
-            # Process the CSV file and add banned words to the database
-            if csv_file:
-                decoded_file = csv_file.read().decode("utf-8")
-                csv_data = csv.reader(decoded_file.splitlines(), delimiter=",")
-                for row in csv_data:
-                    for word in row:
-                        if (
-                            not BannedWord.objects.filter(
-                                word=word.strip(),
-                                banned_by=request.user.parentprofile,
-                            )
-                            and word != ""
-                        ):
-                            banned_word = BannedWord(
-                                banned_by=request.user.parentprofile,
-                                word=word.strip(),
-                                reason=BanReason.INAPPROPRIATE_CONTENT,
-                            )
-                            banned_word.save()
-            messages.success(
-                request, "Successfully uploaded banned words from csv file"
-            )
-            return redirect("banned_words")
-    else:
-        form = BannedCSVForm()
-    return render(request, "safesearch/add_banned_csv.html", {"form": form})
 
 
 @parent_required
@@ -499,15 +513,15 @@ def deny_unban_request(request, unban_request_id):
 
 
 # unban request list view
-@parent_required
-def unban_requests(request):
-    parent = request.user
-
-    # retrieve unban requests from the database
-    unban_requests = UnbanRequest.objects.filter(
-        requested_by__parent_profile__parent_id=parent.id
-    )
-
+@method_decorator(parent_required, name="dispatch")
+class UnbanRequestListView(ListView):
+    model = UnbanRequest
     template_name = "safesearch/unban_requests.html"
-    context = {"unban_requests": unban_requests}
-    return render(request, template_name, context)
+    context_object_name = "unban_requests"
+
+    def get_queryset(self):
+        parent = self.request.user
+        unban_requests = UnbanRequest.objects.filter(
+            requested_by__parent_profile__parent_id=parent.id
+        )
+        return unban_requests

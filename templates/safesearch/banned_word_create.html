@@ -5,28 +5,85 @@
 {% block title %}Ban a Word{% endblock title %}
 
 {% block header %}
-<h1>
-    <center>Creating a New Banned Word</center>
-</h1>
+<div class="text-center">
+    <h2>
+        Ban a Word
+    </h2>
+</div>
 {% endblock header %}
 
 {% block content %}
-<a class="btn btn-secondary m-3" href="{% url 'banned_words' %}" title="Ban a Word">
-    List of Banned Words
-</a>
-
-<br><br>
-
-<a class="btn btn-secondary m-3" href="{% url 'add_banned_csv' %}" title="Ban a Word">
-    Add a banned csv file
-</a>
-
-<section class="container justify-content-center">
-    <form class="mb-3" method="post" enctype="multipart/form-data">
-        {% bootstrap_form form %}
-        {% csrf_token %}
-        <input class="btn btn-outline-warning" type="submit" value="Ban Word">
-    </form>
+<section class="container">
+    <div class="d-flex justify-content-evenly">
+        <a class="btn btn-primary mx-3" href="{% url 'banned_words' %}" title="Ban a Word">
+            Banned Words
+        </a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary mx-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Upload CSV
+        </button>
+    </div>
 </section>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    Upload a CSV File of Banned Words
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container justify-content-center">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm"
+                        action="{% url 'add_banned_csv' %}">
+                        {% bootstrap_form csv_form %}
+                        {% csrf_token %}
+                        <button class="btn btn-success" type="submit" onclick="myButtonCircle(this)" id="uploadButton">
+                            Upload CSV
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container justify-content-center">
+    <form class="mb-3" method="post" enctype="multipart/form-data" action="{% url 'create_banned_word' %}">
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6 col-md-12">
+                <label class="form-label" for="id_word">Word</label>
+                <input type="text" name="word" maxlength="50" class="form-control" placeholder="Word" required
+                    id="id_word">
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <label class="form-label" for="id_reason">Reason</label>
+                <select name="reason" class="form-select" id="id_reason">
+                    <option value="IC" selected>Inappropriate Content</option>
+                    <option value="OP">Obscenities and Profanity</option>
+                    <option value="VC">Violent and Disturbing Content</option>
+                    <option value="OL">Offensive Language</option>
+                </select>
+            </div>
+        </div>
+        {% csrf_token %}
+        <input class="btn btn-success text-color" type="submit" value="Ban Word">
+    </form>
+</div>
 {% endblock content %}
+
+
+{% block custom_js %}
+<script type="text/javascript">
+    function myButtonCircle(el) {
+        uploadButton = document.getElementById("uploadButton")
+        uploadButton.disabled = true;
+        uploadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Uploading CSV...';
+        document.getElementById("uploadForm").submit();
+    }
+</script>
+{% endblock custom_js %}

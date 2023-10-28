@@ -8,12 +8,20 @@ urlpatterns = [
         views.search_history,
         name="search_history",
     ),
-    path("banned_word/create/", views.create_banned_word, name="create_banned_word"),
+    path(
+        "banned_word/create/",
+        views.BannedWordCreateView.as_view(),
+        name="create_banned_word",
+    ),
     path("banned_word/list/", views.banned_word_list, name="banned_words"),
-    path("banned_word/default_list/", views.default_banned_word_list, name="banned_words_default"),
+    path(
+        "banned_word/default_list/",
+        views.default_banned_word_list,
+        name="banned_words_default",
+    ),
     path("banned_word/unban/<int:word_id>/", views.unban_word, name="unban_word"),
     path("banned_word/ban/<int:word_id>/", views.ban_word, name="ban_word"),
-    path("alerts/", views.alert_list, name="alert_list"),
+    path("alerts/", views.FlaggedAlertListView.as_view(), name="alert_list"),
     path("alerts/review/<int:alert_id>/", views.review_alert, name="review_alert"),
     path("add_banned_csv/", views.add_banned_csv, name="add_banned_csv"),
     path(
@@ -33,7 +41,7 @@ urlpatterns = [
     ),
     path(
         "unban_requests/",
-        views.unban_requests,
+        views.UnbanRequestListView.as_view(),
         name="unban_requests",
     ),
     path(
