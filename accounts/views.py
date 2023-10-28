@@ -128,7 +128,7 @@ def register_parent(request):
             # Create a confirmation token
             token = token_generator.make_token(parent)
             confirmation = Confirmation(user=parent, token=token)
-            confirmation.expires_on = timezone.now() + timezone.timedelta(minutes=5)
+            confirmation.expires_on = timezone.now() + timezone.timedelta(minutes=30)
             confirmation.save()
 
             current_site = get_current_site(request)
