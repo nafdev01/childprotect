@@ -27,27 +27,40 @@
 <section class="container-fluid">
     <div class="card shadow">
         <div class="card-header py-3">
-            <div class="input-group mb-3">
-                <label class="input-group-text" for="childSelectGroup">
-                    Show for
-                </label>
-                <select class="form-select" id="childSelectGroup" onchange="filterChild(this)">
-                    {% if child_id %}
-                    <option value="0">All Children</option>
-                    {% for child_profile in parent_profile.childprofile_set.all %}
-                    <option {% if child_id is child_profile.child.id %}selected{% endif %}
-                        value="{{ child_profile.child.id }}">
-                        {{ child_profile.child.get_full_name }}
-                    </option>
-                    {% endfor %}
-                    {% else %}
-                    {% for child_profile in parent_profile.childprofile_set.all %}
-                    <option value="{{ child_profile.child.id }}">
-                        {{ child_profile.child.get_full_name }}
-                    </option>
-                    {% endfor %}
-                    {% endif %}
-                </select>
+            <div class="row g-2">
+                <div class="col-lg-6 col-md-12">
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="childSelectGroup">
+                            Show for
+                        </label>
+                        <select class="form-select" id="childSelectGroup" onchange="filterChild(this)">
+                            {% if child_id %}
+                            <option value="0">All Children</option>
+                            {% for child_profile in parent_profile.childprofile_set.all %}
+                            <option {% if child_id is child_profile.child.id %} selected {% endif %}
+                                value="{{ child_profile.child.id }}">
+                                {{ child_profile.child.get_full_name }}
+                            </option>
+                            {% endfor %}
+                            {% else %}
+                            {% for child_profile in parent_profile.childprofile_set.all %}
+                            <option value="{{ child_profile.child.id }}">
+                                {{ child_profile.child.get_full_name }}
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="input-group w-100">
+                        <input class="form-control" type="search" id="filterInput" onkeyup="filterSearch()"
+                            placeholder="Search for words ...." title="Type in a word">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -113,5 +126,25 @@
             .forEach(tr => tbody.appendChild(tr));
     })));
 
+
+    function filterSearch() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("filterInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
 </script>
+
 {% endblock custom_js %}

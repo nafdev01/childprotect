@@ -5,15 +5,13 @@
 {% block title %}Ban a Word{% endblock title %}
 
 {% block header %}
-<div class="text-center">
-    <h2>
-        Ban a Word
-    </h2>
+<div class="container text-center text-dark mb-3">
+    <h1> Ban a Word</h1>
 </div>
 {% endblock header %}
 
 {% block content %}
-<section class="container">
+<div class="container mb-3">
     <div class="d-flex justify-content-evenly">
         <a class="btn btn-primary mx-3" href="{% url 'banned_words' %}" title="Ban a Word">
             Banned Words
@@ -23,7 +21,7 @@
             Upload CSV
         </button>
     </div>
-</section>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

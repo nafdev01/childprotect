@@ -5,9 +5,9 @@
 {% block title %}Banned Words{% endblock title %}
 
 {% block header %}
-<h1 class="text-center">
-    List of Banned Words
-</h1>
+<div class="container text-center text-dark">
+    <h1> List of Banned Words</h1>
+</div>
 {% endblock header %}
 
 {% block content %}
@@ -38,7 +38,7 @@
                         <form class="d-inline-block mx-auto" method="get" action="{% url 'banned_words' %}"
                             onsubmit="wordSubmit(this)">
                             <div class="input-group">
-                                <input class="bg-light form-control border-0 small" type="search"
+                                <input class="bg-white form-control border-0 small" type="search"
                                     placeholder="Search for Banned Word" name="word" id="word-in-word">
                                 <select id="word-per_page" class="d-none form-select form-select-sm" name="per_page">
                                     <option value="10" selected="">10</option>
