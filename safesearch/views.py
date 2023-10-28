@@ -104,24 +104,37 @@ def search(request):
 
 # child can see teir search history
 @login_required
-def search_history(request):
+def search_history(request, child_id=None):
+    context = {}
+
     if request.user.is_child:
         child = request.user
+        child_profile = child.childprofile
         search_phrases = SearchPhrase.objects.filter(searched_by=child.childprofile)
         template_name = "safesearch/child_search_history.html"
+        context["child"] = child
+        context["child_profile"] = child_profile
 
     elif request.user.is_parent:
         parent = request.user
-        search_phrases = SearchPhrase.objects.filter(
-            searched_by__parent_profile=parent.parentprofile
-        )
+        parent_profile = parent.parentprofile
+        if child_id:
+            search_phrases = SearchPhrase.objects.filter(searched_by_id=child_id)
+            context["child_id"] = child_id
+        else:
+            search_phrases = SearchPhrase.objects.filter(
+                searched_by__parent_profile=parent_profile
+            )
+
         template_name = "safesearch/parent_search_history.html"
+        context["parent"] = parent
+        context["parent_profile"] = parent_profile
 
     else:
         messages.error(request, "You don't have access to the search history page")
         return redirect("home")
 
-    context = {"search_phrases": search_phrases}
+    context["search_phrases"] = search_phrases
     return render(request, template_name, context)
 
 
@@ -183,9 +196,9 @@ def add_banned_csv(request):
             )
             return redirect("banned_words")
         else:
-            messages.error(f"There was an error uploading the form")
+            messages.error(request, f"There was an error uploading the form")
     else:
-        messages.error(f"You don't have access to this page")
+        messages.error(request, f"You don't have access to this page")
 
     return redirect("create_banned_word")
 

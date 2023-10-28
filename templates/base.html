@@ -72,12 +72,6 @@
               &nbsp;<span>Ban a word</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link banned-link" href="{% url 'add_banned_csv' %}" title="Ban a Word">
-              <i class="fa-solid fa-upload fa-xl"></i>
-              &nbsp;<span>Add CSV of Banned Words</span>
-            </a>
-          </li>
           <li class="nav-item banned-link">
             <a class=" nav-link" href="{% url 'banned_words' %}" title="List of Banned Words">
               <i class="fa-solid fa-flag fa-xl"></i>
@@ -230,8 +224,8 @@
                     </a>
                     {% endfor %}
 
-                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'alert_list' %}">
-                      Show All Alerts
+                    <a class="dropdown-item text-center small text-gray-500" href="{% url 'unban_requests' %}">
+                      Show All Messages
                     </a>
                   </div>
                 </div>

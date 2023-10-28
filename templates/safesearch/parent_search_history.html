@@ -2,38 +2,116 @@
 
 {% block title %}Search History{% endblock title %}
 
+
+{% block custom_css %}
+<style>
+    th:hover {
+        cursor: pointer;
+    }
+
+    th:focus {
+        color: red;
+    }
+</style>
+{% endblock custom_css %}
+
+
+{% block header %}
+<div class="container text-center text-dark">
+    <h2>Search History</h2>
+</div>
+{% endblock header %}
+
+
 {% block content %}
-<h2>Search History</h2>
-
-<a class="btn btn-success" href="{% url 'generate_children_pdf_report' %}">
-    Generate Pdf Report
-</a>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Search Phrase</th>
-            <th>Date Searched</th>
-            <th>Child</th>
-            <th>Allowed</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for search_phrase in search_phrases %}
-        <tr>
-            <td>{{ search_phrase.phrase }}</td>
-            <td>{{ search_phrase.searched_on }}</td>
-            <td>{{ search_phrase.searched_by.child }}</td>
-            <td>
-                {{ search_phrase.get_search_status_display }}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="2">No search history available.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+<section class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="childSelectGroup">
+                    Show for
+                </label>
+                <select class="form-select" id="childSelectGroup" onchange="filterChild(this)">
+                    {% if child_id %}
+                    <option value="0">All Children</option>
+                    {% for child_profile in parent_profile.childprofile_set.all %}
+                    <option {% if child_id is child_profile.child.id %}selected{% endif %}
+                        value="{{ child_profile.child.id }}">
+                        {{ child_profile.child.get_full_name }}
+                    </option>
+                    {% endfor %}
+                    {% else %}
+                    {% for child_profile in parent_profile.childprofile_set.all %}
+                    <option value="{{ child_profile.child.id }}">
+                        {{ child_profile.child.get_full_name }}
+                    </option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                <table class="table" id="myTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Child</th>
+                            <th scope="col">Searched</th>
+                            <th scope="col">Searched On</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for search_phrase in search_phrases %}
+                        <tr>
+                            <td>{{ search_phrase.searched_by.child.get_full_name }}</td>
+                            <td>{{ search_phrase.phrase }}</td>
+                            <td>{{ search_phrase.searched_on }}</td>
+                            <td>
+                                {{ search_phrase.get_search_status_display }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">No search history available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
+
+
+{% block custom_js %}
+<script>
+    function filterChild(selectEl) {
+        var child_id = selectEl.value;
+        if (child_id == 0) {
+            var url = '{% url "search_history" %}'.replace('0', child_id);
+        } else {
+            var url = '{% url "search_history_by_child" 0 %}'.replace('0', child_id);
+        }
+        document.location.href = url;
+    }
+</script>
+<script>
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+        v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+    // do the work...
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        Array.from(tbody.querySelectorAll('tr'))
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+            .forEach(tr => tbody.appendChild(tr));
+    })));
+
+</script>
+{% endblock custom_js %}

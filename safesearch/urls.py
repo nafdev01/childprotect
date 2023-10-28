@@ -9,6 +9,11 @@ urlpatterns = [
         name="search_history",
     ),
     path(
+        "search/history/<int:child_id>/",
+        views.search_history,
+        name="search_history_by_child",
+    ),
+    path(
         "banned_word/create/",
         views.BannedWordCreateView.as_view(),
         name="create_banned_word",
