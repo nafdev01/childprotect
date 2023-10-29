@@ -14,14 +14,14 @@
                     <thead>
                         <tr>
                             <th scope="col">Search Phrase</th>
-                            <th scope="col">Searched On</th>
+                            <th scope="col">Flagged On</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for search in flagged_searches %}
                         <tr>
-                            <th scope="row">{{ search.search_phrase }}</th>
-                            <td>{{ search.flagged_on }}</td>
+                            <th scope="row">{{ search.phrase }}</th>
+                            <td>{{ search.searched_on }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
