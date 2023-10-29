@@ -174,6 +174,7 @@ class ChildProfile(models.Model):
         blank=True,
         null=True,
     )
+    last_seen = models.DateTimeField(default=timezone.now, editable=False)
 
     @property
     def banned(self):

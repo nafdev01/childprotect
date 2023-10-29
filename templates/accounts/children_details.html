@@ -220,7 +220,7 @@
                                         <p class="child-details text-dark">
                                             {% if child_profile.child.last_login %}
                                             <span>
-                                                Last active {{ child_profile.child.last_login|timesince }} ago
+                                                Last active {{ child_profile.last_seen|timesince }} ago
                                             </span>
                                             {% else %}
                                             <span>Not logged in yet</span>

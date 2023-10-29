@@ -58,11 +58,6 @@ def search(request):
             search_phrase.save()
 
             if not safe:
-                messages.error(
-                    request,
-                    f"You searched for the banned words { ','.join(flagged_words)}",
-                )
-
                 flagged_search = search_phrase
 
                 flagged_alert = FlaggedAlert(flagged_search=search_phrase)
@@ -78,7 +73,11 @@ def search(request):
                     )
                     flagged_word.save()
 
-                send_email_flagged_alert(request, flagged_words, search_phrase)
+                if send_email_flagged_alert(request, flagged_words, search_phrase):
+                    messages.warning(
+                        request,
+                        f"Your search contained the banned words { ','.join(flagged_words)}",
+                    )
                 return redirect("search_history")
 
             else:

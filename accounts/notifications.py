@@ -212,8 +212,10 @@ def send_email_flagged_alert(request, flagged_words, search_phrase):
         messages.warning(
             request, f"Your parent has been alerted about your illegal search"
         )
+        return True
     else:
         messages.error(request, f"Email could not be sent to your parent")
+        return False
 
 
 def send_email_suspicious_alert(request, suspicious_results, search_phrase):

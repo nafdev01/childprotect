@@ -316,7 +316,7 @@
           {% for message in messages %}
           {% if message.tags == 'success' %}
           <script>
-            var message = "{{ message }}";
+            var message = "{{ message|safe }}";
             var alertType = "success";
 
             silverBox({
@@ -331,7 +331,7 @@
           </script>
           {% elif message.tags == 'info' %}
           <script>
-            var message = "{{ message }}";
+            var message = "{{ message|safe }}";
             var alertType = "info";
 
             silverBox({
@@ -347,7 +347,7 @@
 
           {% elif message.tags == 'warning' %}
           <script>
-            var message = "{{ message }}";
+            var message = "{{ message|safe }}";
             var alertType = "warning";
 
             silverBox({
@@ -363,7 +363,7 @@
 
           {% elif message.tags == 'error' %}
           <script>
-            var message = "{{ message }}";
+            var message = "{{ message|safe }}";
             var alertType = "error";
 
             silverBox({

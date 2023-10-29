@@ -41,3 +41,12 @@ function togglePasswordVisibility(formType, toggleIcon, passPosition = "") {
         }
     }
 }
+
+function showMessage(message, alertType) {
+    Swal.fire({
+        icon: alertType,
+        title: message,
+        showConfirmButton: true,
+    })
+
+}
