@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FlaggedAlert, SearchPhrase, BannedWord, FlaggedWord
+from .models import SearchAlert, SearchPhrase, BannedWord, FlaggedWord
 
 
 @admin.register(SearchPhrase)
@@ -26,8 +26,8 @@ def make_unreviewed(modeladmin, request, queryset):
     queryset.update(been_reviewed=False)
 
 
-@admin.register(FlaggedAlert)
-class FlaggedAlertAdmin(admin.ModelAdmin):
+@admin.register(SearchAlert)
+class SearchAlertAdmin(admin.ModelAdmin):
     list_display = ("flagged_search", "been_reviewed", "reviewed_on")
     list_filter = ("been_reviewed",)
     actions = [make_unreviewed]

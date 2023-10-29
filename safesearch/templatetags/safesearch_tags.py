@@ -10,7 +10,7 @@ def get_alert_count(user):
     try:
         # Assuming your ParentProfile is related to User via a ForeignKey
         parent_profile = ParentProfile.objects.get(parent=user)
-        alert_count = FlaggedAlert.objects.filter(
+        alert_count = SearchAlert.objects.filter(
             flagged_search__searched_by__parent_profile_id=parent_profile.id,
             been_reviewed=False,
         ).count()
@@ -24,7 +24,7 @@ def latest_alerts(parent):
     try:
         # Assuming your ParentProfile is related to User via a ForeignKey
         parent_profile = ParentProfile.objects.get(parent=parent)
-        alerts = FlaggedAlert.objects.filter(
+        alerts = SearchAlert.objects.filter(
             flagged_search__searched_by__parent_profile_id=parent_profile.id,
             been_reviewed=False,
         )[:3]

@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     path("banned_word/unban/<int:word_id>/", views.unban_word, name="unban_word"),
     path("banned_word/ban/<int:word_id>/", views.ban_word, name="ban_word"),
-    path("alerts/", views.FlaggedAlertListView.as_view(), name="alert_list"),
+    path("alerts/", views.SearchAlertListView.as_view(), name="alert_list"),
     path("alerts/review/<int:alert_id>/", views.review_alert, name="review_alert"),
     path("add_banned_csv/", views.add_banned_csv, name="add_banned_csv"),
     path(

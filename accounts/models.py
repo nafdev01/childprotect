@@ -118,7 +118,7 @@ class ParentProfile(models.Model):
 
     @property
     def unreviewed_alerts(self):
-        unreviewed = self.flaggedalert_set.filter(been_reviewed=False)
+        unreviewed = self.searchalert_set.filter(been_reviewed=False)
         return unreviewed.count()
 
     @property

@@ -60,7 +60,7 @@ def search(request):
             if not safe:
                 flagged_search = search_phrase
 
-                flagged_alert = FlaggedAlert(flagged_search=search_phrase)
+                flagged_alert = SearchAlert(flagged_search=search_phrase)
                 flagged_alert.save()
 
                 for flagged_word in flagged_words:
@@ -327,20 +327,20 @@ def default_banned_word_list(request):
 
 # list of flagged alerts
 @method_decorator(parent_required, name="dispatch")
-class FlaggedAlertListView(ListView):
-    model = FlaggedAlert
+class SearchAlertListView(ListView):
+    model = SearchAlert
     template_name = "safesearch/flagged_alerts.html"
     context_object_name = "alerts"
 
     def get_queryset(self):
         parent_profile = self.request.user.parentprofile
-        return FlaggedAlert.objects.filter(reviewed_by=parent_profile)
+        return SearchAlert.objects.filter(reviewed_by=parent_profile)
 
 
 # mark flagged alert as reviewed
 @parent_required
 def review_alert(request, alert_id):
-    alert = FlaggedAlert.objects.get(id=alert_id)
+    alert = SearchAlert.objects.get(id=alert_id)
 
     if alert:
         if not alert.been_reviewed:

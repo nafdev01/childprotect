@@ -1,5 +1,5 @@
 import csv
-from safesearch.models import FlaggedAlert
+from safesearch.models import SearchAlert
 from faker import Faker
 from forum.models import Post
 

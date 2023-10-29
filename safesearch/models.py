@@ -160,7 +160,7 @@ class FlaggedWord(models.Model):
         verbose_name_plural = "Flagged Words"
 
 
-class FlaggedAlert(models.Model):
+class SearchAlert(models.Model):
     """Model for Alerts Created during Flagged Searches"""
 
     class ReviewedManager(models.Manager):
@@ -190,7 +190,7 @@ class FlaggedAlert(models.Model):
         self.reviewed_by = self.flagged_search.searched_by.parent_profile
         self.searched_by = self.flagged_search.searched_by
         self.flagged_on = self.flagged_search.searched_on
-        super(FlaggedAlert, self).save(*args, **kwargs)
+        super(SearchAlert, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.flagged_search} flagged for {self.reviewed_by}"
