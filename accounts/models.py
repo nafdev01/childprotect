@@ -1,5 +1,5 @@
 # accounts/models.py
-from datetime import date
+from datetime import date, time
 
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.tokens import default_token_generator as token_generator
@@ -145,6 +145,12 @@ class AccountStatus(models.TextChoices):
     BANNED = "BN", "Banned"
 
 
+class AlertLevel(models.TextChoices):
+    STRICT = "S", "Strict"
+    MODERATE = "M", "Moderate"
+    LOW = "L", "Low"
+
+
 class ChildProfile(models.Model):
     """Child Profile Model"""
 
@@ -175,6 +181,30 @@ class ChildProfile(models.Model):
         null=True,
     )
     last_seen = models.DateTimeField(default=timezone.now, editable=False)
+
+    # Alert and Filter Levels
+    alert_level = models.CharField(
+        max_length=10,
+        choices=AlertLevel.choices,
+        default=AlertLevel.MODERATE,
+    )
+
+    # Limit Activity Based on Time and Frequency of Search
+    search_time_start = models.TimeField(
+        null=True,
+        blank=True,
+        default=time(hour=8, minute=30, second=0),
+    )
+    search_time_end = models.TimeField(
+        null=True,
+        blank=True,
+        default=time(hour=18, minute=30, second=0),
+    )
+    search_frequency_limit = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Maximum number of searches allowed within the time period",
+    )
 
     @property
     def banned(self):
@@ -250,45 +280,3 @@ class Confirmation(models.Model):
 
     class Meta:
         ordering = ["user"]
-
-
-class AlertLevel(models.TextChoices):
-    STRICT = "S", "Strict"
-    MODERATE = "M", "Moderate"
-    LOW = "L", "Low"
-
-
-class ChildSettings(models.Model):
-    child = models.OneToOneField(ChildProfile, on_delete=models.CASCADE, null=True)
-    parent = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
-
-    # Alert and Filter Levels
-    alert_level = models.CharField(
-        max_length=10,
-        choices=AlertLevel.choices,
-        default=AlertLevel.MODERATE,
-    )
-
-    # Limit Activity Based on Time and Frequency of Search
-    search_time_start = models.TimeField(
-        null=True,
-        blank=True,
-        default=timezone.make_aware(
-            timezone.datetime(1, 1, 1, 8, 0), timezone.get_current_timezone()
-        ),
-    )
-    search_time_end = models.TimeField(
-        null=True,
-        blank=True,
-        default=timezone.make_aware(
-            timezone.datetime(1, 1, 1, 18, 0), timezone.get_current_timezone()
-        ),
-    )
-    search_frequency_limit = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="Maximum number of searches allowed within the time period",
-    )
-
-    def __str__(self):
-        return f"Search Settings for {self.child.username}"

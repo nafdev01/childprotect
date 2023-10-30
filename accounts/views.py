@@ -19,6 +19,7 @@ from accounts.decorators import child_required, guest_required, parent_required
 from accounts.forms import *
 from accounts.models import (
     AccountStatus,
+    AlertLevel,
     ChildProfile,
     Confirmation,
     ParentProfile,
@@ -652,3 +653,32 @@ def update_avatar(request, child_id):
 # custom 404 view
 def custom_404(request, exception):
     return render(request, "404.html", status=404)
+
+
+@parent_required
+def parent_settings(request):
+    parent = request.user
+    parent_profile = ParentProfile.objects.get(parent=parent)
+
+    # get parent's children
+    children_profiles = parent_profile.childprofile_set.all()
+    alert_levels = dict(sorted(AlertLevel.choices))
+    
+    context = {
+        "parent": parent,
+        "profile": parent_profile,
+        "children_profiles": children_profiles,
+        "alert_levels": alert_levels,
+    }
+    template_name = "accounts/settings.html"
+
+    return render(request, template_name, context)
+
+@parent_required
+def update_settings(request):
+    if request.method == "POST":
+        messages.success(request, f"Settings updated successfully!")
+    else:
+        messages.error(request, f"You dont have access to this page!")
+
+    return redirect("parent_settings")

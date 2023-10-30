@@ -59,4 +59,8 @@ urlpatterns = [
         views.update_avatar,
         name="update_avatar",
     ),
+    path("parent/settings/", views.parent_settings, name="parent_settings"),
+    path(
+        "parent/settings/update/", views.update_settings, name="update_search_settings"
+    ),
 ]

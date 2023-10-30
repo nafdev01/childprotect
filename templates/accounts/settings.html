@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}Parent Settings Dashboard{% endblock %}
+
+{% block header %}
+<div class="container text-center">
+    <h1 class="text-dark">Settings</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<section class="container-fluid">
+    <form method="post" action="{% url 'update_search_settings' %}">
+        {% csrf_token %}
+        <div class="row g-2">
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center text-dark">
+                            Alert Levels
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <th scope="col" class="border border-start-0 border-top-0"></th>
+                                {% for alert_level in alert_levels.keys %}
+                                <th scope="col" class="border">{{ alert_level }}</th>
+                                {% endfor %}
+                            </thead>
+                            <tbody class="table-group-divider">
+                                {% for child_profile in children_profiles %}
+                                <tr>
+                                    <th scope="row" class="border">
+                                        {{ child_profile.child.get_full_name }}
+                                    </th>
+                                    {% for alert_level in alert_levels.keys %}
+                                    <td class="border">
+                                        <input class="form-check-input" type="radio"
+                                            name="alert-level-{{child_profile.id}}"
+                                             {% if child_profile.alert_level == alert_level %}checked{% endif %}>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center text-dark">
+                            Search Time
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <th class="border-end" scope="col"></th>
+                                <th class="border" scope="col">Start Time</th>
+                                <th class="border" scope="col">Stop Time</th>
+                            </thead>
+                            <tbody>
+                                {% for child_profile in children_profiles %}
+                                <tr>
+                                    <th scope="row" class="border">
+                                        {{ child_profile.child.get_full_name }}
+                                    </th>
+                                    <td class="border">
+                                        <input class="form-control form-control-sm"
+                                            name="start-time{{ child_profile.id }}" type="time"
+                                            value="{{ child_profile.search_time_start|time:'H:i' }}">
+                                    </td>
+                                    <td class="border">
+                                        <input class="form-control form-control-sm"
+                                            name="stop-time{{child_profile.id }}" type="time"
+                                            value="{{ child_profile.search_time_end|time:'H:i' }}">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between m-3">
+            <button type="submit" class="btn btn-warning">
+                Update Settings
+            </button>
+            <button onclick="window.location.reload()" type="button" href="" class="btn btn-primary">
+                Refresh
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock content %}
