@@ -22,7 +22,7 @@ from accounts.models import *
 from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from safesearch.forms import *
 from safesearch.models import *
-from safesearch.search import get_results, word_is_banned
+from safesearch.search import get_results, is_within_time_range, word_is_banned
 
 
 # child search functionality
@@ -32,10 +32,19 @@ def search(request):
     parent = child.childprofile.parent_profile
 
     search_results = []  # Initialize an empty list
+    # Get the current time
+    current_time = timezone.now().time()
+
+    # Define the search time boundaries
+    search_time_start = child.childprofile.search_time_start
+    search_time_end = child.childprofile.search_time_end
 
     if request.method == "GET":
         search_query = request.GET.get("search-query")
         if search_query:
+            if not is_within_time_range(current_time, search_time_start, search_time_end):
+                messages.error(request,"Search is not allowed at this time.")
+                return redirect("search")
             searched = True
             flagged_words = list()
             safe = True

@@ -4,6 +4,13 @@ from safesearch.models import BannedWord
 from django.template.loader import get_template
 import re
 
+def is_within_time_range(current_time, start_time, end_time):
+    """
+    Check if the current time is within the specified time range.
+    """
+    if start_time < current_time < end_time:
+        return True
+    return False
 
 def word_is_banned(word, banned_by):
     try:
