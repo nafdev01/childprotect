@@ -1,8 +1,26 @@
 # safesearch/filter.py
 import requests
-from safesearch.models import BannedWord
+from safesearch.models import BannedWord, FlaggedWord, SearchAlert
 from django.template.loader import get_template
 import re
+
+
+def create_flagged_alert(search_phrase):
+    flagged_alert = SearchAlert(flagged_search=search_phrase)
+    flagged_alert.save()
+
+
+def create_flagged_words(search_phrase, flagged_words, child):
+    for flagged_word in flagged_words:
+        banned_word = BannedWord.objects.get(
+            word=flagged_word.lower(),
+            banned_by=child.childprofile.parent_profile,
+        )
+        flagged_word = FlaggedWord(
+            flagged_search=search_phrase, flagged_word=banned_word
+        )
+        flagged_word.save()
+
 
 def is_within_time_range(current_time, start_time, end_time):
     """
@@ -12,12 +30,22 @@ def is_within_time_range(current_time, start_time, end_time):
         return True
     return False
 
+
 def word_is_banned(word, banned_by):
     try:
         banned_word = BannedWord.banned.get(word=word.lower(), banned_by=banned_by)
         return True
     except BannedWord.DoesNotExist:
         return False
+
+
+def search_is_safe(search_query, flagged_words, child, safe):
+    for word in search_query.lower().split():
+        if word_is_banned(word, child.childprofile.parent_profile):
+            flagged_words.append(word)
+            safe = False
+
+    return safe, flagged_words
 
 
 def split_string(text):

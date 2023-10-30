@@ -244,8 +244,7 @@ def send_email_suspicious_alert(request, suspicious_results, search_phrase):
     mail.content_subtype = "html"
     if mail.send():
         messages.warning(
-            request,
-            f"Your search was flagged as suspicious and your parent has been alerted",
+            request, f"Your parent has been alerted about your suspicious search"
         )
 
     else:

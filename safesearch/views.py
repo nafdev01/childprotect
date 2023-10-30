@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+import datetime
 import os
 from io import BytesIO
 
@@ -23,7 +23,13 @@ from accounts.models import *
 from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from safesearch.forms import *
 from safesearch.models import *
-from safesearch.search import get_results, is_within_time_range, word_is_banned
+from safesearch.search import (
+    create_flagged_alert,
+    create_flagged_words,
+    get_results,
+    is_within_time_range,
+    word_is_banned,
+)
 
 
 # child search functionality
@@ -34,7 +40,7 @@ def search(request):
 
     search_results = []  # Initialize an empty list
     # Get the current time
-    current_time = datetime.now().time()
+    current_time = datetime.datetime.now().time()
 
     # Define the search time boundaries
     search_time_start = child.childprofile.search_time_start
@@ -67,44 +73,32 @@ def search(request):
                 phrase=search_query,
                 search_status=search_status,
             )
-            search_phrase.save()
 
             if not safe:
-                flagged_search = search_phrase
+                create_flagged_alert(search_phrase)
 
-                flagged_alert = SearchAlert(flagged_search=search_phrase)
-                flagged_alert.save()
-
-                for flagged_word in flagged_words:
-                    banned_word = BannedWord.objects.get(
-                        word=flagged_word.lower(),
-                        banned_by=child.childprofile.parent_profile,
-                    )
-                    flagged_word = FlaggedWord(
-                        flagged_search=flagged_search, flagged_word=banned_word
-                    )
-                    flagged_word.save()
+                create_flagged_words(search_phrase, flagged_words, child)
 
                 if send_email_flagged_alert(request, flagged_words, search_phrase):
                     messages.warning(
                         request,
                         f"Your search contained the banned words { ','.join(flagged_words)}",
                     )
-                return redirect("search_history")
 
-            else:
                 search_results, suspicious_results = get_results(
                     settings.GOOGLE_API_KEY,
                     settings.CUSTOM_SEARCH_ENGINE_ID,
                     search_query,
                     parent,
                 )
+
                 if len(suspicious_results) >= 2:
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
-                    search_phrase.save()
                     send_email_suspicious_alert(
                         request, suspicious_results, search_phrase
                     )
+            else:
+                search_phrase.save()
         else:
             searched = False
 
