@@ -250,3 +250,45 @@ class Confirmation(models.Model):
 
     class Meta:
         ordering = ["user"]
+
+
+class AlertLevel(models.TextChoices):
+    STRICT = "S", "Strict"
+    MODERATE = "M", "Moderate"
+    LOW = "L", "Low"
+
+
+class ChildSettings(models.Model):
+    child = models.OneToOneField(ChildProfile, on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
+
+    # Alert and Filter Levels
+    alert_level = models.CharField(
+        max_length=10,
+        choices=AlertLevel.choices,
+        default=AlertLevel.MODERATE,
+    )
+
+    # Limit Activity Based on Time and Frequency of Search
+    search_time_start = models.TimeField(
+        null=True,
+        blank=True,
+        default=timezone.make_aware(
+            timezone.datetime(1, 1, 1, 8, 0), timezone.get_current_timezone()
+        ),
+    )
+    search_time_end = models.TimeField(
+        null=True,
+        blank=True,
+        default=timezone.make_aware(
+            timezone.datetime(1, 1, 1, 18, 0), timezone.get_current_timezone()
+        ),
+    )
+    search_frequency_limit = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Maximum number of searches allowed within the time period",
+    )
+
+    def __str__(self):
+        return f"Search Settings for {self.child.username}"

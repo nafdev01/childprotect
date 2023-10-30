@@ -183,3 +183,4 @@ todo
 test.py
 banned_words.csv
 static/fontawesome-free/
+fake_words_and_phrases.csv

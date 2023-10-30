@@ -45,16 +45,14 @@ class SearchPhrase(models.Model):
     searched_on = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
     def search_status_counts(parent_profile):
-        safe = SearchPhrase.objects.filter(
-            searched_by__parent_profile=parent_profile, search_status=SearchStatus.SAFE
+        safe = SearchPhrase.safe.filter(
+            searched_by__parent_profile=parent_profile
         ).count()
-        suspicious = SearchPhrase.objects.filter(
-            searched_by__parent_profile=parent_profile,
-            search_status=SearchStatus.SUSPICIOUS,
+        suspicious = SearchPhrase.suspicious.filter(
+            searched_by__parent_profile=parent_profile
         ).count()
-        flagged = SearchPhrase.objects.filter(
+        flagged = SearchPhrase.flagged.filter(
             searched_by__parent_profile=parent_profile,
-            search_status=SearchStatus.FLAGGED,
         ).count()
 
         search_counts = {
@@ -96,6 +94,12 @@ class BanReason(models.TextChoices):
     OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
 
 
+# choices for the type of search
+class BannedType(models.TextChoices):
+    PHRASE = "P", "Phrase"
+    WORD = "W", "Word"
+
+
 # class for a banned word
 class BannedWord(models.Model):
     """Model for Banned Words"""
@@ -109,6 +113,7 @@ class BannedWord(models.Model):
             return super().get_queryset().filter(is_banned=False)
 
     banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
+    banned_for = models.ManyToManyField(ChildProfile)
     word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -119,6 +124,11 @@ class BannedWord(models.Model):
         default=BanReason.INAPPROPRIATE_CONTENT,
     )
     is_banned = models.BooleanField(default=True)
+    banned_type = models.CharField(
+        max_length=2,
+        choices=BannedType.choices,
+        default=BannedType.WORD,
+    )
 
     objects = models.Manager()
     banned = BannedManager()
