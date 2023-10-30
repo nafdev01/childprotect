@@ -61,6 +61,6 @@ urlpatterns = [
     ),
     path("parent/settings/", views.parent_settings, name="parent_settings"),
     path(
-        "parent/settings/update/", views.update_settings, name="update_search_settings"
+        "parent/settings/update/", views.update_search_settings, name="update_search_settings"
     ),
 ]

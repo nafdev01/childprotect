@@ -663,7 +663,7 @@ def parent_settings(request):
     # get parent's children
     children_profiles = parent_profile.childprofile_set.all()
     alert_levels = dict(sorted(AlertLevel.choices))
-    
+
     context = {
         "parent": parent,
         "profile": parent_profile,
@@ -674,11 +674,36 @@ def parent_settings(request):
 
     return render(request, template_name, context)
 
+
 @parent_required
-def update_settings(request):
+def update_search_settings(request):
+    # Get the logged-in parent user
+    parent = request.user.parentprofile
+
+    # Handle POST requests (form submission)
     if request.method == "POST":
-        messages.success(request, f"Settings updated successfully!")
-    else:
-        messages.error(request, f"You dont have access to this page!")
+        try:
+            # Process and update the form data
+            for child_profile in parent.childprofile_set.all():
+                alert_level_key = f"alert-level-{child_profile.id}"
+                start_time_key = f"start-time{child_profile.id}"
+                stop_time_key = f"stop-time{child_profile.id}"
+
+                # get the form data the search settings
+                new_alert_level = request.POST.get(alert_level_key)
+                new_start_time = request.POST.get(start_time_key)
+                new_stop_time = request.POST.get(stop_time_key)
+
+                child_profile.alert_level = new_alert_level
+                child_profile.search_time_start = new_start_time
+                child_profile.search_time_end = new_stop_time
+                child_profile.save()
+
+            messages.success(request, f"Children search settings updated succesfully")
+        except Exception as e:
+            messages.error(
+                request,
+                f"Error when submitting the form - {e}",
+            )
 
     return redirect("parent_settings")

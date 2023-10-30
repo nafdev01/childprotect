@@ -39,8 +39,8 @@
                                     {% for alert_level in alert_levels.keys %}
                                     <td class="border">
                                         <input class="form-check-input" type="radio"
-                                            name="alert-level-{{child_profile.id}}"
-                                             {% if child_profile.alert_level == alert_level %}checked{% endif %}>
+                                            name="alert-level-{{child_profile.id}}" value="{{alert_level}}" 
+                                            {% if child_profile.alert_level == alert_level %}checked{% endif %}>
                                     </td>
                                     {% endfor %}
                                 </tr>
