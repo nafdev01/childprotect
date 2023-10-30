@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import os
 from io import BytesIO
 
@@ -33,7 +34,7 @@ def search(request):
 
     search_results = []  # Initialize an empty list
     # Get the current time
-    current_time = timezone.now().time()
+    current_time = datetime.now().time()
 
     # Define the search time boundaries
     search_time_start = child.childprofile.search_time_start
@@ -42,8 +43,10 @@ def search(request):
     if request.method == "GET":
         search_query = request.GET.get("search-query")
         if search_query:
-            if not is_within_time_range(current_time, search_time_start, search_time_end):
-                messages.error(request,"Search is not allowed at this time.")
+            if not is_within_time_range(
+                current_time, search_time_start, search_time_end
+            ):
+                messages.error(request, "Search is not allowed at this time.")
                 return redirect("search")
             searched = True
             flagged_words = list()
