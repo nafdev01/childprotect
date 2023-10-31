@@ -84,7 +84,7 @@
         console.log(`The connection was setup successfully to "${wsStart}${window.location.host}/" !`);
     };
     chatSocket.onclose = function (e) {
-        console.log("Something unexpected happened !");
+        console.log(`something unexpected happened when connecting to "${wsStart}${window.location.host}/" !`);
     };
     document.querySelector("#id_post_title_input").focus();
     document.querySelector("#id_post_title_input").onkeyup = function (e) {
