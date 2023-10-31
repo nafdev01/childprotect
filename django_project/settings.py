@@ -214,3 +214,4 @@ LOGGING = {
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+CSRF_TRUSTED_ORIGINS = ["https://childprotect.tech"]
