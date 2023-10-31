@@ -26,10 +26,14 @@ from safesearch.models import *
 from safesearch.search import (
     create_flagged_alert,
     create_flagged_words,
+    get_banned_phrases,
     get_results,
+    has_banned_phrase,
     is_within_time_range,
+    is_word_or_phrase,
     word_is_banned,
 )
+from django.db.utils import IntegrityError
 
 
 # child search functionality
@@ -37,15 +41,16 @@ from safesearch.search import (
 def search(request):
     child = request.user
     child_profile = child.childprofile
-    parent = child.childprofile.parent_profile
+    parent_profile = child_profile.parent_profile
+    parent = parent_profile.parent
 
     search_results = []  # Initialize an empty list
     # Get the current time
     current_time = timezone.now().time()
 
     # Define the search time boundaries
-    search_time_start = child.childprofile.search_time_start
-    search_time_end = child.childprofile.search_time_end
+    search_time_start = child_profile.search_time_start
+    search_time_end = child_profile.search_time_end
 
     if request.method == "GET":
         search_query = request.GET.get("search-query")
@@ -60,9 +65,17 @@ def search(request):
             safe = True
 
             for word in search_query.lower().split():
-                if word_is_banned(word, child.childprofile.parent_profile):
+                if word_is_banned(word, child.childprofile):
                     flagged_words.append(word)
                     safe = False
+
+            if has_banned_phrase(search_query.lower(), child_profile):
+                flagged_phrases = get_banned_phrases(
+                    search_query.lower(), child_profile
+                )
+                for phrase in flagged_phrases:
+                    flagged_words.append(phrase)
+                safe = False
 
             if safe:
                 search_status = SearchStatus.SAFE
@@ -70,7 +83,7 @@ def search(request):
                 search_status = SearchStatus.FLAGGED
 
             search_phrase = SearchPhrase(
-                searched_by=child.childprofile,
+                searched_by=child_profile,
                 phrase=search_query,
                 search_status=search_status,
             )
@@ -80,12 +93,12 @@ def search(request):
                 settings.GOOGLE_API_KEY,
                 settings.CUSTOM_SEARCH_ENGINE_ID,
                 search_query,
-                parent,
+                child_profile,
             )
             if not safe:
                 create_flagged_alert(search_phrase)
 
-                create_flagged_words(search_phrase, flagged_words, child)
+                create_flagged_words(search_phrase, flagged_words, child_profile)
 
                 if send_email_flagged_alert(request, flagged_words, search_phrase):
                     messages.warning(
@@ -125,7 +138,7 @@ def search(request):
     return render(request, template_name, context)
 
 
-# child can see teir search history
+# child can see their search history
 @login_required
 def search_history(request, child_id=None):
     context = {}
@@ -162,30 +175,57 @@ def search_history(request, child_id=None):
 
 
 # create banned word view
-@method_decorator(parent_required, name="dispatch")
-class BannedWordCreateView(CreateView):
-    model = BannedWord
-    form_class = BannedWordForm
-    template_name = "safesearch/banned_word_create.html"
+@parent_required
+def create_banned_word(request):
+    parent = request.user
+    parent_profile = parent.parentprofile
+    children_profiles = ChildProfile.objects.filter(parent_profile=parent_profile)
 
-    def form_valid(self, form):
-        # Override this method to customize behavior when the form is valid.
-        # You can perform additional actions here if needed.
-        banned_word = form.save(commit=False)
-        banned_word.banned_by = self.request.user.parentprofile
-        banned_word.save()
-        messages.success(self.request, f"You have banned the word {banned_word}")
-        return super().form_valid(form)
+    if request.method == "POST":
+        try:
+            word = request.POST.get("word")
+            reason = request.POST.get("reason")
+            child_profile_ids = request.POST.getlist("ban_for")
+            children = list()
+        except Exception as e:
+            messages.success(request, f"{e}")
+            return redirect("create_banned_word")
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context["csv_form"] = BannedCSVForm()
-        return context
+        for child_profile_id in child_profile_ids:
+            try:
+                child_profile = ChildProfile.objects.get(id=child_profile_id)
+                banned_word = BannedWord(
+                    word=word,
+                    reason=reason,
+                    banned_for=child_profile,
+                    banned_by=parent_profile,
+                    banned_type=is_word_or_phrase(word),
+                )
+                banned_word.save()
+                children.append(child_profile.child.get_full_name())
+            except IntegrityError as e:
+                messages.success(request, f"{e}")
+                return redirect("create_banned_word")
+            except ValidationError as e:
+                messages.success(request, f"{e}")
+                return redirect("create_banned_word")
+            except Exception as e:
+                messages.success(request, f"{e}")
+                return redirect("create_banned_word")
 
-    def get_success_url(self):
-        return reverse("create_banned_word")
+            children_names = ", ".join(children)
+
+        if len(children) > 1:
+            children_names = f"{', '.join(children[:-1])} and {children[-1]}"
+
+        messages.success(
+            request,
+            f"You have banned the word {banned_word} for {children_names}",
+        )
+        return redirect("banned_words")
+
+    context = {"csv_form": BannedCSVForm(), "children_profiles": children_profiles}
+    return render(request, "safesearch/banned_word_create.html", context)
 
 
 # uploaded csv file with words to be banned

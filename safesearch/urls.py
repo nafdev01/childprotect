@@ -15,7 +15,7 @@ urlpatterns = [
     ),
     path(
         "banned_word/create/",
-        views.BannedWordCreateView.as_view(),
+        views.create_banned_word,
         name="create_banned_word",
     ),
     path("banned_word/list/", views.banned_word_list, name="banned_words"),

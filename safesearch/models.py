@@ -115,7 +115,9 @@ class BannedWord(models.Model):
     banned_by = models.ForeignKey(
         "accounts.ParentProfile", on_delete=models.CASCADE, null=True
     )
-    banned_for = models.ManyToManyField("accounts.ChildProfile")
+    banned_for = models.ForeignKey(
+        "accounts.ChildProfile", on_delete=models.CASCADE, null=True
+    )
     word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -147,7 +149,7 @@ class BannedWord(models.Model):
     class Meta:
         verbose_name = "Banned Word"
         verbose_name_plural = "Banned Words"
-        unique_together = ["word", "banned_by"]
+        unique_together = ["word", "banned_for"]
         ordering = ["word"]
 
 

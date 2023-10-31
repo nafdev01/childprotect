@@ -62,7 +62,7 @@
                         <tr>
                             <th>Word</th>
                             <th>Reason</th>
-                            <th>Searched On</th>
+                            <th>Banned For</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -73,7 +73,7 @@
                         <tr>
                             <td>{{ banned_word.word }}</td>
                             <td>{{ banned_word.get_reason_display }}</td>
-                            <td>{{ banned_word.date_added }}</td>
+                            <td>{{ banned_word.banned_for.child.get_full_name }}</td>
                             <td>
                                 {% if banned_word.is_banned %}
                                 <a class="btn btn-warning" href="{% url 'unban_word' banned_word.id %}">
