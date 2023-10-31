@@ -12,8 +12,8 @@ async def custom_save_post(text_data):
         username = text_data_json["username"]
         title = text_data_json["title"]
         content = text_data_json["content"]
-        username = await database_sync_to_async(User.objects.get)(username=username)
-        post = Post(title=title, created_by=username, content=content)
+        parent = await database_sync_to_async(User.objects.get)(username=username)
+        post = Post(title=title, created_by=parent, content=content)
         await database_sync_to_async(post.save)()
         print(f"saved {post.title} by {post.created_by} to db")
     except Exception as e:
