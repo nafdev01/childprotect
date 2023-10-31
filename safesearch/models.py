@@ -3,8 +3,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
-from accounts.models import ChildProfile, ParentProfile
-
 
 # choices for reasons for a ban
 class SearchStatus(models.TextChoices):
@@ -28,7 +26,9 @@ class SearchPhrase(models.Model):
         def get_queryset(self):
             return super().get_queryset().filter(search_status=SearchStatus.SAFE)
 
-    searched_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE, null=True)
+    searched_by = models.ForeignKey(
+        "accounts.ChildProfile", on_delete=models.CASCADE, null=True
+    )
     phrase = models.CharField(max_length=256)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     search_status = models.CharField(
@@ -112,8 +112,10 @@ class BannedWord(models.Model):
         def get_queryset(self):
             return super().get_queryset().filter(is_banned=False)
 
-    banned_by = models.ForeignKey(ParentProfile, on_delete=models.CASCADE, null=True)
-    banned_for = models.ManyToManyField(ChildProfile)
+    banned_by = models.ForeignKey(
+        "accounts.ParentProfile", on_delete=models.CASCADE, null=True
+    )
+    banned_for = models.ManyToManyField("accounts.ChildProfile")
     word = models.CharField(max_length=50)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -188,12 +190,12 @@ class SearchAlert(models.Model):
     )
     flagged_on = models.DateTimeField(null=True, editable=False)
     searched_by = models.ForeignKey(
-        ChildProfile, null=True, editable=False, on_delete=models.CASCADE
+        "accounts.ChildProfile", null=True, editable=False, on_delete=models.CASCADE
     )
     been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
     reviewed_by = models.ForeignKey(
-        ParentProfile, null=True, editable=False, on_delete=models.CASCADE
+        "accounts.ParentProfile", null=True, editable=False, on_delete=models.CASCADE
     )
 
     def save(self, *args, **kwargs):
@@ -225,7 +227,7 @@ class UnbanRequest(models.Model):
     banned_word = models.ForeignKey(BannedWord, on_delete=models.CASCADE)
     reason = models.TextField(null=True)
     approved = models.BooleanField(default=False)
-    requested_by = models.ForeignKey(ChildProfile, on_delete=models.CASCADE)
+    requested_by = models.ForeignKey("accounts.ChildProfile", on_delete=models.CASCADE)
     requested_on = models.DateTimeField(auto_now_add=True)
     been_reviewed = models.BooleanField(default=False)
     reviewed_on = models.DateTimeField(null=True)
