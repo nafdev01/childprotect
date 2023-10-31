@@ -37,6 +37,13 @@ LOCAL_SERVER = os.getenv("LOCAL_SERVER", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
+    # default apps
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # my apps
     "accounts",
     "safesearch",
@@ -50,13 +57,6 @@ INSTALLED_APPS = [
     "storages",
     "daphne",
     "channels",
-    # default apps
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
 ]
 
 MIDDLEWARE = [
