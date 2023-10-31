@@ -1,9 +1,17 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from accounts.models import User
 
 
 class Post(models.Model):
+    created_by = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": User.UserType.PARENT},
+        to_field="username",
+    )
     title = models.CharField(max_length=255)
     content = models.TextField()
     posted_on = models.DateTimeField(auto_now_add=True, null=True)
@@ -109,3 +117,12 @@ class ContactResponse(models.Model):
     class Meta:
         verbose_name = "Contact Response"
         verbose_name_plural = "Contact Responses"
+
+
+class Message(models.Model):
+    username = models.CharField(max_length=100)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.username} sent {self.message}"

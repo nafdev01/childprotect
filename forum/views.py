@@ -9,14 +9,15 @@ from accounts.decorators import parent_required, child_required
 
 
 @parent_required
-def post_detail(request):
+def post_list(request):
     posts = Post.objects.all()
+    parent = request.user
+    parent_profile = parent.parentprofile
 
-    return render(
-        request,
-        "forum/forum.html",
-        {"posts": posts},
-    )
+    template_name = "forum/forum.html"
+    context = {"posts": posts, "parent": parent, "parent_profile": parent_profile}
+
+    return render(request, template_name=template_name, context=context)
 
 
 @parent_required
@@ -46,7 +47,7 @@ def create_comment(request, post_id=None, comment_id=None):
         else:
             messages.error(request, f"You don't have access to this page")
 
-    return redirect("forum:post_detail")
+    return redirect("forum:post_list")
 
 
 def add_subscriber(request):
@@ -85,3 +86,11 @@ def contact_message(request):
         messages.error(request, f"You cannot access this page")
 
     return redirect("contact")
+
+
+# chatpage view
+def chatPage(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect("login-user")
+    context = {}
+    return render(request, "forum/chatPage.html", context)

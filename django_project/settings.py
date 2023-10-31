@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.postgres",
     "storages",
+    "daphne",
+    "channels",
     # default apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -67,7 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "accounts.middleware.ChildLastSeenMiddleware"
+    "accounts.middleware.ChildLastSeenMiddleware",
 ]
 
 ROOT_URLCONF = "django_project.urls"
@@ -94,7 +96,8 @@ DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-WSGI_APPLICATION = "django_project.wsgi.application"
+# WSGI_APPLICATION = "django_project.wsgi.application"
+ASGI_APPLICATION = "django_project.asgi.application"
 
 
 # Database settings
@@ -209,3 +212,5 @@ LOGGING = {
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

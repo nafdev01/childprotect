@@ -1,46 +1,127 @@
 {% extends 'base.html' %}
 
-{% block title %}Forum{% endblock %}
+{% block title %}ChatPage{% endblock %}
 
-{% block custom_css %}{% endblock custom_css %}
+{% block custom_css %}
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+{% endblock custom_css %}
 
 {% block header %}
-<h1>Posts</h1>
+<div class="container text-center text-dark">
+    <h1>Discussion Forum</h1>
+    <p>Hello , Welcome to Our Discussion Forum {{ parent }}!</p>
+</div>
 {% endblock header %}
 
 {% block content %}
-
-{% for post in posts %}
-<h3>{{ post.title }}</h3>
-<p>{{ post.content }}</p>
-
-<h2>Comments</h2>
-
-<!-- Original Comments -->
-<ul class="list-unstyled">
-    {% for comment in post.og_comments %}
-    <li>
-        {{ comment.content }}
-        {% for reply in comment.reply_comments %}
-        <br>
-        <small class="ms-5"> {{ reply.content }}</small>
-        {% endfor %}
-        <!-- Create a New Comment (Original Comment) -->
-        <form method="post" action="{% url 'forum:create_reply' comment.id %}">
-            {% csrf_token %}
-            <textarea name="content" rows="2" cols="50" placeholder="Your reply"></textarea><br>
-            <input class="btn btn-sm btn-success" type="submit" value="Reply">
-        </form>
-    </li>
+<div class="container-fluid">
+    {% for post in posts %}
+    <div class=" card mb-3">
+        <div class="card-body">
+            <div class="card-title">
+                <a class="h4" href="#">
+                    {{ post.title }}
+                </a>
+            </div>
+            <ul class="list-inline text-muted">
+                <li class="list-inline-item">
+                    <p>
+                        By<a href="#" class="text-muted">&nbsp;{{ post.created_by.get_username }}</a>
+                    </p>
+                </li>
+                <li class="list-inline-item"> {{ post.publish }}</li>
+            </ul>
+            <p>
+                {{ post.content|truncatewords:30|linebreaks }}
+            </p>
+        </div>
+    </div>
     {% endfor %}
-</ul>
+</div>
 
-<!-- Create a New Comment (Original Comment) -->
-<h3>Create a Comment</h3>
-<form method="post" action="{% url 'forum:create_og_comment' post.id %}">
-    {% csrf_token %}
-    <textarea name="content" rows="4" cols="50" placeholder="Your comment"></textarea><br>
-    <input class="btn btn-success" type="submit" value="Submit Comment">
-</form>
-{% endfor %}
+<div class="container py-4" id="id_create_post_container" style="font-size: 20px">
+    <div class="mb-3">
+        <input class="form-control" type="text" id="id_post_title_input" placeholder="post title" required />
+    </div>
+    <div class="mb-3">
+        <textarea id="id_post_content_input" class="form-control" id="" cols="30" rows="3" placeholder="post content">
+        </textarea>
+    </div>
+    <button class="btn btn-primary" type="submit" id="id_post_create_button">Create Post</button>
+</div>
 {% endblock content %}
+
+
+{% block custom_js %}
+<script>
+    var username = "{{ parent.username }}";
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
+
+    const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+    chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+    };
+    chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+    };
+    document.querySelector("#id_post_title_input").focus();
+    document.querySelector("#id_post_title_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+            document.querySelector("#id_post_create_button").click();
+        }
+    };
+    document.querySelector("#id_post_create_button").onclick = function (e) {
+        var titleInput = document.querySelector(
+            "#id_post_title_input"
+        ).value;
+        var contentInput = document.querySelector(
+            "#id_post_content_input"
+        ).value;
+        chatSocket.send(JSON.stringify({ content: contentInput, title: titleInput, username: "{{parent.username}}" }));
+    };
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        var div = document.createElement("div");
+        div.innerHTML = `${data.username} posted about  '${data.title}' \n Content: ${data.content}`;
+        document.querySelector("#id_post_title_input").value = "";
+        document.querySelector("#id_post_content_input").value = "";
+        document.querySelector("#id_create_post_container").appendChild(div);
+
+        if (data.username !== username) {
+            Swal.fire({
+                toast: true,
+                title: `${data.username} posted about ${data.title}!`,
+                text: data.content,
+                icon: 'info',
+                position: 'top-end',
+                showCancelButton: true,
+                cancelButtonText: 'No, cancel!',
+            })
+        }
+        else {
+            Swal.fire({
+                toast: false,
+                title: `Your post has about ${data.title} has been submitted successfully!`,
+                text: data.content,
+                icon: 'success',
+                showSuccessButton: true,
+                successButtonText: 'OK',
+            })
+        }
+    };
+
+</script>
+{% endblock custom_js %}

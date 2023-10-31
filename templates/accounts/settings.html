@@ -34,7 +34,14 @@
                                 {% for child_profile in children_profiles %}
                                 <tr>
                                     <th scope="row" class="border">
-                                        {{ child_profile.child.get_full_name }}
+                                        <span>
+                                        {% if child_profile.avatar %}
+                                            <img class="img-fluid img-thumbnail" src="{{child_profile.avatar.url}}" alt="no avatar" style="width: 40px; height: 40px;">
+                                            {% else %}
+                                            <img class="img-fluid img-thumbnail" src="{% static 'img/user.png' %}" alt="no avatar" style="width: 40px; height: 40px;">
+                                        {% endif %}
+                                        </span>
+                                        <span>{{ child_profile.child.get_full_name }}</span>
                                     </th>
                                     {% for alert_level in alert_levels.keys %}
                                     <td class="border">
@@ -64,12 +71,19 @@
                                 <th class="border" scope="col">Start Time</th>
                                 <th class="border" scope="col">Stop Time</th>
                             </thead>
-                            <tbody>
+                            <tbody class="table-group-divider">
                                 {% for child_profile in children_profiles %}
                                 <tr>
                                     <th scope="row" class="border">
-                                        {{ child_profile.child.get_full_name }}
-                                    </th>
+                                        <span>
+                                            {% if child_profile.avatar %}
+                                                <img class="img-fluid img-thumbnail" src="{{child_profile.avatar.url}}" alt="no avatar" style="width: 40px; height: 40px;">
+                                                {% else %}
+                                                <img class="img-fluid img-thumbnail" src="{% static 'img/user.png' %}" alt="no avatar" style="width: 40px; height: 40px;">
+                                            {% endif %}
+                                            </span>
+                                            <span>{{ child_profile.child.get_full_name }}</span>
+                                        </th>
                                     <td class="border">
                                         <input class="form-control form-control-sm"
                                             name="start-time{{ child_profile.id }}" type="time"
