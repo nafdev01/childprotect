@@ -37,6 +37,8 @@ LOCAL_SERVER = os.getenv("LOCAL_SERVER", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     # default apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -55,8 +57,6 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.postgres",
     "storages",
-    "daphne",
-    "channels",
 ]
 
 MIDDLEWARE = [
