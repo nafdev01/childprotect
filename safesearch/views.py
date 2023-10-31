@@ -183,7 +183,7 @@ def create_banned_word(request):
 
     if request.method == "POST":
         try:
-            word = request.POST.get("word")
+            words = request.POST.get("word")
             reason = request.POST.get("reason")
             child_profile_ids = request.POST.getlist("ban_for")
             children = list()
@@ -193,18 +193,19 @@ def create_banned_word(request):
 
         for child_profile_id in child_profile_ids:
             try:
-                child_profile = ChildProfile.objects.get(id=child_profile_id)
-                banned_word = BannedWord(
-                    word=word,
-                    reason=reason,
-                    banned_for=child_profile,
-                    banned_by=parent_profile,
-                )
-                banned_word.save()
-                children.append(child_profile.child.get_full_name())
+                for word in words.split(","):
+                    child_profile = ChildProfile.objects.get(id=child_profile_id)
+                    banned_word = BannedWord(
+                        word=word,
+                        reason=reason,
+                        banned_for=child_profile,
+                        banned_by=parent_profile,
+                    )
+                    banned_word.save()
+                    if child_profile.child.get_full_name() not in children:
+                        children.append(child_profile.child.get_full_name())
             except IntegrityError as e:
-                messages.success(request, f"{e}")
-                return redirect("create_banned_word")
+                continue
             except ValidationError as e:
                 messages.success(request, f"{e}")
                 return redirect("create_banned_word")
@@ -219,7 +220,7 @@ def create_banned_word(request):
 
         messages.success(
             request,
-            f"You have banned the word {banned_word} for {children_names}",
+            f"Words banned successfully",
         )
         return redirect("banned_words")
 
