@@ -246,3 +246,52 @@ class UnbanRequest(models.Model):
         verbose_name_plural = "Unban Requests"
         unique_together = ["banned_word", "requested_by"]
         ordering = ["-requested_on"]
+
+
+# choices for the type of search
+class DefaultBanCategory(models.TextChoices):
+    SHOPPING = "SH", "Shopping"
+    DRUGS = "DR", "Drugs"
+    GAMBLING = "GB", "Gambling"
+    DATING = "DT", "Dating"
+    SOCIAL_MEDIA = "SM", "Social Media"
+    ADULT_CONTENT = "AC", "Adult Content"
+    GAMES = "GM", "Games"
+    VIDEO_SITES = "VS", "Video Sites"
+    CYBERBULLYING = "CB", "Cyberbullying"
+    HATE_SPEECH = "HS", "Hate Speech"
+    VIOLENCE = "VL", "Violence"
+    PROFANITY = "PF", "Profanity"
+    INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
+
+
+class BannedDefault(models.Model):
+    """Model for Default Banned Words"""
+
+    word = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    category = models.CharField(
+        max_length=2,
+        choices=DefaultBanCategory.choices,
+        default=DefaultBanCategory.INAPPROPRIATE_CONTENT,
+    )
+    banned_type = models.CharField(
+        max_length=2,
+        choices=BannedType.choices,
+        default=BannedType.WORD,
+    )
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.word)
+        self.word = self.word.lower()
+        super(BannedDefault, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "BannedDefault"
+        verbose_name_plural = "BannedDefaults"
+        unique_together = ["word", "category"]
+
+    def __str__(self):
+        return f"default banned word: {self.word}"
