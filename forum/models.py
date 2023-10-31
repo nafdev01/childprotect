@@ -26,6 +26,7 @@ class Post(models.Model):
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
+        ordering = ["-posted_on"]
 
 
 class TypeOfComment(models.TextChoices):

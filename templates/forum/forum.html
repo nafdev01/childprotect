@@ -37,6 +37,10 @@
             </p>
         </div>
     </div>
+    {% empty %}
+    <div class="container-fluid text-center alert alert-success">
+        <h5 class="text-center">Be the first to post!</h5>
+    </div>
     {% endfor %}
 </div>
 
@@ -94,11 +98,10 @@
     };
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        var div = document.createElement("div");
-        div.innerHTML = `${data.username} posted about  '${data.title}' \n Content: ${data.content}`;
+
         document.querySelector("#id_post_title_input").value = "";
         document.querySelector("#id_post_content_input").value = "";
-        document.querySelector("#id_create_post_container").appendChild(div);
+        document.querySelector("#id_post_title_input").focus();
 
         if (data.username !== username) {
             Swal.fire({
@@ -115,10 +118,14 @@
             Swal.fire({
                 toast: false,
                 title: `Your post has about ${data.title} has been submitted successfully!`,
-                text: data.content,
+                text: `${data.content}`,
                 icon: 'success',
-                showSuccessButton: true,
-                successButtonText: 'OK',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Ok, got it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.location.reload();
+                }
             })
         }
     };
