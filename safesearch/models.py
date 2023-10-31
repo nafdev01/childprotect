@@ -1,8 +1,4 @@
 # safesearch/models,py
-import django
-
-django.setup()
-
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
