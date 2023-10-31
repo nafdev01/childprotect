@@ -199,7 +199,6 @@ def create_banned_word(request):
                     reason=reason,
                     banned_for=child_profile,
                     banned_by=parent_profile,
-                    banned_type=is_word_or_phrase(word),
                 )
                 banned_word.save()
                 children.append(child_profile.child.get_full_name())

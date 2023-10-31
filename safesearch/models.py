@@ -138,7 +138,18 @@ class BannedWord(models.Model):
     banned = BannedManager()
     unbanned = UnbannedManager()
 
+    # def is_word_or_phrase(input_string):
+    #     input_string = input_string.strip()
+    #     if " " in input_string:
+    #         return BannedType.PHRASE
+    #     else:
+    #         return BannedType.WORD
+
     def save(self, *args, **kwargs):
+        if " " in self.word:
+            self.banned_type = BannedType.PHRASE
+        else:
+            self.banned_type = BannedType.WORD
         self.slug = slugify(self.word)
         self.word = self.word.lower()
         super(BannedWord, self).save(*args, **kwargs)
