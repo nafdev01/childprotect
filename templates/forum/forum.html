@@ -79,7 +79,7 @@
         wsStart = 'wss://'
     }
 
-    const chatSocket = new WebSocket(wsStart + window.location.host + "/");
+    const chatSocket = new WebSocket(wsStart + window.location.host + ":9002" +  "/");
     chatSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${wsStart}${window.location.host}/" !`);
     };
