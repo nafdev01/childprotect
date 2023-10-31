@@ -196,7 +196,7 @@ def create_banned_word(request):
                 for word in words.split(","):
                     child_profile = ChildProfile.objects.get(id=child_profile_id)
                     banned_word = BannedWord(
-                        word=word,
+                        word=word.strip(),
                         reason=reason,
                         banned_for=child_profile,
                         banned_by=parent_profile,
