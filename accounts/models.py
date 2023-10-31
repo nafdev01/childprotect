@@ -1,8 +1,13 @@
 # accounts/models.py
+import django
+
+django.setup()
+
 from datetime import date, time
 
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.contrib.auth.tokens import \
+    default_token_generator as token_generator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import ValidationError
