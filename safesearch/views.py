@@ -36,6 +36,7 @@ from safesearch.search import (
 @child_required
 def search(request):
     child = request.user
+    child_profile = child.childprofile
     parent = child.childprofile.parent_profile
 
     search_results = []  # Initialize an empty list
@@ -73,6 +74,7 @@ def search(request):
                 phrase=search_query,
                 search_status=search_status,
             )
+            search_phrase.save()
 
             search_results, suspicious_results = get_results(
                 settings.GOOGLE_API_KEY,
@@ -90,14 +92,31 @@ def search(request):
                         request,
                         f"Your search contained the banned words { ','.join(flagged_words)}",
                     )
-
+            else:
                 if len(suspicious_results) >= 2:
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
+                    search_phrase.save()
                     send_email_suspicious_alert(
                         request, suspicious_results, search_phrase
                     )
-            else:
-                search_phrase.save()
+                    messages.warning(
+                        request,
+                        f"Your search returned results that contained banned words!",
+                    )
+
+            if child_profile.alert_level == AlertLevel.LOW:
+                search_results = search_results + suspicious_results
+            elif child_profile.alert_level == AlertLevel.MODERATE:
+                if search_phrase.search_status == SearchStatus.SUSPICIOUS:
+                    search_results = search_results
+                elif search_phrase.search_status == SearchStatus.FLAGGED:
+                    return redirect("search")
+            elif child_profile.alert_level == AlertLevel.STRICT:
+                if search_phrase.search_status == SearchStatus.SUSPICIOUS:
+                    return redirect("search")
+                elif search_phrase.search_status == SearchStatus.FLAGGED:
+                    return redirect("search")
+
         else:
             searched = False
 

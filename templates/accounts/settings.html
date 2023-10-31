@@ -23,10 +23,10 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <table class="table table-hover text-center align-middle">
                             <thead>
                                 <th scope="col" class="border border-start-0 border-top-0"></th>
-                                {% for alert_level in alert_levels.keys %}
+                                {% for alert_level in alert_levels.values %}
                                 <th scope="col" class="border">{{ alert_level }}</th>
                                 {% endfor %}
                             </thead>
@@ -65,7 +65,7 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        <table class="table table-hover">
+                        <table class="table table-hover text-center">
                             <thead>
                                 <th class="border-end" scope="col"></th>
                                 <th class="border" scope="col">Start Time</th>

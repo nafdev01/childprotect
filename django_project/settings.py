@@ -37,8 +37,8 @@ LOCAL_SERVER = os.getenv("LOCAL_SERVER", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
-    "channels",
+    # "daphne",
+    # "channels",
     # default apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -96,8 +96,8 @@ DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-# WSGI_APPLICATION = "django_project.wsgi.application"
-ASGI_APPLICATION = "django_project.asgi.application"
+WSGI_APPLICATION = "django_project.wsgi.application"
+# ASGI_APPLICATION = "django_project.asgi.application"
 
 
 # Database settings
