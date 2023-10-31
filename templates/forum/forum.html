@@ -73,8 +73,13 @@
         }
     })
 
+    var loc = window.location;
+    var wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+        wsStart = 'wss://'
+    }
 
-    const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+    const chatSocket = new WebSocket(wsStart + window.location.host + "/");
     chatSocket.onopen = function (e) {
         console.log("The connection was setup successfully !");
     };
