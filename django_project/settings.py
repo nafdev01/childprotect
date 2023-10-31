@@ -213,12 +213,5 @@ LOGGING = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 CSRF_TRUSTED_ORIGINS = ["https://childprotect.tech"]
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}

@@ -74,6 +74,12 @@ def search(request):
                 search_status=search_status,
             )
 
+            search_results, suspicious_results = get_results(
+                settings.GOOGLE_API_KEY,
+                settings.CUSTOM_SEARCH_ENGINE_ID,
+                search_query,
+                parent,
+            )
             if not safe:
                 create_flagged_alert(search_phrase)
 
@@ -84,13 +90,6 @@ def search(request):
                         request,
                         f"Your search contained the banned words { ','.join(flagged_words)}",
                     )
-
-                search_results, suspicious_results = get_results(
-                    settings.GOOGLE_API_KEY,
-                    settings.CUSTOM_SEARCH_ENGINE_ID,
-                    search_query,
-                    parent,
-                )
 
                 if len(suspicious_results) >= 2:
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
