@@ -695,6 +695,8 @@ def update_search_settings(request):
                 new_alert_level = request.POST.get(alert_level_key)
                 new_start_time = request.POST.get(start_time_key)
                 new_stop_time = request.POST.get(stop_time_key)
+                print(new_start_time)
+                print(new_stop_time)
 
                 child_profile.alert_level = new_alert_level
                 child_profile.search_time_start = new_start_time
