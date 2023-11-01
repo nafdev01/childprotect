@@ -4,12 +4,6 @@ from django.db.utils import IntegrityError
 
 
 DEFAULT_DICTIONARY = {
-    "shopping": BanReason.SHOPPING,
-    "dating": BanReason.DATING,
-    "drugs": BanReason.DRUGS,
-    "gambling": BanReason.GAMBLING,
-    "social": BanReason.SOCIAL_MEDIA,
-    "gaming": BanReason.GAMES,
     "inappropriate": BanReason.INAPPROPRIATE_CONTENT,
 }
 
