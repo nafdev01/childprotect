@@ -10,6 +10,7 @@ DEFAULT_DICTIONARY = {
     "gambling": BanReason.GAMBLING,
     "social": BanReason.SOCIAL_MEDIA,
     "gaming": BanReason.GAMES,
+    "inappropriate": BanReason.INAPPROPRIATE_CONTENT,
 }
 
 
