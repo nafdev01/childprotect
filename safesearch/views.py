@@ -46,7 +46,7 @@ def search(request):
 
     search_results = []  # Initialize an empty list
     # Get the current time
-    current_time = timezone.now().time()
+    current_time = datetime.datetime.now().time()
 
     # Define the search time boundaries
     search_time_start = child_profile.search_time_start
