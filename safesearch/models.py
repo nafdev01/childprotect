@@ -88,17 +88,10 @@ class SearchPhrase(models.Model):
 class BanReason(models.TextChoices):
     """Choices for Reasons A Word was Banned"""
 
-    INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
-    OBSCENITIES_AND_PROFANITY = "OP", "Obscenities and Profanity"
     VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
     OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
     DRUGS = "DR", "Drugs"
-    GAMBLING = "GB", "Gambling"
-    DATING = "DT", "Dating"
-    SOCIAL_MEDIA = "SM", "Social Media"
-    GAMES = "GM", "Games"
-    VIDEO_SITES = "VS", "Video Sites"
-    SHOPPING = "SH", "Shopping"
+    ADULT_CONTENT = "AC", "Adult Content"
 
 
 # choices for the type of search
@@ -132,7 +125,7 @@ class BannedWord(models.Model):
     reason = models.CharField(
         max_length=2,
         choices=BanReason.choices,
-        default=BanReason.INAPPROPRIATE_CONTENT,
+        default=BanReason.OFFENSIVE_LANGUAGE,
     )
     is_banned = models.BooleanField(default=True)
     banned_type = models.CharField(
@@ -272,7 +265,7 @@ class BannedDefault(models.Model):
     category = models.CharField(
         max_length=2,
         choices=BanReason.choices,
-        default=BanReason.INAPPROPRIATE_CONTENT,
+        default=BanReason.OFFENSIVE_LANGUAGE,
     )
     banned_type = models.CharField(
         max_length=2,
