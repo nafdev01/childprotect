@@ -213,11 +213,6 @@ def create_banned_word(request):
                 messages.success(request, f"{e}")
                 return redirect("create_banned_word")
 
-            children_names = ", ".join(children)
-
-        if len(children) > 1:
-            children_names = f"{', '.join(children[:-1])} and {children[-1]}"
-
         messages.success(
             request,
             f"Words banned successfully",
