@@ -60,7 +60,7 @@ def search(request):
             ):
                 messages.error(
                     request,
-                    f"Search is not allowed at this time. You can only search between {search_time_start} and {search_time_end}",
+                    f"Search is not allowed at this time. You can only search between {search_time_start} and {search_time_end} adn the time now is {current_time}",
                 )
 
                 return redirect("search")
