@@ -125,7 +125,7 @@ class BannedWord(models.Model):
     banned_for = models.ForeignKey(
         "accounts.ChildProfile", on_delete=models.CASCADE, null=True
     )
-    word = models.CharField(max_length=50)
+    word = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -265,7 +265,7 @@ class UnbanRequest(models.Model):
 class BannedDefault(models.Model):
     """Model for Default Banned Words"""
 
-    word = models.CharField(max_length=50)
+    word = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250, null=True, blank=True, editable=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
