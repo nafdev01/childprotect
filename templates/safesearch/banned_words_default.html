@@ -1,5 +1,6 @@
 <!-- safesearch/search.html -->
 {% extends 'base.html' %}
+{% load static %}
 {% load django_bootstrap5 %}
 
 {% block title %}Default List of Banned Words{% endblock title %}
@@ -11,54 +12,31 @@
 {% endblock header %}
 
 {% block content %}
-<div class="d-flex justify-content-center mx-auto">
-    <form class="d-inline-block mx-auto" method="get" action="{% url 'banned_words' %}">
-        <div class="input-group">
-            <input class="bg-light form-control border-0 small" type="search" placeholder="Search for Banned Word"
-                name="word">
-            <button class="btn btn-primary py-0" type="submit">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </form>
-</div>
 
-<div class="container">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Word</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% if banned_words %}
-            {% for banned_word in banned_words %}
-            <tr>
-                <td>{{ banned_word }}</td>
-                <td>
-                    <a class="btn btn-warning" href="#">
-                        Ban
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-            {% else %}
-            {% if request.GET.word %}
-            <p>The word isnt in database</p>
-            {% else %}
-            <p>You have no banned words yet</p>
-            {% endif %}
-            {% endif %}
-
-
-
-        </tbody>
-
-    </table>
+<div class="container-2">
 
 </div>
-{% include "safesearch/includes/pagination.html" with page=banned_words %}
 
 {% endblock content %}
+
+
+{% block cucstom_js %}
+<script>
+    function toggleSelectAll(child_profile_id) {
+        name = 'category' + child_profile_id + '_';
+        var ele = document.getElementsByName('ban_for');
+        if (checkAll.checked) {
+            for (var i = 0; i < ele.length; i++) {
+                if (ele[i].type == 'checkbox')
+                    ele[i].checked = true;
+            }
+        } else {
+            for (var i = 0; i < ele.length; i++) {
+                if (ele[i].type == 'checkbox')
+                    ele[i].checked = false;
+            }
+        }
+    }
+
+</script>
+{% endblock cucstom_js %}

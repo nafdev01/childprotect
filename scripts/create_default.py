@@ -1,12 +1,12 @@
 import csv
-from safesearch.models import BannedDefault, DefaultBanCategory
+from safesearch.models import BannedDefault, BanReason
 from django.db.utils import IntegrityError
 
 
 def run():
     counter = 0
     # Open the CSV file in read mode
-    with open("static/csv_files/gaming.csv", mode="r") as file:
+    with open("static/csv_files/shopping.csv", mode="r") as file:
         # Create a CSV reader
         csv_reader = csv.reader(file)
 
@@ -17,7 +17,7 @@ def run():
                 # Create a new BannedDefault object
                 try:
                     banned_default = BannedDefault.objects.create(
-                        word=word, category=DefaultBanCategory.GAMES
+                        word=word, category=BanReason.SHOPPING
                     )
                     banned_default.save()
                     counter += 1

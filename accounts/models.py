@@ -205,6 +205,7 @@ class ChildProfile(models.Model):
         blank=True,
         help_text="Maximum number of searches allowed within the time period",
     )
+    banned_default_enabled = models.BooleanField(default=False)
 
     @property
     def banned(self):

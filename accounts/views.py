@@ -9,6 +9,7 @@ from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.core.files import File
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -26,7 +27,7 @@ from accounts.models import (
     User,
 )
 from accounts.notifications import *
-from safesearch.models import SearchPhrase
+from safesearch.models import BannedDefault, BannedWord, SearchPhrase
 
 
 # logout view
@@ -678,13 +679,14 @@ def parent_settings(request):
 @parent_required
 def update_search_settings(request):
     # Get the logged-in parent user
-    parent = request.user.parentprofile
+    parent = request.user
+    parent_profile = parent.parentprofile
 
     # Handle POST requests (form submission)
     if request.method == "POST":
         try:
             # Process and update the form data
-            for child_profile in parent.childprofile_set.all():
+            for child_profile in parent_profile.childprofile_set.all():
                 alert_level_key = f"alert-level-{child_profile.id}"
                 start_time_key = f"start-time{child_profile.id}"
                 stop_time_key = f"stop-time{child_profile.id}"
@@ -698,6 +700,39 @@ def update_search_settings(request):
                 child_profile.search_time_start = new_start_time
                 child_profile.search_time_end = new_stop_time
                 child_profile.save()
+
+            default_banneds = request.POST.getlist("default_banned")
+
+            for child_profile in parent_profile.childprofile_set.all():
+                if f"{child_profile.id}" in default_banneds:
+                    default_banned_value = True
+                    if child_profile.banned_default_enabled != default_banned_value:
+                        child_profile.banned_default_enabled = default_banned_value
+                        default_banned_words = BannedDefault.objects.all()
+                        for default_banned_word in default_banned_words:
+                            try:
+                                banned_word = BannedWord(
+                                    word=default_banned_word.word.strip(),
+                                    reason=default_banned_word.category,
+                                    banned_for=child_profile,
+                                    banned_by=parent_profile,
+                                    from_default=True,
+                                )
+                                banned_word.save()
+                            except IntegrityError as e:
+                                continue
+
+                        child_profile.save()
+                else:
+                    default_banned_value = False
+                    if child_profile.banned_default_enabled != default_banned_value:
+                        child_profile.banned_default_enabled = default_banned_value
+                        child_default_banneds = BannedWord.objects.filter(
+                            banned_for=child_profile, from_default=True
+                        )
+                        for child_default_banned in child_default_banneds:
+                            child_default_banned.delete()
+                        child_profile.save()
 
             messages.success(request, f"Children search settings updated succesfully")
         except Exception as e:

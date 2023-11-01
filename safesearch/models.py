@@ -92,6 +92,13 @@ class BanReason(models.TextChoices):
     OBSCENITIES_AND_PROFANITY = "OP", "Obscenities and Profanity"
     VIOLENT_AND_DISTURBING_CONTENT = "VC", "Violent and Disturbing Content"
     OFFENSIVE_LANGUAGE = "OL", "Offensive Language"
+    DRUGS = "DR", "Drugs"
+    GAMBLING = "GB", "Gambling"
+    DATING = "DT", "Dating"
+    SOCIAL_MEDIA = "SM", "Social Media"
+    GAMES = "GM", "Games"
+    VIDEO_SITES = "VS", "Video Sites"
+    SHOPPING = "SH", "Shopping"
 
 
 # choices for the type of search
@@ -133,17 +140,11 @@ class BannedWord(models.Model):
         choices=BannedType.choices,
         default=BannedType.WORD,
     )
+    from_default = models.BooleanField(default=False)
 
     objects = models.Manager()
     banned = BannedManager()
     unbanned = UnbannedManager()
-
-    # def is_word_or_phrase(input_string):
-    #     input_string = input_string.strip()
-    #     if " " in input_string:
-    #         return BannedType.PHRASE
-    #     else:
-    #         return BannedType.WORD
 
     def save(self, *args, **kwargs):
         if " " in self.word:
@@ -261,23 +262,6 @@ class UnbanRequest(models.Model):
         ordering = ["-requested_on"]
 
 
-# choices for the type of search
-class DefaultBanCategory(models.TextChoices):
-    SHOPPING = "SH", "Shopping"
-    DRUGS = "DR", "Drugs"
-    GAMBLING = "GB", "Gambling"
-    DATING = "DT", "Dating"
-    SOCIAL_MEDIA = "SM", "Social Media"
-    ADULT_CONTENT = "AC", "Adult Content"
-    GAMES = "GM", "Games"
-    VIDEO_SITES = "VS", "Video Sites"
-    CYBERBULLYING = "CB", "Cyberbullying"
-    HATE_SPEECH = "HS", "Hate Speech"
-    VIOLENCE = "VL", "Violence"
-    PROFANITY = "PF", "Profanity"
-    INAPPROPRIATE_CONTENT = "IC", "Inappropriate Content"
-
-
 class BannedDefault(models.Model):
     """Model for Default Banned Words"""
 
@@ -287,8 +271,8 @@ class BannedDefault(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     category = models.CharField(
         max_length=2,
-        choices=DefaultBanCategory.choices,
-        default=DefaultBanCategory.INAPPROPRIATE_CONTENT,
+        choices=BanReason.choices,
+        default=BanReason.INAPPROPRIATE_CONTENT,
     )
     banned_type = models.CharField(
         max_length=2,
@@ -302,8 +286,8 @@ class BannedDefault(models.Model):
         super(BannedDefault, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = "BannedDefault"
-        verbose_name_plural = "BannedDefaults"
+        verbose_name = "Banned Default"
+        verbose_name_plural = "Banned Defaults"
         unique_together = ["word", "category"]
 
     def __str__(self):

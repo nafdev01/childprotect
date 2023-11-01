@@ -339,48 +339,22 @@ def banned_word_list(request):
     return render(request, template_name, context)
 
 
-# show words from our default banned words list
+# default banned words list
 @parent_required
 def default_banned_word_list(request):
-    parent = request.user.parentprofile
+    parent = request.user
+    parent_profile = ParentProfile.objects.get(parent=parent)
 
-    # Specify the path to your CSV file
-    csv_file_path = os.path.join(settings.MEDIA_ROOT, "default_banned.csv")
+    # get parent's children
+    children_profiles = parent_profile.childprofile_set.all()
 
-    banned_words = []
-
-    # Open and read the CSV file
-    with open(csv_file_path, "r") as csv_file:
-        csv_data = csv.reader(csv_file, delimiter=",")
-        for row in csv_data:
-            for word in row:
-                banned_words.append(word)  # Assuming the words are in the first column
-
-    word = request.GET.get("word")
-
-    if word:
-        banned_words_list = [
-            word for word in banned_words if word and word.__contains__(word)
-        ]
-    else:
-        banned_words_list = banned_words
-
-    # Pagination with 20 banned words per page
-    paginator = Paginator(banned_words_list, 20)
-    page_number = request.GET.get("page", 1)
-
-    try:
-        banned_words = paginator.page(page_number)
-        banned_words.adjusted_elided_pages = paginator.get_elided_page_range(
-            page_number
-        )
-    except PageNotAnInteger:
-        banned_words = paginator.page(1)
-    except EmptyPage:
-        banned_words = paginator.page(paginator.num_pages)
+    default_banned_words = BannedDefault.objects.all()
 
     template_name = ("safesearch/banned_words_default.html",)
-    context = {"banned_words": banned_words}
+    context = {
+        "default_banned_words": default_banned_words,
+        "children_profiles": children_profiles,
+    }
     return render(request, template_name, context)
 
 
