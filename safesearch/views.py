@@ -58,7 +58,11 @@ def search(request):
             if not is_within_time_range(
                 current_time, search_time_start, search_time_end
             ):
-                messages.error(request, "Search is not allowed at this time.")
+                messages.error(
+                    request,
+                    f"Search is not allowed at this time. You can only search between {search_time_start} and {search_time_end}",
+                )
+
                 return redirect("search")
             searched = True
             flagged_words = list()
