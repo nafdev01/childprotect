@@ -65,6 +65,7 @@ def create_og_comment(request, post_id):
         if post_id:
             post = Post.objects.get(id=post_id)
             new_comment = Comment.objects.create(
+                comment_by=parent,
                 content=content,
                 post=post,
                 type_of_comment=TypeOfComment.ORIGINAL,
@@ -86,6 +87,7 @@ def reply_to_comment(request, comment_id):
             comment = Comment.original.get(id=comment_id)
             post = comment.post
             new_reply = Comment.objects.create(
+                comment_by=parent,
                 content=content,
                 reply_to=comment,
                 type_of_comment=TypeOfComment.REPLY,
