@@ -2,6 +2,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+from accounts.models import User
 
 
 class Post(models.Model):
@@ -9,7 +10,7 @@ class Post(models.Model):
         "accounts.User",
         null=True,
         on_delete=models.CASCADE,
-        limit_choices_to={"is_parent": True},
+        limit_choices_to={"user_type": User.UserType.PARENT},
         to_field="username",
     )
     title = models.CharField(max_length=255)

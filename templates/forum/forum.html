@@ -20,7 +20,7 @@
     <div class=" card mb-3">
         <div class="card-body">
             <div class="card-title">
-                <a class="h4" href="#">
+                <a class="h4" href="{% url 'forum:post_detail' post.id %}">
                     {{ post.title }}
                 </a>
             </div>
@@ -30,7 +30,7 @@
                         By<a href="#" class="text-muted">&nbsp;{{ post.created_by.get_username }}</a>
                     </p>
                 </li>
-                <li class="list-inline-item"> {{ post.publish }}</li>
+                <li class="list-inline-item"> {{ post.posted_on }}</li>
             </ul>
             <p>
                 {{ post.content|truncatewords:30|linebreaks }}
@@ -45,95 +45,20 @@
 </div>
 
 <div class="container py-4" id="id_create_post_container" style="font-size: 20px">
-    <div class="mb-3">
-        <input class="form-control" type="text" id="id_post_title_input" placeholder="post title" required />
-    </div>
-    <div class="mb-3">
-        <textarea id="id_post_content_input" class="form-control" id="" cols="30" rows="3" placeholder="post content">
-        </textarea>
-    </div>
-    <button class="btn btn-primary" type="submit" id="id_post_create_button">Create Post</button>
+    <form method="post" action="{% url 'forum:create_post' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <input class="form-control" type="text" id="id_title" name="title" placeholder="post title" required />
+        </div>
+        <div class="mb-3">
+            <textarea id="id_content" class="form-control" id="" cols="30" rows="3" name="content"
+                placeholder="More about your post"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" id="id_create_post_button">Create Post</button>
+    </form>
 </div>
 {% endblock content %}
 
 
 {% block custom_js %}
-<script>
-    var username = "{{ parent.username }}";
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
-
-    var loc = window.location;
-    var wsStart = 'ws://';
-    if (loc.protocol == 'https:') {
-        wsStart = 'wss://'
-    }
-
-    const chatSocket = new WebSocket(wsStart + window.location.host + "/ws/");
-    chatSocket.onopen = function (e) {
-        console.log(`The connection was setup successfully to "${wsStart}${window.location.host}/" !`);
-    };
-    chatSocket.onclose = function (e) {
-        console.log(`something unexpected happened when connecting to "${wsStart}${window.location.host}/" !`);
-    };
-    document.querySelector("#id_post_title_input").focus();
-    document.querySelector("#id_post_title_input").onkeyup = function (e) {
-        if (e.keyCode == 13) {
-            document.querySelector("#id_post_create_button").click();
-        }
-    };
-    document.querySelector("#id_post_create_button").onclick = function (e) {
-        var titleInput = document.querySelector(
-            "#id_post_title_input"
-        ).value;
-        var contentInput = document.querySelector(
-            "#id_post_content_input"
-        ).value;
-        chatSocket.send(JSON.stringify({ content: contentInput, title: titleInput, username: "{{parent.username}}" }));
-    };
-    chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-
-        document.querySelector("#id_post_title_input").value = "";
-        document.querySelector("#id_post_content_input").value = "";
-        document.querySelector("#id_post_title_input").focus();
-
-        if (data.username !== username) {
-            Swal.fire({
-                toast: true,
-                title: `${data.username} posted about ${data.title}!`,
-                text: data.content,
-                icon: 'info',
-                position: 'top-end',
-                showCancelButton: true,
-                cancelButtonText: 'No, cancel!',
-            })
-        }
-        else {
-            Swal.fire({
-                toast: false,
-                title: `Your post has about ${data.title} has been submitted successfully!`,
-                text: `${data.content}`,
-                icon: 'success',
-                confirmButtonColor: '#008000',
-                confirmButtonText: 'Ok, got it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.location.reload();
-                }
-            })
-        }
-    };
-
-</script>
 {% endblock custom_js %}

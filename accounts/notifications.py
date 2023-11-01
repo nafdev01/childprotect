@@ -272,7 +272,7 @@ def send_email_newsletter_subscription(request, subscriber_email):
     mail.content_subtype = "html"
     if mail.send():
         messages.success(
-            request, f"Subscriber with email {subscriber_email} has been added."
+            request, f"You have successfully subscribed to our newsletter."
         )
     else:
         messages.error(request, f"Email could not be sent to subscriber")
