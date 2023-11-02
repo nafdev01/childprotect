@@ -2,7 +2,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from accounts.models import User
 
 
 class Post(models.Model):
@@ -10,7 +9,7 @@ class Post(models.Model):
         "accounts.User",
         null=True,
         on_delete=models.CASCADE,
-        limit_choices_to={"user_type": User.UserType.PARENT},
+        limit_choices_to={"is_parent": True},
         to_field="username",
     )
     title = models.CharField(max_length=255)
@@ -44,7 +43,6 @@ class Comment(models.Model):
         def get_queryset(self):
             return super().get_queryset().filter(type_of_comment=TypeOfComment.REPLY)
 
-    comment_by = models.ForeignKey("accounts.User", null=True, on_delete=models.CASCADE)
     content = models.TextField()
     post = models.ForeignKey("Post", null=True, on_delete=models.CASCADE)
     reply_to = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
@@ -53,7 +51,6 @@ class Comment(models.Model):
         choices=TypeOfComment.choices,
         default=TypeOfComment.REPLY,
     )
-    comment_on = models.DateTimeField(auto_now_add=True, null=True)
 
     objects = models.Manager()
     original = OriginalManager()
@@ -79,7 +76,6 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Comment"
         verbose_name_plural = "Comments"
-        ordering = ["-comment_on"]
 
 
 class Subscriber(models.Model):
