@@ -4,6 +4,12 @@
 
 {% block title %}Ban a Word{% endblock title %}
 
+
+{% block custom_css %}
+
+{% endblock custom_css %}
+
+
 {% block header %}
 <div class="container text-center text-dark mb-3">
     <h1> Ban a Word</h1>
@@ -29,7 +35,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">
-                    Upload a CSV File of Banned Words
+                    Upload a CSV File
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -37,7 +43,18 @@
                 <div class="container justify-content-center">
                     <form method="post" enctype="multipart/form-data" id="uploadForm"
                         action="{% url 'add_banned_csv' %}">
-                        {% bootstrap_form csv_form %}
+                        <div class="mb-3">
+                            <label class="form-label mx-3" for="id_csv_file">
+                                CSV File&nbsp;
+                                <span type="button" class="" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="CSV files are files which contain values seperated by commas">
+                                    <i class="fa-regular fa-circle-question"></i>
+                                </span>
+                            </label>
+                            <input type="file" name="csv_file" class="form-control" required id="id_csv_file">
+                        </div>
+
                         {% csrf_token %}
                         <button class="btn btn-success" type="submit" onclick="myButtonCircle(this)" id="uploadButton">
                             Upload CSV
@@ -51,15 +68,23 @@
 
 
 <div class="container justify-content-center">
-    <form class="mb-3" method="post" enctype="multipart/form-data" action="{% url 'create_banned_word' %}">
+    <form class="mb-3" method="post" enctype="multipart/form-data" action="{% url 'create_banned_word' %}"
+        id="id-create-banned-form">
         <div class="row g-3 mb-3">
             <div class="col-lg-6 col-md-12">
-                <label class="form-label" for="id_word">Word</label>
+                <label class="form-label mx-3" for="id_word">
+                    Word&nbsp;
+                    <span type="button" class="" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-custom-class="custom-tooltip"
+                        data-bs-title=" You can ban both individual words and phrases. To ban multiple words at once, enter them as a comma-separated list.">
+                        <i class="fa-regular fa-circle-question"></i>
+                    </span>
+                </label>
                 <input type="text" name="word" maxlength="50" class="form-control" placeholder="Word" required
                     id="id_word">
             </div>
             <div class="col-lg-3 col-md-12">
-                <label class="form-label" for="id_reason">Reason</label>
+                <label class="form-label mx-3" for="id_reason">Reason</label>
                 <select name="reason" class="form-select" id="id_reason">
                     <option value="OL" selected>Offensive Language</option>
                     <option value="AC">Adult Content</option>
@@ -68,7 +93,7 @@
                 </select>
             </div>
             <div class="col-lg-3 col-md-12">
-                Ban for
+                <p class="text-center py-0">Ban for</p>
                 <div>
                     <table class="table w-75 text-center">
                         <thead>
@@ -80,7 +105,7 @@
                                             Ban for All
                                         </label>
                                         <input class="form-check-input" type="checkbox" value="" id="check-all"
-                                            onchange="toggleSelectAll(this)">
+                                            onchange="toggleSelectAll(this);disableIfNone('toggle-all')">
                                     </div>
                                 </th>
                             </tr>
@@ -93,7 +118,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="{{child_profile.id}}"
                                             id="id_{{child_profile.child.username}}_check" name="ban_for"
-                                            onchange="allSelectedUpdate(this)">
+                                            onchange="allSelectedUpdate(this),disableIfNone('checkbox')">
                                     </div>
                                 </td>
                             </tr>
@@ -107,13 +132,20 @@
             </div>
         </div>
         {% csrf_token %}
-        <input class="btn btn-success text-color" type="submit" value="Ban Word">
+        <input class="btn btn-success text-color" type="submit" value="Ban Word" id="id-submit-button"
+            onclick="disableIfNone('submitted')">
     </form>
 </div>
 {% endblock content %}
 
 
 {% block custom_js %}
+<script>
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
 <script type="text/javascript">
     function myButtonCircle(el) {
         uploadButton = document.getElementById("uploadButton")
@@ -158,6 +190,42 @@
         } else {
             checkAll.checked = false;
             checkAll.indeterminate = true;
+        }
+    }
+    function disableIfNone(el) {
+        // Get all checkboxes with the name "ban_for"
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="ban_for"]');
+        // Get the submit button
+        var submitButton = document.getElementById('id-submit-button');
+
+        // Check if any checkbox is selected
+        var atLeastOneSelected = false;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                atLeastOneSelected = true;
+                break;
+            }
+        }
+
+        if (atLeastOneSelected) {
+            submitButton.disabled = false;
+            if (el === "submitted") {
+                var createform = document.getElementById("id-create-banned-form");
+                createform.submit();
+            }
+        } else {
+            submitButton.disabled = true;
+            if (el === "submitted") {
+                silverBox({
+                    alertIcon: "error",
+                    text: "You must select at least one child before submitting the form",
+                    centerContent: true,
+                    cancelButton: {
+                        text: "Ok"
+                    }
+                })
+            }
+
         }
     }
 </script>

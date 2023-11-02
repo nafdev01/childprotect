@@ -333,8 +333,14 @@ def home(request):
     elif request.user.is_child:
         child = request.user
         child_profile = ChildProfile.objects.get(child=child)
+        search_counts = SearchPhrase.search_status_counts2(child_profile)
 
-        context = {"child": child, "profile": child_profile}
+        context = {
+            "child": child,
+            "profile": child_profile,
+            "search_counts": search_counts,
+        }
+
         template_name = "accounts/child_dashboard.html"
     else:
         context = {

@@ -215,6 +215,27 @@ class ChildProfile(models.Model):
             return False
 
     @property
+    def completion_percentage(self):
+        # Define the fields to be checked for completion
+        profile_fields = [
+            self.child.first_name,
+            self.child.last_name,
+            self.avatar,
+        ]
+        # Calculate the number of completed fields
+        completed_fields = sum(1 for field in profile_fields if field)
+
+        # Calculate the percentage of completion
+        if len(profile_fields) > 0:
+            completion_percentage = (completed_fields / len(profile_fields)) * 100
+        else:
+            completion_percentage = (
+                100  # Profile is considered complete if there are no fields to complete
+            )
+
+        return int(completion_percentage)
+
+    @property
     def age(self):
         today = date.today()
         age = (

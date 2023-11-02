@@ -1,0 +1,56 @@
+<!-- safesearch/search.html -->
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Unban Requests{% endblock title %}
+
+{% block header %}
+<div class="container text-center text-dark">
+    <h1>List of Unban Requests</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="container-fluid">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Word</th>
+                <th scope="col">Requested On</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% if unban_requests %}
+            {% for unban_request in unban_requests %}
+            <tr>
+                <td>{{ unban_request.banned_word.word }}</td>
+                <td>{{ unban_request.requested_on }}</td>
+                <td>
+                    {% if unban_request.been_reviewed %}
+                    {% if unban_request.approved %}
+                    <span class="btn btn-primary btn-sm">
+                        Approved
+                    </span>
+                    {% else %}
+                    <span class="btn btn-danger btn-sm">
+                        Denied
+                    </span>
+                    {% endif %}
+                    {% else %}
+                    <span class="btn btn-warning btn-sm">
+                        Unreviewed
+                    </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <p>You have no unban request from your children yet</p>
+            {% endif %}
+
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

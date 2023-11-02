@@ -19,7 +19,12 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center text-dark">
-                            Alert Levels
+                            Alert Levels&nbsp;
+                            <span type="button" class="" data-bs-toggle="tooltip" data-bs-placement="top"
+                                data-bs-custom-class="custom-tooltip" data-bs-title="Low allows all search results to be displayed.Moderate prevents flagged search results from being displayed. Strict prevents flagged and suspicious search results from being displayed.
+                                ">
+                                <i class="fa-regular fa-circle-question fa-2xs"></i>
+                            </span>
                         </h3>
                     </div>
                     <div class="card-body">
@@ -63,7 +68,12 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center text-dark">
-                            Search Time
+                            Search Time&nbsp;
+                            <span type="button" class="" data-bs-toggle="tooltip" data-bs-placement="top"
+                                data-bs-custom-class="custom-tooltip"
+                                data-bs-title="You can set the time of day when your child can make searches.">
+                                <i class="fa-regular fa-circle-question fa-2xs"></i>
+                            </span>
                         </h3>
                     </div>
                     <div class="card-body">
@@ -110,14 +120,21 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center text-dark">
-                            Default Banned Words
+                            Default Banned Words&nbsp;
+                            <span type="button" class="" data-bs-toggle="tooltip" data-bs-placement="top"
+                                data-bs-custom-class="custom-tooltip"
+                                data-bs-title="Enable our preset list of banned words for each child ">
+                                <i class="fa-regular fa-circle-question fa-2xs"></i>
+                            </span>
                         </h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-hover text-center">
                             <thead>
                                 <th class="border-end" scope="col"></th>
-                                <th class="border" scope="col">Enabled</th>
+                                <th class="border" scope="col">
+                                    Enabled
+                                </th>
                             </thead>
                             <tbody class="table-group-divider">
                                 {% for child_profile in children_profiles %}
@@ -168,6 +185,11 @@
 
 {% block custom_js %}
 <script type="text/javascript">
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
     function myButtonCircle(el) {
         updateButton = document.getElementById("updateButton")
         updateButton.disabled = true;

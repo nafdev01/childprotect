@@ -46,7 +46,7 @@ urlpatterns = [
     ),
     path(
         "unban_requests/",
-        views.UnbanRequestListView.as_view(),
+        views.unban_requests,
         name="unban_requests",
     ),
     path(

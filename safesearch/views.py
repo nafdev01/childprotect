@@ -562,15 +562,27 @@ def deny_unban_request(request, unban_request_id):
 
 
 # unban request list view
-@method_decorator(parent_required, name="dispatch")
-class UnbanRequestListView(ListView):
-    model = UnbanRequest
-    template_name = "safesearch/unban_requests.html"
-    context_object_name = "unban_requests"
+@login_required
+def unban_requests(request):
+    context = dict()
+    if request.user.is_child:
+        child = request.user
+        child_profile = child.childprofile
 
-    def get_queryset(self):
-        parent = self.request.user
+        unban_requests = UnbanRequest.objects.filter(requested_by=child_profile)
+        context["unban_requests"] = unban_requests
+        template_name = "safesearch/child_unban_requests.html"
+    elif request.user.is_parent:
+        parent = request.user
+        parent_profile = parent.parentprofile
+
         unban_requests = UnbanRequest.objects.filter(
             requested_by__parent_profile__parent_id=parent.id
         )
-        return unban_requests
+        template_name = "safesearch/unban_requests.html"
+        context["unban_requests"] = unban_requests
+    else:
+        messages.error(request, f"You dont have access to this page!")
+        return redirect("home")
+
+    return render(request, template_name, context)

@@ -62,6 +62,22 @@ class SearchPhrase(models.Model):
         }
         return search_counts
 
+    def search_status_counts2(child_profile):
+        all_searches = SearchPhrase.objects.filter(searched_by=child_profile).count()
+        safe = SearchPhrase.safe.filter(searched_by=child_profile).count()
+        suspicious = SearchPhrase.suspicious.filter(searched_by=child_profile).count()
+        flagged = SearchPhrase.flagged.filter(
+            searched_by=child_profile,
+        ).count()
+
+        search_counts = {
+            "all": all_searches,
+            "safe": safe,
+            "suspicious": suspicious,
+            "flagged": flagged,
+        }
+        return search_counts
+
     def flagged_searches(self):
         self.flagged.all()
 

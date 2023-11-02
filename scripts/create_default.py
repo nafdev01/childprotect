@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 
 
 DEFAULT_DICTIONARY = {
-    "inappropriate": BanReason.INAPPROPRIATE_CONTENT,
+    "inappropriate": BanReason.ADULT_CONTENT,
 }
 
 
