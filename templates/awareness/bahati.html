@@ -1,0 +1,203 @@
+<!-- awareness/intro.html -->
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Unban Requests{% endblock title %}
+
+{% block custom_css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+
+    .container {
+        width: 80%;
+        margin: auto;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        animation: fade-in 1s ease-in-out;
+    }
+
+    h1 {
+        font-size: 36px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #0084ff;
+        animation: shake 1s ease-in-out;
+        cursor: pointer;
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #0084ff;
+    }
+
+    p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    ul {
+        list-style-type: disc;
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+
+    .custom-link {
+        color: #0084ff;
+        text-decoration: none;
+        animation: color-change 1s ease-in-out infinite alternate;
+    }
+
+    .custom-link:hover {
+        text-decoration: underline;
+        animation: none;
+        color: #ff0084;
+    }
+
+    .avatar-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .avatar {
+        width: 350px;
+        animation: dance 2s infinite;
+    }
+
+    .topic {
+        font-size: 24px;
+        margin-left: 20px;
+        padding-left: 30;
+        padding-top: 20;
+        font-weight: 200;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-10px);
+        }
+
+        50% {
+            transform: translateX(10px);
+        }
+
+        75% {
+            transform: translateX(-5px);
+        }
+
+        100% {
+            transform: translateX(5px);
+        }
+    }
+
+    @keyframes color-change {
+        0% {
+            color: #0084ff;
+        }
+
+        50% {
+            color: #ff0084;
+        }
+
+        100% {
+            color: #0084ff;
+        }
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes dance {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>
+{% endblock custom_css %}
+
+
+{% block header %}
+<div class="avatar-container">
+    <div class="avatar">
+        <img class="img img-fluid" src="{% static 'img/man-with-diary.gif' %}" alt="Dancing Avatar">
+    </div>
+    <div class="topic"
+        style="color: green;font-size: xx-large;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
+        Hey Kids! Learn About Online Safety
+    </div>
+</div>
+
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    
+    <h2>Cyberbullying</h2>
+    <p>Imagine online bullies are like villains from your favorite cartoon who tease, but don't let them spoil your day. Talk to a grown-up if you need help!</p>
+    
+    <h2>Online Grooming</h2>
+    <p>Online grooming is when someone tries to trick you, just like a tricky character in a fairy tale. Always tell your parents or a guardian about any online friends you have!</p>
+    
+    <h2>Identity Theft</h2>
+    <p>Identity thieves are like sneaky wizards who pretend to be you. Keep your secrets safe, and don't share personal information with anyone!</p>
+    
+    <h2>Child-friendly content</h2>
+    <p>Imagine your computer as a magic box, and you should never open any bad or scary pictures. Stay away from anything that doesn't look nice or friendly!</p>
+    
+    <h2>Protecting Yourself</h2>
+    <p>Always remember to stay away from strangers online, just like you would in the real world. Only talk to people you know and trust, like your parents and friends!</p>
+    
+    <p>For more information and help, visit <a class="custom-link" href="https://www.childhelp.org/hotline/">Childhelp National Child Abuse Hotline</a>.</p>
+</div>
+{% endblock content %}
+
+{% block custom_js %}
+<script>
+    const avatar = document.querySelector(".avatar img");
+    const dancePoses = ["{% static 'img/man-with-diary.gif' %}", "{% static 'img/man-showing-smartphone.gif' %}"]; // Add more poses as needed
+    let currentPose = 0;
+
+    function animateDance() {
+        avatar.src = dancePoses[currentPose];
+        currentPose = (currentPose + 1) % dancePoses.length;
+    }
+
+    // Start the animation and repeat every 6 seconds
+    setInterval(animateDance, 1000);
+</script>
+
+{% endblock custom_js %}

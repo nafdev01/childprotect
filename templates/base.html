@@ -107,23 +107,32 @@
 
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'home' %}" title="Dashboard">
-              <i class="fa-solid fa-house fa-xl"></i><span>Dashboard</span>
+              <i class="fa-solid fa-house fa-xl"></i>
+              <span>&nbsp;Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'search' %}" title="View Children Search History">
-              <i class="fa-solid fa-magnifying-glass fa-xl"></i><span>Search</span>
+              <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+              <span>&nbsp;Search</span>
             </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'search_history' %}" title="View Search History">
-              <i class="fa-solid fa-clock-rotate-left fa-xl"></i><span>Search History</span>
+              <i class="fa-solid fa-clock-rotate-left fa-xl"></i>
+              <span>&nbsp;Search History</span>
             </a>
           </li>
           <li class="nav-item">
             <a class=" nav-link" href="{% url 'unban_requests' %}" title="View Sumitted Unban Requests">
               <i class="fa-solid fa-magnifying-glass fa-xl"></i>
-              <span>Unban Requests</span>
+              <span>&nbsp;Unban Requests</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class=" nav-link" href="{% url 'awareness:intro' %}" title="View Sumitted Unban Requests">
+              <i class="fa-solid fa-book-open-reader fa-xl"></i>
+              <span>&nbsp;Let's Learn</span>
             </a>
           </li>
           {% endif %}

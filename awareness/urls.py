@@ -6,4 +6,7 @@ app_name = "awareness"
 
 urlpatterns = [
     path("intro/", views.intro, name="intro"),
+    path("bahati/", views.bahati, name="bahati"),
+    path("klein/", views.klein, name="klein"),
+    path("meki/", views.meki, name="meki"),
 ]

@@ -1,21 +1,249 @@
 <!-- awareness/intro.html -->
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
+{% load static %}
 
 {% block title %}Unban Requests{% endblock title %}
 
 {% block custom_css %}
+<style>
 
+    .article img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .article h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .article p {
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    /* Style for the container */
+    .kontainer {
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Define the bounce animation */
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    /* Style for the avatar image with the bounce animation */
+    .kontainer img {
+        width: 400px;
+        border-radius: 100%;
+        animation: bounce 1s infinite;
+    }
+
+    /* Style for the avatar image with the bounce animation */
+    .kontainer img:hover {
+        width: 400px;
+        border-radius: 100%;
+        animation: bounce 1s infinite;
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
+
+    /* Style for the message box */
+    .message-box {
+        background-color: cyan;
+        padding: 10px;
+        border-radius: 10px;
+        margin-left: 10px;
+        position: relative;
+        margin-top: -200px;
+        margin-left: -10px;
+    }
+
+    /* Style for the message text */
+    .message {
+        font-family: 'Comic Sans MS', cursive;
+        font-size: 18px;
+        color: #000;
+    }
+
+    /* Style for the speech bubble tail */
+    .tail {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 15px solid cyan;
+        top: -15px;
+        left: 10px;
+    }
+</style>
+<style>
+    .conntainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .learn-from {
+        width: 410px;
+        height: 250px;
+        margin: 10px;
+        border: 1px solid orange;
+        text-align: center;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+    }
+
+    .learn-from:hover {
+        transform: scale(1.1);
+        box-shadow: 2px 2px 5px cyan;
+    }
+
+    .learn-from img {
+        max-width: 100%;
+        max-height: 100%;
+        vertical-align: middle;
+    }
+
+    .info {
+        display: none;
+        padding: 12px;
+        background-color: whitesmoke;
+        border: 1px cyan;
+        text-align: center;
+        font-size: 20px;
+        border-radius: 30;
+    }
+
+    .learn-from:focus .info {
+        display: block;
+    }
+</style>
+<style>
+    .sp {
+        margin-right: 30px;
+        /* add 10px of margin on the right side of each image */
+    }
+
+    .sp {
+        border: 2.7px solid whitesmoke;
+        border-radius: 9px;
+        padding: 0.1 px;
+        height: 300px;
+        width: 350px;
+    }
+
+
+    .sp:hover {
+        box-shadow: 0 0 3.6px 1.6px rgba(0, 140, 186, 0.5);
+        transform: scale(1.1);
+    }
+</style>
 {% endblock custom_css %}
 
 
 {% block header %}
 <div class="container text-center text-dark">
-    <h1>Awareness Page</h1>
+    <h1 class="tr" style="color: green;">KIDS! LETS GET SAFE ONLINE</h1>
 </div>
 {% endblock header %}
 
 {% block content %}
+<section class="container-fluid">
+    <div>
+        <marquee behavior="alternate" vspace="5%" direction="right" scrollamount="7" style="margin-top: 0.1px;">
+            <img class="sp" src="{% static 'img/bully.jpg' %}">
+            <img class="sp" src="{% static 'img/dsp1.jpg' %}">
+            <img class="sp" src="{% static 'img/dsp2.png' %}">
+            <img class="sp" src="{% static 'img/ast2.png' %}">
+            <img class="sp" src="{% static 'img/ast8.jpg' %}">
+            <img class="sp" src="{% static 'img/dsp4.png' %}">
+            <img class="sp" src="{% static 'img/ast7.jpg' %}">
+
+        </marquee>
+    </div>
+    <section>
+        <div class="kontainer">
+            <img src="{% static 'img/man-holding-note.gif' %}" alt="Avatar">
+            <div class="message-box">
+                <div class="tail"></div>
+                <p class="message">I have some tips for you below!</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mb-5">
+        <div class="row g-3">
+            <div class="col-4">
+                <div class="card p-2">
+                    <h2 class="h2">Bullying</h2>
+                    <p>Bullying is never okay. It's important to tell a trusted adult if you or someone you know is
+                        being bullied.</p>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card p-2">
+                    <h2 class="h2">Online Safety</h2>
+                    <p>It's important to be safe when you're online. Never share personal information with strangers
+                        and tell a trusted adult if someone makes you feel uncomfortable online.</p>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card p-2">
+                    <h2 class="h2">Healthy Habits</h2>
+                    <p>Lets maintain healthy habbits that you will learn from our avatars below when online!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div class="col col-md-10 col-lg-4 col-sm-10">
+                <a class="card text-center p-5 learn-from border-warning" href="{% url 'awareness:bahati' %}" tabindex="0">
+                    <div class="d-flex justify-content-center">
+                        <img src="{% static 'img/baha.jpeg' %}" alt="Image 1"
+                            style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
+                    </div>
+                    <div class="">Click to learn from <span style="color: green;">CYBER</span></div>
+                </a>
+            </div>
+            <div class="col col-md-10 col-lg-4 col-sm-10">
+                <a class="card text-center p-5 learn-from border-warning" href="{% url 'awareness:klein' %}" tabindex="0">
+                    <div class="d-flex justify-content-center">
+                        <img src="{% static 'img/klein.jpeg' %}" alt="Image 2"
+                            style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
+                    </div>
+                    <div class="">Click to learn from <span style="color: green;">TECH</span></div>
+                </a>
+            </div>
+            <div class="col col-md-10 col-lg-4 col-sm-10">
+                <a class="card text-center p-5 learn-from border-warning" href="{% url 'awareness:meki' %}" tabindex="0">
+                    <div class="d-flex justify-content-center">
+                        <img src="{% static 'img/meki.jpeg' %}" alt="Image 3"
+                            style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
+                    </div>
+                    <div class="">Click to learn from <span style="color: green;">SAFE </span></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock content %}
 

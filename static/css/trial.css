@@ -1,0 +1,330 @@
+.page{
+    color: aqua;
+    font-size: larger;
+}
+
+
+
+.tr{
+
+        color: green;
+        font: size 10px ;
+        font-family: 'Dancing Script', cursive;
+        }
+           
+   
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+       
+      
+   
+      
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 50px;
+            margin: 130;
+        }
+
+    
+        .kontainer {
+          display: flex;
+          align-items: center;
+          width: 80%;
+          margin-left: 1px;
+        }
+        
+        .avatar {
+          margin-right: 1%;
+          position: relative;
+          right: 1%;
+        }
+        
+.img1 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.message-box {
+  background-color: rgb(212, 125, 24);
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+}
+
+.message {
+  margin: 0;
+}
+
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+}
+.bbox {
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+  border: 1px solid black;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.bbox:hover {
+  transform: scale(1.1);
+  box-shadow: 2px 2px 5px grey;
+}
+.bbox img {
+  max-width: 100%;
+  max-height: 100%;
+  vertical-align: middle;
+}
+.info {
+  display: none;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 1px solid black;
+  text-align: center;
+  font-size: 20px;
+}
+.bbox:focus .info {
+  display: block;
+}
+
+
+/* Heading styles */
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  color: #333;
+}
+
+/* Paragraph styles */
+p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  color: #666;
+  text-align: justify;
+}
+
+/* Container styles */
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+
+
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  background-color: #FFFFFF;
+  margin: 0;
+}
+.navtop {
+  background-color: #3f69a8;
+  height: 60px;
+  width: 100%;
+  border: 0;
+}
+.navtop div {
+  display: flex;
+  margin: 0 auto;
+  width: 1000px;
+  height: 100%;
+}
+.navtop div h1, .navtop div a {
+  display: inline-flex;
+  align-items: center;
+}
+.navtop div h1 {
+  flex: 1;
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+  color: #ecf0f6;
+  font-weight: normal;
+}
+.navtop div a {
+  padding: 0 20px;
+  text-decoration: none;
+  color: #c5d2e5;
+  font-weight: bold;
+}
+.navtop div a i {
+  padding: 2px 8px 0 0;
+}
+.navtop div a:hover {
+  color: #ecf0f6;
+}
+.content {
+  width: 1000px;
+  margin: 0 auto;
+}
+.content h2 {
+  margin: 0;
+  padding: 25px 0;
+  font-size: 22px;
+  border-bottom: 1px solid #ebebeb;
+  color: #666666;
+} 
+.comments .comment_header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.comments .comment_header .total {
+  color: #777777;
+  font-size: 14px;
+}
+.comments .comment_header .write_comment_btn {
+  margin: 0;
+}
+.comments .write_comment_btn, .comments .write_comment button {
+  display: inline-block;
+  background-color: #565656;
+  color: #fff;
+  text-decoration: none;
+  margin: 10px 0 0 0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0;
+}
+.comments .write_comment_btn:hover, .comments .write_comment button:hover {
+  background-color: #636363;
+}
+.comments .write_comment {
+  display: none;
+  padding: 20px 0 10px 0;
+}
+.comments .write_comment textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  height: 150px;
+  margin-top: 10px;
+}
+.comments .write_comment input {
+  display: block;
+  width: 250px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+.comments .write_comment button {
+  cursor: pointer;
+}
+.comments .comment {
+  padding-top: 10px;
+}
+.comments .comment .name {
+  display: inline;
+  padding: 0 5px 3px 0;
+  margin: 0;
+  font-size: 16px;
+  color: #555555;
+}
+.comments .comment .date {
+  color: #888888;
+  font-size: 14px;
+}
+.comments .comment .content {
+  padding: 5px 0 5px 0;
+}
+.comments .comment .reply_comment_btn {
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #888888;
+}
+.comments .comment .replies {
+  padding-left: 30px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  background-color: #FFFFFF;
+  margin: 0;
+}
+.navtop {
+  background-color: #3f69a8;
+  height: 60px;
+  width: 100%;
+  border: 0;
+}
+.navtop div {
+  display: flex;
+  margin: 0 auto;
+  width: 1000px;
+  height: 100%;
+}
+.navtop div h1, .navtop div a {
+  display: inline-flex;
+  align-items: center;
+}
+.navtop div h1 {
+  flex: 1;
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+  color: #ecf0f6;
+  font-weight: normal;
+}
+.navtop div a {
+  padding: 0 20px;
+  text-decoration: none;
+  color: #c5d2e5;
+  font-weight: bold;
+}
+.navtop div a i {
+  padding: 2px 8px 0 0;
+}
+.navtop div a:hover {
+  color: #ecf0f6;
+}
+.content {
+  width: 1000px;
+  margin: 0 auto;
+}
+.content h2 {
+  margin: 0;
+  padding: 25px 0;
+  font-size: 22px;
+  border-bottom: 1px solid #ebebeb;
+  color: #666666;
+}
+  
+  
