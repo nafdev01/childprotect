@@ -96,8 +96,8 @@ DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-WSGI_APPLICATION = "django_project.wsgi.application"
-# ASGI_APPLICATION = "django_project.asgi.application"
+# WSGI_APPLICATION = "django_project.wsgi.application"
+ASGI_APPLICATION = "django_project.asgi.application"
 
 
 # Database settings

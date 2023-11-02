@@ -74,14 +74,13 @@
     })
 
     var loc = window.location;
-    var port = "8001"
     var wsStart = 'ws://';
     if (loc.protocol == 'https:') {
         wsStart = 'wss://'
     }
 
 
-    var socaddress = wsStart + window.location.hostname + ":8001" + "/ws/";
+    var socaddress = wsStart + window.location.host + "/ws/";
     const chatSocket = new WebSocket(socaddress);
     chatSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress}!`);
