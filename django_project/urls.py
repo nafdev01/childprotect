@@ -12,6 +12,7 @@ urlpatterns = [
     path("", include("accounts.urls")),
     path("forum/", include("forum.urls")),
     path("", include("safesearch.urls")),
+    path("awareness/", include("awareness.urls")),
 ]
 
 if settings.DEBUG:
