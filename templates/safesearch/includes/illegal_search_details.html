@@ -1,18 +1,15 @@
 <!-- Modal -->
-<div class="modal fade" id="illegalSearchModal{{search_phrase.id}}" tabindex="-1"
-    aria-labelledby="illegalSearchModal{{search_phrase.id}}Label" aria-hidden="true">
+<div class="modal fade" id="illegalSearchModal{{search_phrase.id}}" tabindex="-1" data-bs-backdrop="static"
+    data-bs-keyboard="false" aria-labelledby="illegalSearchModal{{search_phrase.id}}Label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="illegalSearchModal{{search_phrase.id}}Label">
-                    Search: {{ search_phrase }}
-                </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
                 <div>
-                    <h4>Banned Words</h4>
-
+                    <h4 class="modal-title text-center" id="illegalSearchModal{{search_phrase.id}}Label">
+                        <u>Search: {{ search_phrase }}</u>
+                    </h4>
+                </div>
+                <div class="table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
@@ -24,7 +21,7 @@
                         <tbody>
                             {% for banned_word in search_phrase.flaggedword_set.all %}
                             <tr>
-                                <td>{{ banned_word.flagged_word }}</td>
+                                <th scope="row">{{ banned_word.flagged_word }}</th>
                                 <td>{{ banned_word.flagged_word.get_reason_display }}</td>
                                 <td>
 
@@ -49,7 +46,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

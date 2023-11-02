@@ -2,48 +2,96 @@
 
 {% block title %}Search History{% endblock title %}
 
+{% block custom_css %}
+<style>
+    .column-header:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock custom_css %}
+
+{% block header %}
+<div class="container text-center">
+    <h2 class="text-dark">Search History</h2>
+</div>
+{% endblock header %}
+
+
 {% block content %}
-<h2>Search History</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Search Phrase</th>
-            <th>Date Searched</th>
-            <th>Allowed</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for search_phrase in search_phrases %}
-        <tr>
-            <td>{{ search_phrase.phrase }}</td>
-            <td>{{ search_phrase.searched_on }}</td>
-            <td>
-                {{ search_phrase.get_search_status_display }}
-            </td>
-            <td>
-                {% if search_phrase.is_flagged %}
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#illegalSearchModal{{search_phrase.id}}">
-                    Details
-                </button>
-                {% include 'safesearch/includes/illegal_search_details.html' %}
-                {% else %}
-                <a href></a>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="2">No search history available.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container m-3">
+    <div class="d-flex flex-row-reverse">
+        <div class="input-group w-75">
+            <input class="form-control" type="search" id="filterInput" onkeyup="filterSearch()"
+                placeholder="Search for words ...." title="Type in a word">
+            <span class="input-group-text">
+                <i class="fa fa-search"></i>
+            </span>
+        </div>
+    </div>
+</div>
 
 
-
+<div class="container table-responsive">
+    <table id="myTable" class="table table-hover text-center align-middle">
+        <thead>
+            <tr>
+                <th class="column-header" scope="col">Search Phrase</th>
+                <th class="column-header" scope="col">Date Searched</th>
+                <th class="column-header" scope="col">Allowed</th>
+                <th class="column-header" scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for search_phrase in search_phrases %}
+            <tr>
+                <td class="fw-bolder">{{ search_phrase.phrase }}</td>
+                <td>{{ search_phrase.searched_on }}</td>
+                <td>
+                    {{ search_phrase.get_search_status_display }}
+                </td>
+                <td>
+                    {% if search_phrase.is_flagged %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#illegalSearchModal{{search_phrase.id}}">
+                        Details
+                    </button>
+                    {% include 'safesearch/includes/illegal_search_details.html' %}
+                    {% else %}
+                    <a href></a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No search history available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
+
+
+{% block custom_js %}
+<script>
+    function filterSearch() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("filterInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+{% endblock custom_js %}
