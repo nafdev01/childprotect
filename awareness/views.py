@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# Create your views here.
+from accounts.decorators import child_required, parent_required
+from django.contrib.auth.decorators import login_required
+
+
+@child_required
+def intro(request):
+    child = request.user
+    child_profile = child.childprofile
+
+    template_name = "awareness/intro.html"
+    context = {"child": child, "profile": child_profile}
+    return render(request, template_name, context)
