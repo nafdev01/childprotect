@@ -79,12 +79,14 @@
         wsStart = 'wss://'
     }
 
-    const chatSocket = new WebSocket(wsStart + window.location.host + "/ws/");
+
+    var socaddress = wsStart + window.location.host + "/ws/";
+    const chatSocket = new WebSocket(socaddress);
     chatSocket.onopen = function (e) {
-        console.log(`The connection was setup successfully to "${wsStart}${window.location.host}/" !`);
+        console.log(`The connection was setup successfully to "${socaddress}!`);
     };
     chatSocket.onclose = function (e) {
-        console.log(`something unexpected happened when connecting to "${wsStart}${window.location.host}/" !`);
+        console.log(`something unexpected happened when connecting to "${socaddress}/" !`);
     };
     document.querySelector("#id_post_title_input").focus();
     document.querySelector("#id_post_title_input").onkeyup = function (e) {
