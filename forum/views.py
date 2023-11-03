@@ -21,6 +21,24 @@ def post_list(request):
 
 
 @parent_required
+def post_detail(request, post_slug, parent_id):
+    parent = request.user
+    parent_profile = parent.parentprofile
+
+    post = get_object_or_404(Post, slug=post_slug, created_by_id=parent_id)
+    og_comments = Comment.original.filter(post=post)
+
+    template_name = "forum/post_detail.html"
+    context = {
+        "post": post,
+        "parent": parent,
+        "parent_profile": parent_profile,
+        "og_comments": og_comments,
+    }
+    return render(request, template_name=template_name, context=context)
+
+
+@parent_required
 def create_comment(request, post_id=None, comment_id=None):
     if request.method == "POST":
         content = request.POST.get("content")

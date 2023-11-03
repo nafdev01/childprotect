@@ -2,6 +2,10 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
+from django.urls import reverse
+
+from accounts.models import User
 
 
 class Post(models.Model):
@@ -9,16 +13,26 @@ class Post(models.Model):
         "accounts.User",
         null=True,
         on_delete=models.CASCADE,
-        limit_choices_to={"is_parent": True},
-        to_field="username",
+        limit_choices_to={"user_type": User.UserType.PARENT},
     )
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, editable=False, null=True)
     content = models.TextField()
     posted_on = models.DateTimeField(auto_now_add=True, null=True)
     updated_on = models.DateTimeField(auto_now=True, null=True)
 
     def og_comments(self):
         return Comment.original.filter(post=self)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title.strip().lower())
+        super(Post, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse(
+            "forum:post_detail",
+            kwargs={"post_slug": self.slug, "parent_id": self.created_by.id},
+        )
 
     def __str__(self):
         return f"{self.title[:20]}"
@@ -27,6 +41,7 @@ class Post(models.Model):
         verbose_name = "Post"
         verbose_name_plural = "Posts"
         ordering = ["-posted_on"]
+        unique_together = ["created_by", "slug"]
 
 
 class TypeOfComment(models.TextChoices):
@@ -46,11 +61,19 @@ class Comment(models.Model):
     content = models.TextField()
     post = models.ForeignKey("Post", null=True, on_delete=models.CASCADE)
     reply_to = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
+    comment_by = models.ForeignKey(
+        "accounts.User",
+        null=True,
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": User.UserType.PARENT},
+        to_field="username",
+    )
     type_of_comment = models.CharField(
         max_length=1,
         choices=TypeOfComment.choices,
         default=TypeOfComment.REPLY,
     )
+    comment_on = models.DateTimeField(auto_now_add=True, null=True)
 
     objects = models.Manager()
     original = OriginalManager()
@@ -76,6 +99,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Comment"
         verbose_name_plural = "Comments"
+        ordering = ["-comment_on"]
 
 
 class Subscriber(models.Model):
@@ -89,6 +113,7 @@ class Subscriber(models.Model):
     class Meta:
         verbose_name = "Subscriber"
         verbose_name_plural = "Subscribers"
+        ordering = ["-subscribed_on"]
 
 
 class Contact(models.Model):
@@ -105,6 +130,7 @@ class Contact(models.Model):
     class Meta:
         verbose_name = "Contact"
         verbose_name_plural = "Contacts"
+        ordering = ["-contact_on"]
 
 
 class ContactResponse(models.Model):
@@ -118,12 +144,4 @@ class ContactResponse(models.Model):
     class Meta:
         verbose_name = "Contact Response"
         verbose_name_plural = "Contact Responses"
-
-
-class Message(models.Model):
-    username = models.CharField(max_length=100)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.username} sent {self.message}"
+        ordering = ["-responded_on"]

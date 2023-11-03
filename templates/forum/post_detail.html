@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load forum_tags %}
+
+{% block title %}{{post.title}}{% endblock title %}
+
+
+{% block custom_css %}
+<style>
+    .comments {
+        text-decoration: underline;
+        text-underline-position: under;
+        cursor: pointer;
+    }
+
+    .dot {
+        height: 7px;
+        width: 7px;
+        margin-top: 3px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .comment-comment-by {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .comment-timestamp {
+        font-size: 0.8rem;
+    }
+
+    .comment-content {
+        font-size: 0.9rem;
+    }
+
+    .reply-reply-by {
+        font-size: 0.8rem;
+    }
+
+    .reply-timestamp {
+        font-size: 0.7rem;
+    }
+
+    .reply-content {
+        font-size: 0.8rem;
+    }
+
+    .reply-button {
+        height: 30px;
+        width: 50px;
+        font-size: 0.85rem;
+        font-stretch: normal;
+        border-radius: 10px;
+        color: white;
+        background-color: white;
+        color: black;
+        border: none;
+    }
+
+    .reply-button:hover {
+        transform: scale(1.2);
+        text-decoration: underline;
+        text-underline-position: under;
+    }
+
+    .submit-reply-button {
+        height: 30px;
+        width: 50px;
+        font-size: 0.85rem;
+        font-stretch: normal;
+        border-radius: 10px;
+        color: white;
+        background-color: rgb(76, 76, 228);
+        color: white;
+        border: none;
+    }
+
+    .submit-reply-button:hover {
+        transform: scale(1.1);
+        background-color: rgb(52, 187, 47);
+    }
+</style>
+{% endblock custom_css %}
+
+
+{% block header %}
+<div class="container text-center">
+    <h1 class="text-dark">{{ post.title }}</h1>
+    <small class="text-muted">
+        Posted on {{ post.posted_on }} by <span><a href="#">{{ post.created_by }}</a></span>
+    </small>
+</div>
+{% endblock header %}
+
+
+{% block content %}
+<div class="container text-dark">
+    <h5>{{ post.content | markdown }}</h5>
+</div>
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        <div class="d-flex flex-column col-md-8">
+            <div class="coment-bottom bg-white p-2">
+                <form action="{% url 'forum:create_og_comment' post.id %}" method="post">
+                    {% csrf_token %}
+                    <textarea class="form-control form-control-sm mb-2" name="content" id="og_comment_input"></textarea>
+                    <button class="btn btn-primary" type="submit">Comment</button>
+                </form>
+                {% for comment in post.og_comments %}
+                <div class="commented-section m-2">
+                    <div class="d-flex flex-row justify-content-between commented-user">
+                        <p class="comment-comment-by">{{comment.reply_by}}</p>
+                        <small class="text-muted comment-timestamp">
+                            {{comment.comment_on|timesince}}&nbsp;ago
+                        </small>
+                    </div>
+                    <div class="comment-content">
+                        <span>{{comment.content}}</span>
+                    </div>
+                    <div class="d-flex flex-row-reverse">
+                        <button type="button" class="reply-button" id="show-reply-{{comment.id}}"
+                            data-bs-target="reply-form-{{comment.id}}" onclick="showReply(this)">Reply</button>
+                    </div>
+
+                    <div id="reply-form-{{comment.id}}" class="m-2 d-none d-block flex-row-reverse">
+                        <form action="{% url 'forum:create_reply' comment.id %}" method="post">
+                            {% csrf_token %}
+                            <textarea class="form-control form-control-sm mb-2" name="content"
+                                id="og_comment_input"></textarea>
+                            <button class="submit-reply-button" type="submit">Reply</button>
+                        </form>
+                    </div>
+                    {% for reply in comment.reply_comments %}
+                    <div>
+                        <div class="d-flex flex-row-reverse">
+                            <p class="reply-reply-by">{{reply.comment_by}}<span class="text-muted reply-timestamp">
+                                    &nbsp;replied&nbsp;{{reply.comment_on|timesince}}&nbsp;ago
+                                </span>
+                            </p>
+                        </div>
+                        <div class="reply-content text-end">
+                            <span>{{reply.content}}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block custom_js %}
+<script>
+    function showReply(button) {
+        var target = button.getAttribute("data-bs-target");
+        var replyForm = document.getElementById(target);
+        replyForm.classList.toggle("d-none");
+    }
+</script>
+{% endblock custom_js %}

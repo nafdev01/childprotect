@@ -20,14 +20,15 @@
     <div class=" card mb-3">
         <div class="card-body">
             <div class="card-title">
-                <a class="h4" href="#">
+                <a class="h4" href="{{post.get_absolute_url}}">
                     {{ post.title }}
                 </a>
             </div>
             <ul class="list-inline text-muted">
                 <li class="list-inline-item">
                     <p>
-                        By<a href="#" class="text-muted">&nbsp;{{ post.created_by.get_username }}</a>
+                        By<a href="#" class="text-muted">
+                            &nbsp;{{ post.created_by.get_username }}</a>
                     </p>
                 </li>
                 <li class="list-inline-item"> {{ post.publish }}</li>
@@ -114,18 +115,25 @@
             Swal.fire({
                 toast: true,
                 title: `${data.username} posted about ${data.title}!`,
-                text: data.content,
+                text: `${data.content.substring(0, 100)} ....`,
                 icon: 'info',
                 position: 'top-end',
                 showCancelButton: true,
-                cancelButtonText: 'No, cancel!',
+                cancelButtonText: 'Dismiss',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Read it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var postLocation = window.location.origin + data.url;
+                    window.location.href = postLocation;
+                }
             })
         }
         else {
             Swal.fire({
                 toast: false,
                 title: `Your post has about ${data.title} has been submitted successfully!`,
-                text: `${data.content}`,
+                text: `${data.content.substring(0, 150)} ....`,
                 icon: 'success',
                 confirmButtonColor: '#008000',
                 confirmButtonText: 'Ok, got it!'
@@ -136,6 +144,5 @@
             })
         }
     };
-
 </script>
 {% endblock custom_js %}
