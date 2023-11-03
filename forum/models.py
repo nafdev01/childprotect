@@ -66,7 +66,6 @@ class Comment(models.Model):
         null=True,
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": User.UserType.PARENT},
-        to_field="username",
     )
     type_of_comment = models.CharField(
         max_length=1,

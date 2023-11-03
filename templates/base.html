@@ -446,6 +446,92 @@
     integrity="sha512-Ktf+fv0N8ON+ALPwyuXP9d8usxLqqPL5Ox9EHlqxehMM+h1wIU/AeVWFJwVGGFMddw/67P+KGFvFDhZofz2YEg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script>
+    var username = "{{ parent.username }}";
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
+    var loc = window.location;
+    var wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+        wsStart = 'wss://'
+    }
+
+
+    var socaddress = wsStart + window.location.host + "/ws/";
+    const postSocket = new WebSocket(socaddress);
+    postSocket.onopen = function (e) {
+        console.log(`The connection was setup successfully to "${socaddress}!`);
+    };
+    postSocket.onclose = function (e) {
+        console.log(`something unexpected happened when connecting to "${socaddress}/" !`);
+    };
+    document.querySelector("#id_post_title_input").focus();
+    document.querySelector("#id_post_title_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+            document.querySelector("#id_post_create_button").click();
+        }
+    };
+    document.querySelector("#id_post_create_button").onclick = function (e) {
+        var titleInput = document.querySelector(
+            "#id_post_title_input"
+        ).value;
+        var contentInput = document.querySelector(
+            "#id_post_content_input"
+        ).value;
+        postSocket.send(JSON.stringify({ content: contentInput, title: titleInput, username: "{{parent.username}}" }));
+    };
+    postSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+
+        document.querySelector("#id_post_title_input").value = "";
+        document.querySelector("#id_post_content_input").value = "";
+        document.querySelector("#id_post_title_input").focus();
+
+        if (data.username !== username) {
+            Swal.fire({
+                toast: true,
+                title: `${data.username} posted about ${data.title}!`,
+                text: `${data.content.substring(0, 100)} ....`,
+                icon: 'info',
+                position: 'top-end',
+                showCancelButton: true,
+                cancelButtonText: 'Dismiss',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Read it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var postLocation = window.location.origin + data.url;
+                    window.location.href = postLocation;
+                }
+            })
+        }
+        else {
+            Swal.fire({
+                toast: false,
+                title: `Your post has about ${data.title} has been submitted successfully!`,
+                text: `${data.content.substring(0, 150)} ....`,
+                icon: 'success',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Ok, got it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.location.reload();
+                }
+            })
+        }
+    };
+</script>
 
   {% block custom_js %}
 
