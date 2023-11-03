@@ -15,7 +15,12 @@ def post_list(request):
     parent_profile = parent.parentprofile
 
     template_name = "forum/forum.html"
-    context = {"posts": posts, "parent": parent, "parent_profile": parent_profile}
+    context = {
+        "posts": posts,
+        "parent": parent,
+        "parent_profile": parent_profile,
+        "section": "forum",
+    }
 
     return render(request, template_name=template_name, context=context)
 
@@ -34,6 +39,7 @@ def post_detail(request, post_slug, parent_id):
         "parent": parent,
         "parent_profile": parent_profile,
         "og_comments": og_comments,
+        "section": "forum_post",
     }
     return render(request, template_name=template_name, context=context)
 

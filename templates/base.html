@@ -477,29 +477,37 @@
       console.log(`The connection was setup successfully to "${socaddress}!`);
     };
     postSocket.onclose = function (e) {
-      console.log(`something unexpected happened when connecting to "${socaddress}/" !`);
+      console.log(`something unexpected happened when connecting to "${socaddress}" !`);
     };
-    document.querySelector("#id_post_title_input").focus();
-    document.querySelector("#id_post_title_input").onkeyup = function (e) {
-      if (e.keyCode == 13) {
-        document.querySelector("#id_post_create_button").click();
-      }
-    };
-    document.querySelector("#id_post_create_button").onclick = function (e) {
-      var titleInput = document.querySelector(
-        "#id_post_title_input"
-      ).value;
-      var contentInput = document.querySelector(
-        "#id_post_content_input"
-      ).value;
-      postSocket.send(JSON.stringify({ content: contentInput, title: titleInput, username: "{{parent.username}}" }));
-    };
+
+    var pagesection = "{{section}}";
+
+    if (pagesection == "forum") {
+      document.querySelector("#id_post_title_input").focus();
+      document.querySelector("#id_post_title_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#id_post_create_button").click();
+        }
+      };
+      document.querySelector("#id_post_create_button").onclick = function (e) {
+        var titleInput = document.querySelector(
+          "#id_post_title_input"
+        ).value;
+        var contentInput = document.querySelector(
+          "#id_post_content_input"
+        ).value;
+        postSocket.send(JSON.stringify({ content: contentInput, title: titleInput, username: "{{parent.username}}" }));
+      };
+    }
+
+
     postSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
-
-      document.querySelector("#id_post_title_input").value = "";
-      document.querySelector("#id_post_content_input").value = "";
-      document.querySelector("#id_post_title_input").focus();
+      if (pagesection == "forum") {
+        document.querySelector("#id_post_title_input").value = "";
+        document.querySelector("#id_post_content_input").value = "";
+        document.querySelector("#id_post_title_input").focus();
+      }
 
       if (data.username !== username) {
         Swal.fire({
