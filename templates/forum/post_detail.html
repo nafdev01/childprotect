@@ -103,15 +103,15 @@
     <div class="d-flex justify-content-center row">
         <div class="d-flex flex-column col-md-8">
             <div class="coment-bottom bg-white p-2">
-                <form action="{% url 'forum:create_og_comment' post.id %}" method="post">
+                <form action="{% url 'forum:create_og_comment' post.id %}" method="post" id="create-comment-form">
                     {% csrf_token %}
                     <textarea class="form-control form-control-sm mb-2" name="content" id="og_comment_input"></textarea>
-                    <button class="btn btn-primary" type="submit">Comment</button>
+                    <button class="btn btn-primary" type="button" id="id-og-comment-create-button">Comment</button>
                 </form>
                 {% for comment in post.og_comments %}
                 <div class="commented-section m-2">
                     <div class="d-flex flex-row justify-content-between commented-user">
-                        <p class="comment-comment-by">{{comment.reply_by}}</p>
+                        <p class="comment-comment-by">{{comment.comment_by}}</p>
                         <small class="text-muted comment-timestamp">
                             {{comment.comment_on|timesince}}&nbsp;ago
                         </small>
@@ -161,4 +161,138 @@
         replyForm.classList.toggle("d-none");
     }
 </script>
+<script>
+    var username = "{{ parent.username }}";
+    var postTitle = "{{post.title}}";
+    var postId = "{{post.id}}";
+
+    var loc = window.location;
+    var wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+        wsStart = 'wss://'
+    }
+
+    var socaddress2 = wsStart + window.location.host + "/ws/og/comment/";
+    const commentSocket = new WebSocket(socaddress2);
+    commentSocket.onopen = function (e) {
+        console.log(`The connection was setup successfully to "${socaddress2}!`);
+    };
+    commentSocket.onclose = function (e) {
+        console.log(`something unexpected happened when connecting to "${socaddress2}/" !`);
+        console.log(`Error: ${e}`);
+    };
+    document.querySelector("#og_comment_input").focus();
+    document.querySelector("#og_comment_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+            document.querySelector("#id-og-comment-create-button").click();
+        }
+    };
+    document.querySelector("#id-og-comment-create-button").onclick = function (e) {
+        var contentInput = document.querySelector(
+            "#og_comment_input"
+        ).value;
+
+        commentSocket.send(JSON.stringify({ content: contentInput, username: "{{parent.username}}", post_id: postId }));
+    };
+    commentSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+
+        document.querySelector("#og_comment_input").value = "";
+        document.querySelector("#og_comment_input").focus();
+
+        if (data.username !== username) {
+            Swal.fire({
+                toast: true,
+                title: `${data.username} commented on ${postTitle}!`,
+                text: `${data.content.substring(0, 100)} ....`,
+                icon: 'info',
+                position: 'top-end',
+                showCancelButton: true,
+                cancelButtonText: 'Dismiss',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Read it!'
+            });
+
+            // Create an HTML string representing the content you want to insert
+            const commentHtml = `
+            <div class="commented-section m-2">
+                <div class="d-flex flex-row justify-content-between commented-user">
+                    <p class="comment-comment-by">${data.username}</p>
+                    <small class="text-muted comment-timestamp">
+                        ${data.comment_on} &nbsp;ago
+                    </small>
+                </div>
+                <div class="comment-content">
+                    <span>${data.content}</span>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button type="button" class="reply-button" id="show-reply-${data.comment_id}"
+                        data-bs-target="reply-form-${data.comment_id}" onclick="showReply(this)">Reply</button>
+                </div>
+
+                <div id="reply-form-${data.comment_id}" class="m-2 d-none d-block flex-row-reverse">
+                    <form action="${window.location.origin}/forum/reply/${data.comment_id}/" method="post">
+                        {% csrf_token %}
+                        <textarea class="form-control form-control-sm mb-2" name="content" id="og_comment_input"></textarea>
+                        <button class="submit-reply-button" type="submit">Reply</button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+            // Find the target element with the id "foodismine"
+            const targetElement = document.getElementById("create-comment-form");
+
+            // Append the commentHtml to the target element
+            targetElement.insertAdjacentHTML('afterend', commentHtml);
+
+        }
+        else {
+            Swal.fire({
+                toast: false,
+                position: 'top-end',
+                title: `Your comment about ${postTitle} has been submitted successfully!`,
+                text: `${data.content.substring(0, 150)} ....`,
+                icon: 'success',
+                confirmButtonColor: '#008000',
+                confirmButtonText: 'Ok, got it!'
+            })
+
+            // Create an HTML string representing the content you want to insert
+            const commentHtml = `
+            <div class="commented-section m-2">
+                <div class="d-flex flex-row justify-content-between commented-user">
+                    <p class="comment-comment-by">${data.username}</p>
+                    <small class="text-muted comment-timestamp">
+                        ${data.comment_on} &nbsp;ago
+                    </small>
+                </div>
+                <div class="comment-content">
+                    <span>${data.content}</span>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button type="button" class="reply-button" id="show-reply-${data.comment_id}"
+                        data-bs-target="reply-form-${data.comment_id}" onclick="showReply(this)">Reply</button>
+                </div>
+
+                <div id="reply-form-${data.comment_id}" class="m-2 d-none d-block flex-row-reverse">
+                    <form action="${window.location.origin}/forum/reply/${data.comment_id}/" method="post">
+                        {% csrf_token %}
+                        <textarea class="form-control form-control-sm mb-2" name="content" id="og_comment_input"></textarea>
+                        <button class="submit-reply-button" type="submit">Reply</button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+            // Find the target element with the id "foodismine"
+            const targetElement = document.getElementById("create-comment-form");
+
+            // Append the commentHtml to the target element
+            targetElement.insertAdjacentHTML('afterend', commentHtml);
+
+        }
+    };
+</script>
+
 {% endblock custom_js %}
