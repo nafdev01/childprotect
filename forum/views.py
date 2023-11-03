@@ -54,6 +54,7 @@ def create_comment(request, post_id=None, comment_id=None):
 
         elif comment_id:
             comment = get_object_or_404(Comment, id=comment_id)
+            post = comment.post
             reply = Comment.objects.create(
                 content=content,
                 reply_to=comment,
@@ -64,8 +65,9 @@ def create_comment(request, post_id=None, comment_id=None):
 
         else:
             messages.error(request, f"You don't have access to this page")
+            return redirect("forum:post_list")
 
-    return redirect("forum:post_list")
+    return redirect(post)
 
 
 def add_subscriber(request):

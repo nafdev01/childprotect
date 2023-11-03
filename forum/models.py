@@ -15,7 +15,7 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={"user_type": User.UserType.PARENT},
     )
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=255, editable=False, null=True)
     content = models.TextField()
     posted_on = models.DateTimeField(auto_now_add=True, null=True)
