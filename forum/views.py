@@ -48,6 +48,7 @@ def create_comment(request, post_id=None, comment_id=None):
                 content=content,
                 post=post,
                 type_of_comment=TypeOfComment.ORIGINAL,
+                comment_by=request.user,
             )
             new_comment.save()
             messages.success(request, f"You have replied to a post")
@@ -59,6 +60,7 @@ def create_comment(request, post_id=None, comment_id=None):
                 content=content,
                 reply_to=comment,
                 type_of_comment=TypeOfComment.REPLY,
+                comment_by=request.user,
             )
             reply.save()
             messages.success(request, f"You have replied to a post")

@@ -24,7 +24,7 @@ async def custom_save_post(text_data):
 
 class PostConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.roomGroupName = "grouppost"
+        self.roomGroupName = "group_post"
         await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
         await self.accept()
 
