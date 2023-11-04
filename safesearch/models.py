@@ -336,7 +336,7 @@ class ResultReport(models.Model):
         ordering = ["-reported_on"]
 
 
-class SiteVisite(models.Model):
+class SiteVisit(models.Model):
     """Model for Site Visits"""
 
     child = models.ForeignKey(
@@ -345,6 +345,12 @@ class SiteVisite(models.Model):
         null=True,
         limit_choices_to={"user_type": User.UserType.CHILD},
     )
+    search = models.ForeignKey(
+        SearchPhrase,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+
     site_link = models.URLField(max_length=250)
     site_title = models.CharField(max_length=250)
     site_snippet = models.TextField()

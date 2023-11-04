@@ -20,7 +20,9 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
                         <h4 class="card-title">
-                            <a href="javascript:void(0);" onclick="openLink('{{ result.link }}')" target="_blank">
+                            <a href="javascript:void(0);"
+                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}')"
+                                target="_blank">
                                 {{ result.title }}
                             </a>
                         </h4>
@@ -90,9 +92,11 @@
 
 {% block custom_js %}
 <script>
-    function openLink(link) {
+    function openLink(link, title, snippet, search_query_id) {
         // the desired window properties, including height
         var windowFeatures = 'height=400,width=600';
+
+        saveSiteVisit(link, title, snippet, search_query_id);
 
         // Open the link in a new window with the specified properties
         window.open(link, '_blank', windowFeatures);
@@ -152,15 +156,36 @@
             showCancelButton: true,
             showConfirmButton: false,
             cancelButtonColor: '#008000',
-            cancelButtonText: 'OKay!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var postLocation = window.location.origin + data.url;
-                window.location.href = postLocation;
-            }
+            cancelButtonText: 'Okay!'
         })
-
     };
 </script>
+<script>
+    var loc = window.location;
+    var wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+        wsStart = 'wss://'
+    }
 
+    var socaddress4 = wsStart + window.location.host + "/ws/site/visit/";
+    const siteVisitSocket = new WebSocket(socaddress4);
+    siteVisitSocket.onopen = function (e) {
+        console.log(`The connection was setup successfully to "${socaddress4}!`);
+    };
+    siteVisitSocket.onclose = function (e) {
+        console.log(`smething unexpected happened when connecting to "${socaddress4}" !`);
+        console.log(`Error: ${e.code} , reason: ${e.reason}`);
+    };
+
+    function saveSiteVisit(link, title, snippet, search_query_id) {
+        siteVisitSocket.send(JSON.stringify({ title: title, link: link, snippet: snippet, search_query_id: search_query_id, username: "{{request.user.username}}" }));
+        console.log(`Sent visit info for ${link}!`)
+    }
+
+
+    siteVisitSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        console.log(`Saved visit info for ${data.link}!`)
+    };
+</script>
 {% endblock custom_js %}
