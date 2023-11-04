@@ -12,7 +12,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_project.settings")
 application = get_asgi_application()
 
 
-from forum import routing
+from django_project import routing
 
 application = ProtocolTypeRouter(
     {
