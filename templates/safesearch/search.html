@@ -14,18 +14,58 @@
 
     <div class="search-results">
         {% if search_results %}
-        <ul>
+        <div>
             {% for result in search_results %}
-            <li>
-                <h3>
-                    <a href="javascript:void(0);" onclick="openLink('{{ result.link }}')" target="_blank">
-                        {{ result.title }}
-                    </a>
-                </h3>
-                <p>{{ result.snippet }}</p>
-            </li>
+            <div class="card m-2 p-2">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="card-title">
+                            <a href="javascript:void(0);" onclick="openLink('{{ result.link }}')" target="_blank">
+                                {{ result.title }}
+                            </a>
+                        </h4>
+                        <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
+                            data-bs-target="#result{{result.index}}Modal">Report</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p>{{ result.snippet }}</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="result{{result.index}}Modal" tabindex="-1"
+                aria-labelledby="result{{result.index}}ModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                id="id-close-result-report-modal{{result.index}}"></button>
+                            <div>
+                                <div class="container-fluid">
+                                    <p>Do you want to report this result "{{result.title}}"?</p>
+                                </div>
+                                <div class="container-fluid">
+                                    <input type="hidden" value="{{result.title}}" name="result_title"
+                                        id="id-result-report-title{{result.index}}">
+                                    <input type="hidden" value="{{result.link}}" name="result_link"
+                                        id="id-result-report-link{{result.index}}">
+                                    <input type="hidden" value="{{result.snippet}}" name="result_snippet"
+                                        id="id-result-report-snippet{{result.index}}">
+                                    <input type="hidden" value="{{search_phrase.id}}" name="search_query_id"
+                                        id="id-search-query-id{{result.index}}">
+                                    <textarea class="form-control" name="report_reason"
+                                        id="id-report-reason{{result.index}}" rows=" 3"></textarea>
+                                    <button type="button" class="btn btn-sm btn-danger" id="id-report-result-button"
+                                        onclick="reportResult('{{result.index}}')">Report Result</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {% endfor %}
-        </ul>
+        </div>
         {% else %}
         <p>No search results found.</p>
         {% endif %}
@@ -46,15 +86,82 @@
     </form>
     {% csrf_token %}
 </div>
+{% endblock %}
 
+{% block custom_js %}
 <script>
     function openLink(link) {
-        // Specify the desired window properties, including height
+        // the desired window properties, including height
         var windowFeatures = 'height=400,width=600';
 
         // Open the link in a new window with the specified properties
         window.open(link, '_blank', windowFeatures);
     }
 </script>
+<script>
+    var loc = window.location;
+    var wsStart = 'ws://';
+    if (loc.protocol == 'https:') {
+        wsStart = 'wss://'
+    }
 
-{% endblock %}
+
+    var socaddress3 = wsStart + window.location.host + "/ws/report/result/";
+    const reportResultSocket = new WebSocket(socaddress3);
+    reportResultSocket.onopen = function (e) {
+        console.log(`The connection was setup successfully to "${socaddress3}!`);
+    };
+    reportResultSocket.onclose = function (e) {
+        console.log(`something unexpected happened when connecting to "${socaddress3}" !`);
+        console.log(`Error: ${e.code} , reason: ${e.reason}`);
+    };
+
+    function reportResult(result_index) {
+        var result_title = document.querySelector(
+            "#id-result-report-title" + result_index
+        ).value;
+        var result_link = document.querySelector(
+            "#id-result-report-link" + result_index
+        ).value;
+        var result_snippet = document.querySelector(
+            "#id-result-report-snippet" + result_index
+        ).value;
+        var search_query_id = document.querySelector(
+            "#id-search-query-id" + result_index
+        ).value;
+        var report_reason = document.querySelector(
+            "#id-report-reason" + result_index
+        ).value;
+        reportResultSocket.send(JSON.stringify({ title: result_title, link: result_link, snippet: result_snippet, reason: report_reason, search_query_id: search_query_id, username: "{{request.user.username}}" }));
+        var close_modal_button = document.querySelector(
+            "#id-close-result-report-modal" + result_index
+        );
+        close_modal_button.click();
+    }
+
+
+    reportResultSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+
+        if (data.username !== username) {
+            Swal.fire({
+                toast: true,
+                title: `You reported a result!`,
+                text: `You reported the result ${data.title} on the search ${data.search_phrase} ....`,
+                icon: 'info',
+                position: 'top-end',
+                showCancelButton: true,
+                showConfirmButton: false,
+                cancelButtonColor: '#008000',
+                cancelButtonText: 'OKay!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var postLocation = window.location.origin + data.url;
+                    window.location.href = postLocation;
+                }
+            })
+        }
+    };
+</script>
+
+{% endblock custom_js %}

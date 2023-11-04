@@ -43,6 +43,7 @@ def search(request):
     child_profile = child.childprofile
     parent_profile = child_profile.parent_profile
     parent = parent_profile.parent
+    context = dict()
 
     search_results = []  # Initialize an empty list
     # Get the current time
@@ -92,6 +93,7 @@ def search(request):
                 search_status=search_status,
             )
             search_phrase.save()
+            context["search_phrase"] = search_phrase
 
             search_results, suspicious_results = get_results(
                 settings.GOOGLE_API_KEY,
@@ -138,7 +140,8 @@ def search(request):
             searched = False
 
     template_name = "safesearch/search.html"
-    context = {"search_results": search_results, "searched": searched}
+    context["search_results"] = search_results
+    context["searched"] = searched
     return render(request, template_name, context)
 
 

@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
+from accounts.models import User
+
 
 # choices for reasons for a ban
 class SearchStatus(models.TextChoices):
@@ -301,3 +303,59 @@ class BannedDefault(models.Model):
 
     def __str__(self):
         return f"default banned word: {self.word}"
+
+
+class ResultReport(models.Model):
+    """Model for Child Reporting Results to Parents"""
+
+    child = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        null=True,
+        limit_choices_to={"user_type": User.UserType.CHILD},
+    )
+    search = models.ForeignKey(
+        SearchPhrase,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    result_title = models.CharField(max_length=250)
+    result_link = models.URLField(max_length=250)
+    result_snippet = models.TextField()
+    report_reason = models.TextField()
+    reported_on = models.DateTimeField(auto_now_add=True)
+    is_reviewed = models.BooleanField(default=False)
+    reviewed_on = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.result_title} reported by {self.child}"
+
+    class Meta:
+        verbose_name = "Result Report"
+        verbose_name_plural = "Result Reports"
+        ordering = ["-reported_on"]
+
+
+class SiteVisite(models.Model):
+    """Model for Site Visits"""
+
+    child = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        null=True,
+        limit_choices_to={"user_type": User.UserType.CHILD},
+    )
+    site_link = models.URLField(max_length=250)
+    site_title = models.CharField(max_length=250)
+    site_snippet = models.TextField()
+    visited_on = models.DateTimeField(auto_now_add=True)
+    is_reviewed = models.BooleanField(default=False)
+    reviewed_on = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.site_link} visited by {self.child}"
+
+    class Meta:
+        verbose_name = "Site Visite"
+        verbose_name_plural = "Site Visites"
+        ordering = ["-visited_on"]
