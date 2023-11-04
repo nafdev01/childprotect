@@ -20,10 +20,11 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
                         <h4 class="card-title">
-                            <button class="btn btn-link"
-                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}')">
+                            <a href="javascript:void(0);"
+                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}')"
+                                target="_blank">
                                 {{ result.title }}
-                            </button>
+                            </a>
                         </h4>
                         <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
                             data-bs-target="#result{{result.index}}Modal">Report</button>
