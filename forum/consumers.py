@@ -6,6 +6,12 @@ from accounts.models import User
 from forum.models import Post, Comment, TypeOfComment
 from django.utils.text import slugify
 from django.utils.timesince import timesince
+from channels.layers import get_channel_layer
+import logging
+
+channel_layer = get_channel_layer()
+
+logger = logging.getLogger(__name__)
 
 
 async def custom_save_post(text_data):
@@ -21,6 +27,7 @@ async def custom_save_post(text_data):
         return post
     except Exception as e:
         print(f"Error: {e}")
+        logger.warning(f"Error: {e}")
 
 
 async def custom_save_og_comment(text_data):
@@ -42,6 +49,7 @@ async def custom_save_og_comment(text_data):
         return comment
     except Exception as e:
         print(f"Error: {e}")
+        logger.warning(f"Error: {e}")
 
 
 class PostConsumer(AsyncWebsocketConsumer):
@@ -111,6 +119,7 @@ class OgCommentConsumer(AsyncWebsocketConsumer):
             )
         except Exception as e:
             print(e)
+            logger.warning(f"Error: {e}")
 
     async def sendOgComment(self, event):
         try:
@@ -130,3 +139,4 @@ class OgCommentConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=text_data)
         except Exception as e:
             print(e)
+            logger.warning(f"Error: {e}")

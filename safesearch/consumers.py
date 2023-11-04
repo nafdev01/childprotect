@@ -8,8 +8,11 @@ from django.utils.text import slugify
 from django.utils.timesince import timesince
 from safesearch.models import ResultReport
 from channels.layers import get_channel_layer
+import logging
 
 channel_layer = get_channel_layer()
+
+logger = logging.getLogger(__name__)
 
 
 async def custom_save_result_report(text_data):
@@ -41,6 +44,8 @@ async def custom_save_result_report(text_data):
         return result_report
     except Exception as e:
         print(f"Error: {e}")
+        logger.warning(f"Error: {e}")
+
 
 
 class ResultReportConsumer(AsyncWebsocketConsumer):
@@ -77,6 +82,8 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps(success_response))
         except Exception as e:
             print(e)
+            logger.warning(f"Error: {e}")
+
 
     async def sendParentReport(self, event):
         try:
@@ -101,3 +108,5 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=text_data)
         except Exception as e:
             print(e)
+            logger.warning(f"Error: {e}")
+
