@@ -7,6 +7,9 @@ from safesearch.models import SearchPhrase
 from django.utils.text import slugify
 from django.utils.timesince import timesince
 from safesearch.models import ResultReport
+from channels.layers import get_channel_layer
+
+channel_layer = get_channel_layer()
 
 
 async def custom_save_result_report(text_data):
@@ -42,6 +45,7 @@ async def custom_save_result_report(text_data):
 
 class ResultReportConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.user = self.scope["user"]
         self.roomGroupName = "group_report_result"
         await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
         await self.accept()
@@ -59,19 +63,18 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
         snippet = text_data_json["snippet"]
         reason = text_data_json["reason"]
 
+        success_response = {
+            "type": "sendParentReport",
+            "username": username,
+            "title": title,
+            "link": link,
+            "snippet": snippet,
+            "reason": reason,
+            "search_phrase": report_result.search.phrase,
+        }
+
         try:
-            await self.channel_layer.group_send(
-                self.roomGroupName,
-                {
-                    "type": "sendParentReport",
-                    "username": username,
-                    "title": title,
-                    "link": link,
-                    "snippet": snippet,
-                    "reason": reason,
-                    "search_phrase": report_result.search.phrase,
-                },
-            )
+            await self.send(text_data=json.dumps(success_response))
         except Exception as e:
             print(e)
 

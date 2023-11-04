@@ -143,24 +143,23 @@
     reportResultSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
 
-        if (data.username !== username) {
-            Swal.fire({
-                toast: true,
-                title: `You reported a result!`,
-                text: `You reported the result ${data.title} on the search ${data.search_phrase} ....`,
-                icon: 'info',
-                position: 'top-end',
-                showCancelButton: true,
-                showConfirmButton: false,
-                cancelButtonColor: '#008000',
-                cancelButtonText: 'OKay!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var postLocation = window.location.origin + data.url;
-                    window.location.href = postLocation;
-                }
-            })
-        }
+        Swal.fire({
+            toast: true,
+            title: `You reported a result!`,
+            text: `You reported the result ${data.title.substring(0, 20)} on the search ${data.search_phrase} ....`,
+            icon: 'info',
+            position: 'top-end',
+            showCancelButton: true,
+            showConfirmButton: false,
+            cancelButtonColor: '#008000',
+            cancelButtonText: 'OKay!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var postLocation = window.location.origin + data.url;
+                window.location.href = postLocation;
+            }
+        })
+
     };
 </script>
 
