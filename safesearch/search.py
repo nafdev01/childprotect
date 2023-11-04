@@ -3,6 +3,9 @@ import requests
 from safesearch.models import BannedType, BannedWord, FlaggedWord, SearchAlert
 from django.template.loader import get_template
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def is_word_or_phrase(input_string):
@@ -142,29 +145,34 @@ def get_results(api_key, custom_search_engine_id, query, child_profile):
     response = requests.get(url)
 
     # Parse and process the response (e.g., extract search results).
-    if response.status_code == 200:
-        data = response.json()
+    try:
+        if response.status_code == 200:
+            data = response.json()
 
-        # Check if there are search results
-        if "items" in data:
-            # Iterate through the search results and print them
-            for index, item in enumerate(data["items"], start=1):
-                search_result = {
-                    "index": index,
-                    "title": item["title"],
-                    "link": item["link"],
-                    "snippet": item["snippet"],
-                }
-                search_results.append(search_result)
+            # Check if there are search results
+            if "items" in data:
+                # Iterate through the search results and print them
+                for index, item in enumerate(data["items"], start=1):
+                    search_result = {
+                        "index": index,
+                        "title": item["title"],
+                        "link": item["link"],
+                        "snippet": item["snippet"],
+                    }
+                    search_results.append(search_result)
 
-            filtered_search_results, suspicious_results = filter_search_results(
-                search_results, child_profile
-            )
-            return filtered_search_results, suspicious_results
+                filtered_search_results, suspicious_results = filter_search_results(
+                    search_results, child_profile
+                )
+                return filtered_search_results, suspicious_results
 
+            else:
+                print("No search results found.")
+                return None
         else:
-            print("No search results found.")
+            print(f"Error: {response.status_code}")
             return None
-    else:
-        print(f"Error: {response.status_code}")
-        return None
+    except Exception as e:
+        print(f"Error{e}")
+        logger.warning(f"Error: {e}")
+
