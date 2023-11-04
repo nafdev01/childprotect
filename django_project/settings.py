@@ -185,7 +185,8 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS").lower() == "true"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+if DEVELOPMENT_MODE and LOCAL_SERVER:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGGING = {
     "version": 1,
