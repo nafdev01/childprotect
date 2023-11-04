@@ -4,7 +4,10 @@ from django.db.utils import IntegrityError
 
 
 DEFAULT_DICTIONARY = {
-    "inappropriate": BanReason.ADULT_CONTENT,
+    "adult": BanReason.ADULT_CONTENT,
+    "violent": BanReason.VIOLENT_AND_DISTURBING_CONTENT,
+    "drugs": BanReason.DRUGS,
+    "offensive": BanReason.OFFENSIVE_LANGUAGE,
 }
 
 
@@ -22,6 +25,8 @@ def run():
             for row in csv_reader:
                 # Output each word on a new line
                 for word in row:
+                    if word.strip() == "":
+                        continue
                     # Create a new BannedDefault object
                     try:
                         banned_default = BannedDefault.objects.create(
