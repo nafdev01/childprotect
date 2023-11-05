@@ -12,23 +12,42 @@
 
 
 {% block content %}
+
+
+
+
 <div class="container">
+    <div class="container my-3">
+        <form method="get">
+            <div class="input-group mb-3">
+                <input type="text" name="search-query" id="search-query" class="form-control" required
+                    placeholder="Search for ...">
+                <button type="submit" class="btn btn-success">
+                    &nbsp;<span class="text-white"><i class="fas fa-search"></i></span>
+                    <span class="text-white">Search</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="text-center">
+        {% if searched %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">
+                You searched for "{{search_phrase.phrase}}".
+            </h4>
+            <p>Displaying {{ search_results|length }} search results</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <p>You haven't performed a search yet.</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+    </div>
     {% if searched %}
     <div class="search-results">
-
-        <div class="container mb-3">
-            <form method="get">
-                <label class="text-center" for="search-query">Search</label>
-                <div class="input-group mb-3">
-                    <input type="text" name="search-query" id="search-query" class="form-control" required
-                        placeholder="Search for ...">
-                    <button type="submit" class="btn btn-success">Search</button>
-                </div>
-            </form>
-        </div>
-        <div class="alert alert-success m-2">
-            <p>Displaying search results:</p>
-        </div>
         {% if search_results %}
         <div>
             {% for result in search_results %}
@@ -90,11 +109,6 @@
         {% else %}
         <p>No search results found.</p>
         {% endif %}
-    </div>
-
-    {% else %}
-    <div class="alert alert-warning">
-        <p>You haven't performed a search yet.</p>
     </div>
     {% endif %}
 </div>
