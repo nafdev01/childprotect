@@ -8,10 +8,6 @@
     <h1>Toto Search</h1>
 
     {% if searched %}
-    <div class="alert alert-info">
-        <p>Displaying search results:</p>
-    </div>
-
     <div class="search-results">
 
         <div class="container mb-3">
@@ -83,6 +79,10 @@
             </div>
 
             {% endfor %}
+        </div>
+
+        <div class="alert alert-info m-2">
+            <p>Displaying search results:</p>
         </div>
         {% else %}
         <p>No search results found.</p>
