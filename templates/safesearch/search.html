@@ -18,15 +18,19 @@
             {% for result in search_results %}
             <div class="card m-2 p-2">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between">
-                        <h4 class="card-title">
+                    <div class="row">
+                        <div class="col-8">
                             <button type="button" class="btn btn-link mx-2"
                                 onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
                                 <span class="h5">{{ result.title }}</span>
-                                </a>
-                        </h4>
-                        <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
-                            data-bs-target="#result{{result.index}}Modal">Report</button>
+                            </button>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
+                                data-bs-target="#result{{result.index}}Modal">
+                                Report
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -95,7 +99,7 @@
         // the desired window properties, including height
         var windowFeatures = 'height=400,width=600';
 
-        saveSiteVisit(link, title, snippet, search_query_id);
+        saveSiteVisit(`${link}`, `${title}`, `${snippet}`, `${search_query_id}`);
 
         // Open the link in a new window with the specified properties
         window.open(link, '_blank', windowFeatures);
@@ -136,7 +140,7 @@
         var report_reason = document.querySelector(
             "#id-report-reason" + result_index
         ).value;
-        reportResultSocket.send(JSON.stringify({ title: result_title, link: result_link, snippet: result_snippet, reason: report_reason, search_query_id: search_query_id, parent_id: parent_id, username: "{{request.user.username}}" }));
+        reportResultSocket.send(JSON.stringify({ title: `${result_title}`, link: `${result_link}`, snippet: `${result_snippet}`, reason: `${report_reason}`, search_query_id: search_query_id, parent_id: parent_id, username: "{{request.user.username}}" }));
         var close_modal_button = document.querySelector(
             "#id-close-result-report-modal" + result_index
         );
@@ -181,7 +185,7 @@
     };
 
     function saveSiteVisit(link, title, snippet, search_query_id) {
-        siteVisitSocket.send(JSON.stringify({ title: title, link: link, snippet: snippet, search_query_id: search_query_id, parent_id:parent_id, username: "{{request.user.username}}" }));
+        siteVisitSocket.send(JSON.stringify({ title: title, link: link, snippet: snippet, search_query_id: search_query_id, parent_id: parent_id, username: "{{request.user.username}}" }));
         console.log(`Sent visit info for ${link}!`)
     }
 
