@@ -30,9 +30,9 @@
         </form>
     </div>
 
-    <div class="text-center">
+    <div class="text-center p-0">
         {% if searched %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert-success alert-dismissible fade show" role="alert">
             <h4 class="alert-heading">
                 You searched for "{{search_phrase.phrase}}".
             </h4>
@@ -56,13 +56,13 @@
             <div class="card m-2 p-2">
                 <div class="card-header">
                     <div class="row g-1">
-                        <div class="col-8">
+                        <div class="col-lg-10 col-sm-8 col-md-8">
                             <button type="button" class="btn btn-link"
                                 onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
                                 <span class="h5">{{ result.title }}</span>
                             </button>
                         </div>
-                        <div class="col-4">
+                        <div class="col-lg-2 col-sm-4 col-md-4">
                             <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
                                 data-bs-target="#result{{result.index}}Modal">
                                 Report
