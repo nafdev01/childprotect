@@ -20,9 +20,8 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
                         <h4 class="card-title">
-                            <a href="javascript:void(0);"
-                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}');"
-                                target="_blank">
+                            <button type="button" class="btn btn-link"
+                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}');">
                                 {{ result.title }}
                             </a>
                         </h4>
