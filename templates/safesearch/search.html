@@ -31,9 +31,9 @@
             {% for result in search_results %}
             <div class="card m-2 p-2">
                 <div class="card-header">
-                    <div class="row">
+                    <div class="row g-1">
                         <div class="col-8">
-                            <button type="button" class="btn btn-link mx-2"
+                            <button type="button" class="btn btn-link"
                                 onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
                                 <span class="h5">{{ result.title }}</span>
                             </button>
