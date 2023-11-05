@@ -20,6 +20,7 @@ async def custom_save_result_report(text_data):
     try:
         text_data_json = json.loads(text_data)
         username = text_data_json["username"]
+        parent_id = text_data_json["parent_id"]
         title = text_data_json["title"]
         link = text_data_json["link"]
         snippet = text_data_json["snippet"]
@@ -28,9 +29,12 @@ async def custom_save_result_report(text_data):
         search_phrase = await database_sync_to_async(SearchPhrase.objects.get)(
             id=search_query_id
         )
-        child = await database_sync_to_async(User.objects.get)(username=username)
+        child = await database_sync_to_async(User.children.get)(username=username)
+        parent = await database_sync_to_async(User.parents.get)(id=parent_id)
+
         result_report = ResultReport(
             child=child,
+            parent=parent,
             search=search_phrase,
             result_title=title,
             result_link=link,
@@ -52,6 +56,7 @@ async def custom_save_site_visit(text_data):
     try:
         text_data_json = json.loads(text_data)
         username = text_data_json["username"]
+        parent_id = text_data_json["parent_id"]
         title = text_data_json["title"]
         link = text_data_json["link"]
         snippet = text_data_json["snippet"]
@@ -59,9 +64,11 @@ async def custom_save_site_visit(text_data):
         search_phrase = await database_sync_to_async(SearchPhrase.objects.get)(
             id=search_query_id
         )
-        child = await database_sync_to_async(User.objects.get)(username=username)
+        child = await database_sync_to_async(User.children.get)(username=username)
+        parent = await database_sync_to_async(User.parents.get)(id=parent_id)
         site_visit = SiteVisit(
             child=child,
+            parent=parent,
             search=search_phrase,
             site_title=title,
             site_link=link,
@@ -69,9 +76,7 @@ async def custom_save_site_visit(text_data):
         )
 
         await database_sync_to_async(site_visit.save)()
-        print(
-            f"{site_visit.child} visited {site_visit.site_link}"
-        )
+        print(f"{site_visit.child} visited {site_visit.site_link}")
         return site_visit
     except Exception as e:
         print(f"Error: {e}")

@@ -313,6 +313,14 @@ class ResultReport(models.Model):
         on_delete=models.CASCADE,
         null=True,
         limit_choices_to={"user_type": User.UserType.CHILD},
+        related_name="reportedhildresults",
+    )
+    parent = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        null=True,
+        limit_choices_to={"user_type": User.UserType.PARENT},
+        related_name="reportedhildrenresults",
     )
     search = models.ForeignKey(
         SearchPhrase,
@@ -344,6 +352,14 @@ class SiteVisit(models.Model):
         on_delete=models.CASCADE,
         null=True,
         limit_choices_to={"user_type": User.UserType.CHILD},
+        related_name="siteschildvisited",
+    )
+    parent = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.CASCADE,
+        null=True,
+        limit_choices_to={"user_type": User.UserType.PARENT},
+        related_name="siteschildrenvisited",
     )
     search = models.ForeignKey(
         SearchPhrase,
