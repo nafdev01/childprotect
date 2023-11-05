@@ -155,9 +155,9 @@ def get_results(api_key, custom_search_engine_id, query, child_profile):
                 for index, item in enumerate(data["items"], start=1):
                     search_result = {
                         "index": index,
-                        "title": item["title"],
-                        "link": item["link"],
-                        "snippet": item["snippet"],
+                        "title": item.get("title", ""),
+                        "link": item.get("link", ""),
+                        "snippet": item.get("snippet", ""),
                     }
                     search_results.append(search_result)
 
@@ -175,4 +175,3 @@ def get_results(api_key, custom_search_engine_id, query, child_profile):
     except Exception as e:
         print(f"Error{e}")
         logger.warning(f"Error: {e}")
-

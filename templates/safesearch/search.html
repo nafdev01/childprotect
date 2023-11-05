@@ -20,9 +20,9 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between">
                         <h4 class="card-title">
-                            <button type="button" class="btn btn-link"
+                            <button type="button" class="btn btn-link mx-2"
                                 onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}');">
-                                {{ result.title }}
+                                <span class="h5">{{ result.title }}</span>
                             </a>
                         </h4>
                         <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
