@@ -136,7 +136,7 @@
         var report_reason = document.querySelector(
             "#id-report-reason" + result_index
         ).value;
-        reportResultSocket.send(JSON.stringify({ title: result_title, link: result_link, snippet: result_snippet, reason: report_reason, search_query_id: search_query_id, parent_id: parent_id, username: "{{request.user.username}}" }));
+        reportResultSocket.send(JSON.stringify({  title: `${title}`, link: `${link}`, snippet: `${snippet}`, search_query_id: `${search_query_id}`, reason: `${report_reason}`, parent_id: parent_id, username: "{{request.user.username}}" }));
         var close_modal_button = document.querySelector(
             "#id-close-result-report-modal" + result_index
         );
@@ -181,7 +181,7 @@
     };
 
     function saveSiteVisit(link, title, snippet, search_query_id) {
-        siteVisitSocket.send(JSON.stringify({ title: title, link: link, snippet: snippet, search_query_id: search_query_id, parent_id:parent_id, username: "{{request.user.username}}" }));
+        siteVisitSocket.send(JSON.stringify({ title: `${title}`, link: `${link}`, snippet: `${snippet}`, search_query_id: `${search_query_id}`, parent_id:parent_id, username: "{{request.user.username}}" }));
         console.log(`Sent visit info for ${link}!`)
     }
 
