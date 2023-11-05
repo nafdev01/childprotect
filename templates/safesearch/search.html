@@ -3,27 +3,30 @@
 
 {% block title %}Toto Search{% endblock title %}
 
+
+{% block header %}
+<div class="container-fluid text-center">
+    <h1 class="text-dark">Toto Search</h1>
+</div>
+{% endblock header %}
+
+
 {% block content %}
 <div class="container">
-    <h1>Toto Search</h1>
-
     {% if searched %}
     <div class="search-results">
 
         <div class="container mb-3">
             <form method="get">
+                <label class="text-center" for="search-query">Search</label>
                 <div class="input-group mb-3">
-                    <div class="form-floating">
-                        <input type="text" name="search-query" id="search-query" class="form-control" required
-                            placeholder="Search for ...">
-                        <label for="search-query">Search for ...</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <input type="text" name="search-query" id="search-query" class="form-control" required
+                        placeholder="Search for ...">
+                    <button type="submit" class="btn btn-success">Search</button>
                 </div>
             </form>
         </div>
-
-        <div class="alert alert-info m-2">
+        <div class="alert alert-success m-2">
             <p>Displaying search results:</p>
         </div>
         {% if search_results %}
