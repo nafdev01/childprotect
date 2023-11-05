@@ -1,11 +1,11 @@
 <!-- safesearch/search.html -->
 {% extends 'base.html' %}
 
-{% block title %}Search Engine{% endblock title %}
+{% block title %}Toto Search{% endblock title %}
 
 {% block content %}
 <div class="container">
-    <h1>Search Engine</h1>
+    <h1>Toto Search</h1>
 
     {% if searched %}
     <div class="alert alert-info">
@@ -83,7 +83,7 @@
     {% endif %}
 
     <form method="get">
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label for="search-query">Search Query:</label>
             <input type="text" name="search-query" id="search-query" class="form-control" required>
         </div>
