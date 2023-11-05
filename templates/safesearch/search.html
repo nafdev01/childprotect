@@ -16,12 +16,14 @@
 
         <div class="container mb-3">
             <form method="get">
-                <div class="form-floating mb-1">
-                    <input type="text" name="search-query" id="search-query" class="form-control" required
-                        placeholder="Search for ...">
-                    <label for="search-query">Search for ...</label>
+                <div class="input-group mb-3">
+                    <div class="form-floating mb-1">
+                        <input type="text" name="search-query" id="search-query" class="form-control" required
+                            placeholder="Search for ...">
+                        <label for="search-query">Search for ...</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
-                <button type="submit" class="btn btn-primary">Search</button>
             </form>
         </div>
         {% if search_results %}
