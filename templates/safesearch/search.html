@@ -58,7 +58,7 @@
                                         id="id-result-report-snippet{{result.index}}">
                                     <input type="hidden" value="{{search_phrase.id}}" name="search_query_id"
                                         id="id-search-query-id{{result.index}}">
-                                    <textarea class="form-control" name="report_reason"
+                                    <textarea class="form-control m-2" name="report_reason"
                                         id="id-report-reason{{result.index}}" rows=" 3"></textarea>
                                     <button type="button" class="btn btn-sm btn-danger" id="id-report-result-button"
                                         onclick="reportResult('{{result.index}}')">Report Result</button>
@@ -83,9 +83,9 @@
     {% endif %}
 
     <form method="get">
-        <div class="form-group mb-3">
-            <label for="search-query">Search Query:</label>
+        <div class="form-floating mb-3">
             <input type="text" name="search-query" id="search-query" class="form-control" required>
+            <label for="search-query">Search for ...</label>
         </div>
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
