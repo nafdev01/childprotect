@@ -21,7 +21,7 @@
                     <div class="d-flex justify-content-between">
                         <h4 class="card-title">
                             <button type="button" class="btn btn-link mx-2"
-                                onclick="openLink('{{ result.link }}','{{ result.title }}','{{ result.snippet }}','{{search_phrase.id}}');">
+                                onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
                                 <span class="h5">{{ result.title }}</span>
                                 </a>
                         </h4>
