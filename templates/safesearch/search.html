@@ -56,13 +56,13 @@
             <div class="card m-2 p-2">
                 <div class="card-header">
                     <div class="row g-2">
-                        <div class="col-lg-10 col-sm-7 col-md-7">
+                        <div class="col-8">
                             <button type="button" class="btn btn-link"
                                 onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
                                 <span class="h5">{{ result.title }}</span>
                             </button>
                         </div>
-                        <div class="col-lg-2 col-sm-4 col-md-4">
+                        <div class="col-4">
                             <button class="btn btn-sm btn-danger" id="report-result-modal-button" data-bs-toggle="modal"
                                 data-bs-target="#result{{result.index}}Modal">
                                 Report
