@@ -22,6 +22,10 @@
                 </div>
             </form>
         </div>
+
+        <div class="alert alert-info m-2">
+            <p>Displaying search results:</p>
+        </div>
         {% if search_results %}
         <div>
             {% for result in search_results %}
@@ -79,10 +83,6 @@
             </div>
 
             {% endfor %}
-        </div>
-
-        <div class="alert alert-info m-2">
-            <p>Displaying search results:</p>
         </div>
         {% else %}
         <p>No search results found.</p>
