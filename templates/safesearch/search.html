@@ -13,6 +13,17 @@
     </div>
 
     <div class="search-results">
+
+        <div class="container">
+            <form method="get">
+                <div class="form-floating mb-3">
+                    <input type="text" name="search-query" id="search-query" class="form-control" required
+                        placeholder="Search for ...">
+                    <label for="search-query">Search for ...</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
         {% if search_results %}
         <div>
             {% for result in search_results %}
@@ -81,15 +92,6 @@
         <p>You haven't performed a search yet.</p>
     </div>
     {% endif %}
-
-    <form method="get">
-        <div class="form-floating mb-3">
-            <input type="text" name="search-query" id="search-query" class="form-control" required placeholder="Search for ...">
-            <label for="search-query">Search for ...</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
-    {% csrf_token %}
 </div>
 {% endblock %}
 
