@@ -46,7 +46,7 @@ async def custom_save_result_report(text_data):
         print(
             f"{result_report.child}'s  reported {result_report.result_title[:20]} to db"
         )
-        return result_report
+        return child, parent, result_report
     except Exception as e:
         print(f"Error: {e}")
         logger.warning(f"Error: {e}")
@@ -85,8 +85,8 @@ async def custom_save_site_visit(text_data):
 
 class ResultReportConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope["user"]
-        self.room_group_name = "group_report_result"
+        self.room_name = self.scope["url_route"]["kwargs"]["child_id"]
+        self.room_group_name = f"report_result{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
@@ -95,7 +95,7 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        report_result = await custom_save_result_report(text_data)
+        child, parent, result_report = await custom_save_result_report(text_data)
 
         username = text_data_json["username"]
         title = text_data_json["title"]
@@ -110,11 +110,16 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
             "link": link,
             "snippet": snippet,
             "reason": reason,
-            "search_phrase": report_result.search.phrase,
+            "parent_id": parent.id,
+            "full_name": child.get_full_name(),
+            "search_phrase": result_report.search.phrase,
         }
 
         try:
-            await self.send(text_data=json.dumps(success_response))
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                success_response,
+            )
         except Exception as e:
             print(e)
             logger.warning(f"Error: {e}")
@@ -136,6 +141,7 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
                     "snippet": snippet,
                     "reason": reason,
                     "search_phrase": search_phrase,
+                    "full_name": event["full_name"]
                 }
             )
 
@@ -147,7 +153,7 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
 
 class SiteVisitConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["parent_id"]
+        self.room_name = self.scope["url_route"]["kwargs"]["child_id"]
         self.room_group_name = f"site_visit_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()

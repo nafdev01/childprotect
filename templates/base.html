@@ -468,6 +468,11 @@
 
   {% if request.user.is_parent %}
   <script>
+    var resultsReportedSockets = {};
+    var sitesVisitedSockets = {};
+  </script>
+
+  <script>
     var loc = window.location;
     var wsStart = 'ws://';
     if (loc.protocol == 'https:') {
@@ -546,20 +551,26 @@
         })
       }
     };
+  </script>
 
+  {% for child_profile in request.user.parentprofile.childprofile_set.all %}
+
+  <script>
     var parent_id = "{{ request.user.id }}";
+    var child_id = "{{ child_profile.child.id }}";
+    var socketname = `socaddress6${child_id}`
 
-    var socaddress5 = wsStart + window.location.host + "/ws/site/visit/" + parent_id + "/";
-    const sitesVisitedSocket = new WebSocket(socaddress5);
-    sitesVisitedSocket.onopen = function (e) {
-      console.log(`The connection was setup successfully to "${socaddress5}!`);
+    var socaddress5 = wsStart + window.location.host + "/ws/site/visit/" + child_id + "/";
+    sitesVisitedSockets[socketname] = new WebSocket(socaddress5);
+    sitesVisitedSockets[socketname].onopen = function (e) {
+      console.log(`The connection was setup successfully to site visited socket for ${child_id}!`);
     };
-    sitesVisitedSocket.onclose = function (e) {
-      console.log(`something unexpected happened when connecting to "${socaddress5}" !`);
+    sitesVisitedSockets[socketname].onclose = function (e) {
+      console.log(`something unexpected happened when connecting to  site visited socket for ${child_id} !`);
     };
 
 
-    sitesVisitedSocket.onmessage = function (e) {
+    sitesVisitedSockets[socketname].onmessage = function (e) {
       const data = JSON.parse(e.data);
 
       if (data.parent_id === parent_id) {
@@ -587,9 +598,52 @@
       }
     };
   </script>
+  {% endfor %}
+
+  {% for child_profile in request.user.parentprofile.childprofile_set.all %}
+
+  <script>
+    var parent_id = "{{ request.user.id }}";
+    var child_id = "{{ child_profile.child.id }}";
+    var socketname = `socaddress7${child_id}`
+
+    var socaddress7 = wsStart + window.location.host + "/ws/report/result/" + child_id + "/";
+    resultsReportedSockets[socketname] = new WebSocket(socaddress7);
+    resultsReportedSockets[socketname].onopen = function (e) {
+      console.log(`The connection was setup successfully to result reported socket for ${child_id}!`);
+    };
+    resultsReportedSockets[socketname].onclose = function (e) {
+      console.log(`something unexpected happened when connecting to result reported socket for ${child_id} !`);
+    };
+
+    resultsReportedSockets[socketname].onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      console.log(`Your child ${data.full_name} reported ${data.link} at ${data.title}!`)
+      Swal.fire({
+          toast: true,
+          title: `Your child ${data.full_name} Reported a Result!`,
+          showClass: {
+            popup: `animate__animated animate__fadeInUp animate__faster`
+          },
+          text: `${data.title} at ${data.link}`,
+          icon: 'info',
+          position: 'top-end',
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "View Site!",
+          cancelButtonText: "Dismiss"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open(data.link, '_blank');
+          }
+        })
+    };
+  </script>
+  {% endfor %}
+
+
   {% endif %}
-
-
 
   {% block custom_js %}
 

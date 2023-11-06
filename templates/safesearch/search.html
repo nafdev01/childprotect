@@ -172,8 +172,9 @@
     }
 
     var parent_id = "{{parent.id}}";
+    var child_id = "{{ request.user.id }}";
 
-    var socaddress3 = wsStart + window.location.host + "/ws/report/result/";
+    var socaddress3 = wsStart + window.location.host + "/ws/report/result/" + child_id + "/";
     const reportResultSocket = new WebSocket(socaddress3);
     reportResultSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress3}!`);
@@ -232,7 +233,7 @@
 
     var parent_id = "{{parent.id}}";
 
-    var socaddress4 = wsStart + window.location.host + "/ws/site/visit/" + parent_id + "/";
+    var socaddress4 = wsStart + window.location.host + "/ws/site/visit/" + child_id + "/";
     const siteVisitSocket = new WebSocket(socaddress4);
     siteVisitSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress4}!`);
