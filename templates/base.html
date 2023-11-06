@@ -575,9 +575,14 @@
           icon: 'info',
           position: 'top-end',
           showCancelButton: true,
-          showConfirmButton: false,
-          cancelButtonColor: '#008000',
-          cancelButtonText: 'Okay!'
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "View Site!",
+          cancelButtonText: "Dismiss"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open(data.link, '_blank');
+          }
         })
       }
     };
