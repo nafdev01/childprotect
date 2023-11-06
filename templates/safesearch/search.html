@@ -1,6 +1,6 @@
 <!-- safesearch/search.html -->
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Toto Search{% endblock title %}
 
 
@@ -18,7 +18,7 @@
 
 <div class="container">
     <div class="container my-3">
-        <form method="get">
+        <form method="get" id="id-search-form" onsubmit="startSearch()">
             <div class="input-group mb-3">
                 <input type="text" name="search-query" id="search-query" class="form-control" required
                     placeholder="Search for ...">
@@ -37,19 +37,23 @@
                 You searched for "{{search_phrase.phrase}}".
             </h4>
             <p>Displaying {{ search_results|length }} search results</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="close-search-alert"></button>
         </div>
         {% else %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <h4 class="alert-heading">
                 You haven't performed a search yet.
             </h4>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="close-search-alert"></button>
         </div>
         {% endif %}
+        <div class="container" id="search-gif" style="display: none;">
+            <img src="{% static 'search.gif' %}" alt="" height="100px">
+            <p>Searching ...</p>
+        </div>
     </div>
     {% if searched %}
-    <div class="search-results">
+    <div id="id-search-results">
         {% if search_results %}
         <div>
             {% for result in search_results %}
@@ -74,7 +78,6 @@
                     <p>{{ result.snippet }}</p>
                 </div>
             </div>
-
             <div class="modal fade" id="result{{result.index}}Modal" tabindex="-1"
                 aria-labelledby="result{{result.index}}ModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -126,6 +129,18 @@
 
         // Open the link in a new window with the specified properties
         window.open(link, '_blank', windowFeatures);
+    }
+    function startSearch() {
+        var search_query = document.querySelector("#search-query").value;
+        var form = document.querySelector("#id-search-form");
+        form.action = "{% url 'search' %}";
+        var alertCloseButton = document.querySelector("#close-search-alert");
+        alertCloseButton.click();
+        var searchResults = document.querySelector("#id-search-results");
+        searchResults.innerHTML = "";
+        var searchGif = document.querySelector("#search-gif");
+        searchGif.style.display = "block";
+        form.submit();
     }
 </script>
 <script>
