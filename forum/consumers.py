@@ -54,12 +54,12 @@ async def custom_save_og_comment(text_data):
 
 class PostConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.roomGroupName = "group_post"
-        await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
+        self.room_group_name = "group_post"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.roomGroupName, self.channel_layer)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_layer)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -69,7 +69,7 @@ class PostConsumer(AsyncWebsocketConsumer):
         content = text_data_json["content"]
 
         await self.channel_layer.group_send(
-            self.roomGroupName,
+            self.room_group_name,
             {
                 "type": "sendPost",
                 "title": title,
@@ -93,12 +93,13 @@ class PostConsumer(AsyncWebsocketConsumer):
 
 class OgCommentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.roomGroupName = "group_og_comment"
-        await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
+        self.room_name = self.scope["url_route"]["kwargs"]["post_id"]
+        self.room_group_name = f"post_{self.room_name}"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.roomGroupName, self.channel_layer)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_layer)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -108,7 +109,7 @@ class OgCommentConsumer(AsyncWebsocketConsumer):
 
         try:
             await self.channel_layer.group_send(
-                self.roomGroupName,
+                self.room_group_name,
                 {
                     "type": "sendOgComment",
                     "username": username,

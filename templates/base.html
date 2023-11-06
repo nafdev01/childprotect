@@ -12,6 +12,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <title>{% block title %}{% endblock %}</title>
   {% block custom_css %}{% endblock custom_css %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
 
@@ -462,7 +464,10 @@
         toast.addEventListener('mouseleave', Swal.resumeTimer)
       }
     })
+  </script>
 
+  {% if request.user.is_parent %}
+  <script>
     var loc = window.location;
     var wsStart = 'ws://';
     if (loc.protocol == 'https:') {
@@ -541,7 +546,45 @@
         })
       }
     };
+
+    var parent_id = "{{ request.user.id }}";
+
+    var socaddress5 = wsStart + window.location.host + "/ws/site/visit/" + parent_id + "/";
+    const sitesVisitedSocket = new WebSocket(socaddress5);
+    sitesVisitedSocket.onopen = function (e) {
+      console.log(`The connection was setup successfully to "${socaddress5}!`);
+    };
+    sitesVisitedSocket.onclose = function (e) {
+      console.log(`something unexpected happened when connecting to "${socaddress5}" !`);
+    };
+
+
+    sitesVisitedSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+
+      if (data.parent_id === parent_id) {
+        const data = JSON.parse(e.data);
+        console.log(`Your child ${data.full_name} visited ${data.link} at ${data.title}!`)
+        Swal.fire({
+          toast: true,
+          title: `Your child ${data.full_name} visited a site!`,
+          showClass: {
+            popup: `animate__animated animate__fadeInUp animate__faster`
+          },
+          text: `${data.title} at ${data.link}`,
+          icon: 'info',
+          position: 'top-end',
+          showCancelButton: true,
+          showConfirmButton: false,
+          cancelButtonColor: '#008000',
+          cancelButtonText: 'Okay!'
+        })
+      }
+    };
   </script>
+  {% endif %}
+
+
 
   {% block custom_js %}
 

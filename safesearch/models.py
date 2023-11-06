@@ -378,6 +378,6 @@ class SiteVisit(models.Model):
         return f"{self.site_link} visited by {self.child}"
 
     class Meta:
-        verbose_name = "Site Visite"
-        verbose_name_plural = "Site Visites"
+        verbose_name = "Site Visit"
+        verbose_name_plural = "Site Visits"
         ordering = ["-visited_on"]

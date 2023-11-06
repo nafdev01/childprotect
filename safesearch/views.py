@@ -44,9 +44,9 @@ def search(request):
     parent_profile = child_profile.parent_profile
     parent = parent_profile.parent
     context = dict()
+    context["parent"] = parent
 
-    search_results = []  # Initialize an empty list
-    # Get the current time
+    search_results = []
     current_time = datetime.datetime.now().time()
 
     # Define the search time boundaries

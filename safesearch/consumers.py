@@ -77,7 +77,7 @@ async def custom_save_site_visit(text_data):
 
         await database_sync_to_async(site_visit.save)()
         print(f"{site_visit.child} visited {site_visit.site_link}")
-        return site_visit
+        return child.get_full_name(), site_visit
     except Exception as e:
         print(f"Error: {e}")
         logger.warning(f"Error: {e}")
@@ -86,12 +86,12 @@ async def custom_save_site_visit(text_data):
 class ResultReportConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
-        self.roomGroupName = "group_report_result"
-        await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
+        self.room_group_name = "group_report_result"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.roomGroupName, self.channel_layer)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_layer)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -147,22 +147,23 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
 
 class SiteVisitConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope["user"]
-        self.roomGroupName = "group_open_link"
-        await self.channel_layer.group_add(self.roomGroupName, self.channel_name)
+        self.room_name = self.scope["url_route"]["kwargs"]["parent_id"]
+        self.room_group_name = f"site_visit_{self.room_name}"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.roomGroupName, self.channel_layer)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_layer)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        site_visit = await custom_save_site_visit(text_data)
+        child, site_visit = await custom_save_site_visit(text_data)
 
         username = text_data_json["username"]
         title = text_data_json["title"]
         link = text_data_json["link"]
         snippet = text_data_json["snippet"]
+        parent_id = text_data_json["parent_id"]
 
         success_response = {
             "type": "sendSiteVisit",
@@ -170,11 +171,16 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
             "title": title,
             "link": link,
             "snippet": snippet,
+            "parent_id": parent_id,
+            "full_name": child,
             "search_phrase": site_visit.search.phrase,
         }
 
         try:
-            await self.send(text_data=json.dumps(success_response))
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                success_response,
+            )
         except Exception as e:
             print(e)
             logger.warning(f"Error: {e}")
@@ -186,6 +192,8 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
             link = event["link"]
             snippet = event["snippet"]
             search_phrase = event["search_phrase"]
+            parent_id = event["parent_id"]
+            full_name = event["full_name"]
 
             text_data = json.dumps(
                 {
@@ -194,6 +202,8 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
                     "link": link,
                     "snippet": snippet,
                     "search_phrase": search_phrase,
+                    "parent_id": parent_id,
+                    "full_name": full_name,
                 }
             )
 

@@ -10,11 +10,7 @@
 </div>
 {% endblock header %}
 
-
 {% block content %}
-
-
-
 
 <div class="container">
     <div class="container my-3">
@@ -37,14 +33,16 @@
                 You searched for "{{search_phrase.phrase}}".
             </h4>
             <p>Displaying {{ search_results|length }} search results</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="close-search-alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                id="close-search-alert"></button>
         </div>
         {% else %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <h4 class="alert-heading">
                 You haven't performed a search yet.
             </h4>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="close-search-alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                id="close-search-alert"></button>
         </div>
         {% endif %}
         <div class="container" id="search-gif" style="display: none;">
@@ -61,9 +59,16 @@
                 <div class="card-header">
                     <div class="row g-2">
                         <div class="col-8">
-                            <button type="button" class="btn btn-link"
-                                onclick="openLink('{{ result.link|safe}}','{{ result.titleresult.link|safe }}','{{ result.snippetresult.link|safe }}','{{search_phrase.id}}');">
+                            <button type="button" class="btn btn-link" onclick="openLink('{{result.index}}')">
                                 <span class="h5">{{ result.title }}</span>
+                                <input type="hidden" value="{{result.title}}" name="result_title"
+                                    id="id-open-link-title{{result.index}}">
+                                <input type="hidden" value="{{result.link}}" name="result_link"
+                                    id="id-open-link-link{{result.index}}">
+                                <input type="hidden" value="{{result.snippet}}" name="result_snippet"
+                                    id="id-open-link-snippet{{result.index}}">
+                                <input type="hidden" value="{{search_phrase.id}}" name="search_query_id"
+                                    id="id-open-link-id{{result.index}}">
                             </button>
                         </div>
                         <div class="col-4">
@@ -121,14 +126,29 @@
 
 {% block custom_js %}
 <script>
-    function openLink(link, title, snippet, search_query_id) {
+    function openLink(result_index) {
         // the desired window properties, including height
         var windowFeatures = 'height=400,width=600';
-
-        saveSiteVisit(`${link}`, `${title}`, `${snippet}`, `${search_query_id}`);
-
+        try {
+            var result_title = document.querySelector(
+                "#id-open-link-title" + result_index
+            ).value;
+            var result_link = document.querySelector(
+                "#id-open-link-link" + result_index
+            ).value;
+            var result_snippet = document.querySelector(
+                "#id-open-link-snippet" + result_index
+            ).value;
+            var search_query_id = document.querySelector(
+                "#id-open-link-id" + result_index
+            ).value;
+            saveSiteVisit(result_link, result_title, result_snippet, search_query_id)
+        }
+        catch (err) {
+            console.log(err.message);
+        }
         // Open the link in a new window with the specified properties
-        window.open(link, '_blank', windowFeatures);
+        window.open(result_link, '_blank', windowFeatures);
     }
     function startSearch() {
         var search_query = document.querySelector("#search-query").value;
@@ -137,12 +157,13 @@
         var alertCloseButton = document.querySelector("#close-search-alert");
         alertCloseButton.click();
         var searchResults = document.querySelector("#id-search-results");
-        searchResults.innerHTML = "";
+        searchResults.style.display = "none";
         var searchGif = document.querySelector("#search-gif");
         searchGif.style.display = "block";
         form.submit();
     }
 </script>
+
 <script>
     var loc = window.location;
     var wsStart = 'ws://';
@@ -150,16 +171,16 @@
         wsStart = 'wss://'
     }
 
-    var parent_id = "{{search_phrase.searched_by.parent_profile.parent.id}}";
+    var parent_id = "{{parent.id}}";
 
     var socaddress3 = wsStart + window.location.host + "/ws/report/result/";
     const reportResultSocket = new WebSocket(socaddress3);
     reportResultSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress3}!`);
     };
-    reportResultSocket.onclose = function (e) {
+    reportResultSocket.onclose = function (error) {
         console.log(`something unexpected happened when connecting to "${socaddress3}" !`);
-        console.log(`Error: ${e.code} , reason: ${e.reason}`);
+        console.log(`Error: ${error.code} , reason: ${error.reason}`);
     };
 
     function reportResult(result_index) {
@@ -209,10 +230,9 @@
         wsStart = 'wss://'
     }
 
-    var parent_id = "{{search_phrase.searched_by.parent_profile.parent.id}}";
+    var parent_id = "{{parent.id}}";
 
-
-    var socaddress4 = wsStart + window.location.host + "/ws/site/visit/";
+    var socaddress4 = wsStart + window.location.host + "/ws/site/visit/" + parent_id + "/";
     const siteVisitSocket = new WebSocket(socaddress4);
     siteVisitSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress4}!`);
@@ -230,7 +250,7 @@
 
     siteVisitSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        console.log(`Saved visit info for ${data.link}!`)
+        console.log(`Saved visit info for ${data.link}!`);
     };
 </script>
 {% endblock custom_js %}

@@ -172,7 +172,7 @@
         wsStart = 'wss://'
     }
 
-    var socaddress2 = wsStart + window.location.host + "/ws/og/comment/";
+    var socaddress2 = wsStart + window.location.host + "/ws/og/comment/" + postId + "/";
     const commentSocket = new WebSocket(socaddress2);
     commentSocket.onopen = function (e) {
         console.log(`The connection was setup successfully to "${socaddress2}!`);
@@ -237,8 +237,7 @@
                         <button class="submit-reply-button" type="submit">Reply</button>
                     </form>
                 </div>
-            </div>
-        `;
+            </div> `;
 
             // Find the target element with the id "foodismine"
             const targetElement = document.getElementById("create-comment-form");
