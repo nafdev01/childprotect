@@ -7,13 +7,6 @@
 
 {% block custom_css %}
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-    }
-
     .container {
         width: 80%;
         margin: auto;
@@ -23,11 +16,10 @@
         margin-top: 30px;
         margin-bottom: 30px;
         border-radius: 10px;
-        animation: fade-in 1s ease-in-out;
+        animation: fade-in 2s ease-in-out;
     }
 
-    h1 {
-        font-size: 36px;
+    .addiction-heading {
         margin-top: 0;
         margin-bottom: 10px;
         text-align: left;
@@ -36,20 +28,11 @@
         cursor: pointer;
     }
 
-    h2 {
-        font-size: 24px;
-        margin-top: 20px;
-        margin-bottom: 10px;
-        color: #0084ff;
-    }
-
-    p {
+    .paragraph {
         font-size: 18px;
         line-height: 1.5;
         margin-bottom: 20px;
     }
-
-
 
     .custom-link {
         color: #0084ff;
@@ -157,31 +140,38 @@
 
 {% block content %}
 <div class="container">
-    <h2>What is Online Addiction?</h2>
-    <p>Online addiction is a bit like when you love something so much that you can't stop doing it. Imagine if
+    <h2 class="addiction-heading">What is Online Addiction?</h2>
+    <p class="paragraph">Online addiction is a bit like when you love something so much that you can't stop doing it.
+        Imagine if
         you really liked playing with your toys, and you played with them all the time, even when you should be
         eating or sleeping. It's a bit like that but with the internet. It's when someone spends too much time
         online, even when they don't need to.</p>
+    <div class="row g-2">
+        <div class="col-lg-6 col-md-12 col-md-12">
+            <h2 class="addiction-heading">Signs of Online Addiction</h2>
+            <ul>
+                <li>Spending too much time on the internet.</li>
+                <li>Sneaking online when no one is watching.</li>
+                <li>Telling lies about how much time you spend online.</li>
+                <li>Not following the rules your parents set for the internet.</li>
+                <li>Staying up all night just to be online.</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 col-md-12 col-md-12">
+            <h2 class="addiction-heading">How to Stop Online Addiction</h2>
+            <ul>
+                <li>Use the computer only when you have a reason.</li>
+                <li>Agree with your family when you can use the internet and stick to those rules.</li>
+                <li>Parents can use special programs to help manage your time online.</li>
+                <li>Spend time doing fun things outdoors with your family.</li>
+            </ul>
+        </div>
+    </div>
 
-    <h2>Signs of Online Addiction</h2>
-    <ul>
-        <li>Spending too much time on the internet.</li>
-        <li>Sneaking online when no one is watching.</li>
-        <li>Telling lies about how much time you spend online.</li>
-        <li>Not following the rules your parents set for the internet.</li>
-        <li>Staying up all night just to be online.</li>
-    </ul>
-
-    <h1>How to Stop Online Addiction</h1>
-    <ul>
-        <li>Use the computer only when you have a reason.</li>
-        <li>Agree with your family when you can use the internet and stick to those rules.</li>
-        <li>Parents can use special programs to help manage your time online.</li>
-        <li>Spend time doing fun things outdoors with your family.</li>
-    </ul>
-
-    <p>For more information and help, you can visit <a class="custom-link" href="https://www.childhelp.org/hotline/">Childhelp
-            National Child Abuse Hotline</a>.</p>
+    <p class="paragraph">
+        For more information and help, you can visit <a class="custom-link"
+            href="https://www.childhelp.org/hotline/">Childhelp National Child Abuse Hotline</a>.
+    </p>
 </div>
 {% endblock content %}
 

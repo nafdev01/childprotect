@@ -7,13 +7,6 @@
 
 {% block custom_css %}
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-    }
-
     .container {
         width: 80%;
         margin: auto;
@@ -23,40 +16,20 @@
         margin-top: 30px;
         margin-bottom: 30px;
         border-radius: 10px;
-        animation: fade-in 1s ease-in-out;
+        animation: fade-in 2s ease-in-out;
     }
 
-    h1 {
-        font-size: 36px;
-        margin-top: 0;
-        margin-bottom: 10px;
-        text-align: center;
-        color: #0084ff;
-        animation: shake 1s ease-in-out;
-        cursor: pointer;
-    }
-
-    h2 {
+    #id-tips {
         font-size: 24px;
         margin-top: 20px;
         margin-bottom: 10px;
         color: #0084ff;
     }
 
-    p {
+    .tips-item {
         font-size: 18px;
         line-height: 1.5;
         margin-bottom: 20px;
-    }
-
-    ul {
-        list-style-type: disc;
-        margin-left: 20px;
-        margin-bottom: 20px;
-    }
-
-    li {
-        margin-bottom: 10px;
     }
 
     .custom-link {
@@ -157,26 +130,34 @@
     </div>
     <div class="topic"
         style="color: green;font-size: xx-large;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
-        <b>Let's Stay Safe Online!</b></div>
+        <b>Let's Stay Safe Online!</b>
+    </div>
 </div>
 
 {% endblock header %}
 
 {% block content %}
 <div class="container">
-    <h2>Here Are Some Tips</h2>
-    <p>Protect yourself from things that are not suitable for kids. Don't visit those websites or share that stuff. If
+    <h2 id="id-tips">Here Are Some Tips</h2>
+    <p class="tips-item">Protect yourself from things that are not suitable for kids. Don't visit those websites or
+        share that
+        stuff. If
         you see something that bothers you, talk to your parents or an adult you trust.</p>
-    <p>If someone is being mean or talking in a way that makes you feel uncomfortable, it's okay to leave and not
+    <p class="tips-item">If someone is being mean or talking in a way that makes you feel uncomfortable, it's okay to
+        leave and not
         respond.</p>
-    <p>If someone is using bad words or being scary online, you can block them, so they can't bother you anymore.</p>
-    <p>Always be careful if someone, especially a stranger, wants to talk about things that make you uncomfortable.</p>
-    <p>If someone tricks you into doing something you shouldn't, tell a trusted adult right away.</p>
-    <p>If you see something online that's really wrong or makes you worried, you should tell someone like the police or
+    <p class="tips-item">If someone is using bad words or being scary online, you can block them, so they can't bother
+        you anymore.</p>
+    <p class="tips-item">Always be careful if someone, especially a stranger, wants to talk about things that make you
+        uncomfortable.</p>
+    <p class="tips-item">If someone tricks you into doing something you shouldn't, tell a trusted adult right away.</p>
+    <p class="tips-item">If you see something online that's really wrong or makes you worried, you should tell someone
+        like the police or
         a grown-up who can help.</p>
-    <p>Remember to take care of your computer or phone. Keeping them safe is important.</p>
+    <p class="tips-item">Remember to take care of your computer or phone. Keeping them safe is important.</p>
 
-    <p>For more information and help, you can visit <a class="custom-link" href="https://www.childhelp.org/hotline/">Childhelp National
+    <p class="tips-item">For more information and help, you can visit <a class="custom-link"
+            href="https://www.childhelp.org/hotline/">Childhelp National
             Child Abuse Hotline</a>.</p>
 </div>
 {% endblock content %}
