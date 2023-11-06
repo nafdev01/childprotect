@@ -7,33 +7,27 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import landscape, letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 from accounts.decorators import child_required, parent_required
 from accounts.models import *
-from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
+from accounts.notifications import (send_email_flagged_alert,
+                                    send_email_suspicious_alert)
 from safesearch.forms import *
 from safesearch.models import *
-from safesearch.search import (
-    create_flagged_alert,
-    create_flagged_words,
-    get_banned_phrases,
-    get_results,
-    has_banned_phrase,
-    is_within_time_range,
-    is_word_or_phrase,
-    word_is_banned,
-)
-from django.db.utils import IntegrityError
+from safesearch.search import (create_flagged_alert, create_flagged_words,
+                               get_banned_phrases, get_results,
+                               has_banned_phrase, is_within_time_range,
+                               word_is_banned)
 
 
 # child search functionality
@@ -398,7 +392,6 @@ def review_alert(request, alert_id):
 
 @parent_required
 def generate_pdf_report(request, child_id=None):
-    # Fetch the child's search history
     if child_id:
         child = User.children.get(id=child_id)
         search_history = SearchPhrase.objects.filter(searched_by__child_id=child_id)
@@ -407,13 +400,8 @@ def generate_pdf_report(request, child_id=None):
             searched_by__parent_profile__parent_id=request.user.id
         )
 
-    # Create a BytesIO buffer to receive the PDF content
     buffer = BytesIO()
-
-    # Create the PDF object, using the BytesIO buffer as its "file."
     doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
-
-    # Create a list to hold the table data
     data = [["Searched By", "Search Phrase", "Searched On", "Search Status"]]
 
     # Populate the data list with search history
@@ -443,12 +431,9 @@ def generate_pdf_report(request, child_id=None):
         )
     )
 
-    # Build the PDF document
     elements = []
     elements.append(table)
     doc.build(elements)
-
-    # Get the value of the BytesIO buffer and write it to the response.
     pdf_content = buffer.getvalue()
     buffer.close()
 

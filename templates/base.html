@@ -580,7 +580,10 @@
           toast: true,
           title: `Your child ${data.full_name} visited a site!`,
           showClass: {
-            popup: `animate__animated animate__fadeInUp animate__faster`
+            popup: `animate__animated animate__bounceInDown`
+          },
+          hideClass: {
+            popup: `animate__animated animate__fadeOutDown`
           },
           text: `${data.title} at ${data.link}`,
           icon: 'info',
@@ -620,24 +623,27 @@
       const data = JSON.parse(e.data);
       console.log(`Your child ${data.full_name} reported ${data.link} at ${data.title}!`)
       Swal.fire({
-          toast: true,
-          title: `Your child ${data.full_name} Reported a Result!`,
-          showClass: {
-            popup: `animate__animated animate__fadeInUp animate__faster`
-          },
-          text: `${data.title} at ${data.link}`,
-          icon: 'info',
-          position: 'top-end',
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "View Site!",
-          cancelButtonText: "Dismiss"
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.open(data.link, '_blank');
-          }
-        })
+        toast: true,
+        title: `Your child ${data.full_name} Reported a Result!`,
+        showClass: {
+          popup: `animate__animated animate__bounceInDown`
+        },
+        hideClass: {
+          popup: `animate__animated animate__fadeOutDown`
+        },
+        text: `${data.title} at ${data.link}`,
+        icon: 'info',
+        position: 'top-end',
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "View Site!",
+        cancelButtonText: "Dismiss"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.open(data.link, '_blank');
+        }
+      })
     };
   </script>
   {% endfor %}
