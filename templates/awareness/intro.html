@@ -98,8 +98,6 @@
     }
 
     .learn-from {
-        width: 410px;
-        height: 250px;
         margin: 10px;
         border: 1px solid orange;
         text-align: center;
@@ -109,8 +107,11 @@
 
     .learn-from:hover {
         transform: scale(1.1);
+        -moz-transform: scale(1.1);
+        -webkit-transform: scale(1.1);
         box-shadow: 2px 2px 5px cyan;
     }
+
 
     .learn-from img {
         max-width: 100%;
@@ -218,7 +219,7 @@
                         <img src="{% static 'img/baha.jpeg' %}" alt="Image 1"
                             style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
                     </div>
-                    <div class="">Click to learn from <span style="color: green;">CYBER</span></div>
+                    <div class="learn-from-text">Click to learn from <span style="color: green;">CYBER</span></div>
                 </a>
             </div>
             <div class="col col-md-10 col-lg-4 col-sm-10">
@@ -228,7 +229,7 @@
                         <img src="{% static 'img/klein.jpeg' %}" alt="Image 2"
                             style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
                     </div>
-                    <div class="">Click to learn from <span style="color: green;">TECH</span></div>
+                    <div class="learn-from-text">Click to learn from <span style="color: green;">TECH</span></div>
                 </a>
             </div>
             <div class="col col-md-10 col-lg-4 col-sm-10">
@@ -238,7 +239,7 @@
                         <img src="{% static 'img/meki.jpeg' %}" alt="Image 3"
                             style="width:80px;height:80px;border-radius: 50%; margin-right: 20px;">
                     </div>
-                    <div class="">Click to learn from <span style="color: green;">SAFE </span></div>
+                    <div class="learn-from-text">Click to learn from <span style="color: green;">SAFE </span></div>
                 </a>
             </div>
         </div>
