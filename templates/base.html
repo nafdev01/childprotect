@@ -470,6 +470,7 @@
   <script>
     var resultsReportedSockets = {};
     var sitesVisitedSockets = {};
+    var searchAlertsSockets = {};
   </script>
 
   <script>
@@ -643,6 +644,46 @@
         if (result.isConfirmed) {
           window.open(data.link, '_blank');
         }
+      })
+    };
+  </script>
+  {% endfor %}
+
+  {% for child_profile in request.user.parentprofile.childprofile_set.all %}
+
+  <script>
+    var parent_id = "{{ request.user.id }}";
+    var child_id = "{{ child_profile.child.id }}";
+    var socketname = `socaddress8${child_id}`
+
+    var socaddress8 = wsStart + window.location.host + "/ws/search/alerts/" + child_id + "/";
+    searchAlertsSockets[socketname] = new WebSocket(socaddress8);
+    searchAlertsSockets[socketname].onopen = function (e) {
+      console.log(`The connection was setup successfully to search alerts socket for ${child_id}!`);
+    };
+    searchAlertsSockets[socketname].onclose = function (e) {
+      console.log(`something unexpected happened when connecting to search alerts socket for ${child_id} !`);
+    };
+
+    searchAlertsSockets[socketname].onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      console.log(`${data.full_name}`)
+      Swal.fire({
+        toast: true,
+        title: `${data.title}!`,
+        showClass: {
+          popup: `animate__animated animate__bounceInDown animate__slow`
+        },
+        hideClass: {
+          popup: `animate__animated animate__fadeOutDown animate__slow`
+        },
+        text: `${data.text}!`,
+        icon: 'info',
+        position: 'top-end',
+        showCancelButton: true,
+        showConfirmButton: false,
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Okay"
       })
     };
   </script>

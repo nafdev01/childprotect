@@ -1,8 +1,11 @@
 import csv
 import datetime
+import logging
 import os
 from io import BytesIO
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,14 +23,21 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 from accounts.decorators import child_required, parent_required
 from accounts.models import *
-from accounts.notifications import (send_email_flagged_alert,
-                                    send_email_suspicious_alert)
+from accounts.notifications import send_email_flagged_alert, send_email_suspicious_alert
 from safesearch.forms import *
 from safesearch.models import *
-from safesearch.search import (create_flagged_alert, create_flagged_words,
-                               get_banned_phrases, get_results,
-                               has_banned_phrase, is_within_time_range,
-                               word_is_banned)
+from safesearch.search import (
+    create_flagged_alert,
+    create_flagged_words,
+    get_banned_phrases,
+    get_results,
+    has_banned_phrase,
+    is_within_time_range,
+    word_is_banned,
+)
+
+channel_layer = get_channel_layer()
+logger = logging.getLogger(__name__)
 
 
 # child search functionality
@@ -80,6 +90,23 @@ def search(request):
                 search_status = SearchStatus.SAFE
             else:
                 search_status = SearchStatus.FLAGGED
+                try:
+                    group_name = f"banned_alert_{child.id}"
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
+                        {
+                            "type": "sendBannedAlert",
+                            "title": f"A search by your child {child.get_full_name()} contained banned words!",
+                            "username": child.get_username(),
+                            "text": f"The banned words '{ ','.join(flagged_words)}' were found in the search '{search_query}' ",
+                            "search_phrase": search_query,
+                        },
+                    )
+                    logger.warning(f"Error: sent banned tex message")
+
+                except Exception as e:
+                    print(e)
+                    logger.warning(f"Error on banned: {e}")
 
             search_phrase = SearchPhrase(
                 searched_by=child_profile,
@@ -109,6 +136,22 @@ def search(request):
                 if len(suspicious_results) >= 2:
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
                     search_phrase.save()
+                    try:
+                        group_name = f"banned_alert_{child.id}"
+                        async_to_sync(channel_layer.group_send)(
+                            group_name,
+                            {
+                                "type": "sendSuspiciousAlert",
+                                "title": f"A search by your child {child.get_full_name()} returned results which contained banned words!",
+                                "username": child.get_username(),
+                                "text": f"The search was '{search_query}'\n",
+                                "search_phrase": search_query,
+                            },
+                        )
+                    except Exception as e:
+                        print(e)
+                        logger.warning(f"Error on banned: {e}")
+
                     send_email_suspicious_alert(
                         request, suspicious_results, search_phrase
                     )

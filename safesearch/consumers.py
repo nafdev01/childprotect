@@ -141,7 +141,7 @@ class ResultReportConsumer(AsyncWebsocketConsumer):
                     "snippet": snippet,
                     "reason": reason,
                     "search_phrase": search_phrase,
-                    "full_name": event["full_name"]
+                    "full_name": event["full_name"],
                 }
             )
 
@@ -170,6 +170,7 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
         link = text_data_json["link"]
         snippet = text_data_json["snippet"]
         parent_id = text_data_json["parent_id"]
+        print(f"{self.room_group_name}")
 
         success_response = {
             "type": "sendSiteVisit",
@@ -213,6 +214,66 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+            await self.send(text_data=text_data)
+        except Exception as e:
+            print(e)
+            logger.warning(f"Error: {e}")
+
+
+class BannedSearchConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope["url_route"]["kwargs"]["child_id"]
+        self.room_group_name = f"banned_alert_{self.room_name}"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_layer)
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        username = text_data_json["username"]
+        parent_id = text_data_json["parent_id"]
+
+        child = await database_sync_to_async(User.children.get)(username=username)
+        parent = await database_sync_to_async(User.parents.get)(id=parent_id)
+
+    async def sendBannedAlert(self, event):
+        try:
+            title = event["title"]
+            username = event["username"]
+            text = event["text"]
+            search_phrase = event["search_phrase"]
+
+            text_data = json.dumps(
+                {
+                    "username": username,
+                    "title": title,
+                    "search_phrase": search_phrase,
+                    "text": text,
+                }
+            )
+
+            await self.send(text_data=text_data)
+        except Exception as e:
+            print(e)
+            logger.warning(f"Error: {e}")
+
+    async def sendSuspiciousAlert(self, event):
+        try:
+            title = event["title"]
+            username = event["username"]
+            text = event["text"]
+            search_phrase = event["search_phrase"]
+
+            text_data = json.dumps(
+                {
+                    "username": username,
+                    "title": title,
+                    "search_phrase": search_phrase,
+                    "text": text,
+                }
+            )
             await self.send(text_data=text_data)
         except Exception as e:
             print(e)
