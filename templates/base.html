@@ -471,6 +471,7 @@
     var resultsReportedSockets = {};
     var sitesVisitedSockets = {};
     var searchAlertsSockets = {};
+    var unbanRequestsSockets = {};
   </script>
 
   <script>
@@ -678,7 +679,7 @@
           popup: `animate__animated animate__fadeOutDown animate__slow`
         },
         text: `${data.text}!`,
-        icon: 'info',
+        icon: 'warning',
         position: 'top-end',
         showCancelButton: true,
         showConfirmButton: false,
@@ -689,6 +690,77 @@
   </script>
   {% endfor %}
 
+  {% for child_profile in request.user.parentprofile.childprofile_set.all %}
+
+  <script>
+    var parent_id = "{{ request.user.id }}";
+    var child_id = "{{ child_profile.child.id }}";
+    var socketname = `socaddress9${child_id}`
+
+    var socaddress9 = wsStart + window.location.host + "/ws/unban/requests/" + child_id + "/";
+    unbanRequestsSockets[socketname] = new WebSocket(socaddress9);
+    unbanRequestsSockets[socketname].onopen = function (e) {
+      console.log(`The connection was setup successfully to unban requests socket for ${child_id}!`);
+    };
+    unbanRequestsSockets[socketname].onclose = function (e) {
+      console.log(`something unexpected happened when connecting to unban requests socket for ${child_id} !`);
+    };
+
+    unbanRequestsSockets[socketname].onmessage = function (e) {
+      const data = JSON.parse(e.data);
+
+      if (`${data.type_of_request}` === "unban_request") {
+        Swal.fire({
+          toast: true,
+          title: `${data.title}!`,
+          html: `<p>The word is&nbsp;<span class="text-warning fw-bolder">${data.word}</span></p>`,
+          showClass: {
+            popup: `animate__animated animate__bounceInDown animate__slow`
+          },
+          hideClass: {
+            popup: `animate__animated animate__fadeOutDown animate__slow`
+          },
+          icon: 'info',
+          position: 'top-end',
+          showDenyButton: true,
+          showConfirmButton: true,
+          cancelButtonColor: "#d33",
+          denyButtonText: "Deny",
+          confirmButtonText: "Approve"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            unbanRequestsSockets[socketname].send(JSON.stringify({ word: `${data.word}`, type_of_request: "approve_request", parent_id: parent_id, child_id: child_id, banned_word_id: `${data.banned_word_id}`, unban_request_id: `${data.unban_request_id}` }));
+            console.log(`Approving unban request by ${data.child} for ${data.word} .....`);
+          } else if (result.isDenied) {
+            unbanRequestsSockets[socketname].send(JSON.stringify({ word: `${data.word}`, type_of_request: `deny_request`, parent_id: parent_id, child_id: child_id, banned_word_id: `${data.banned_word_id}`, unban_request_id: `${data.unban_request_id}` }));
+            console.log(`Denying unban request by ${data.child} for ${data.word} .....`);
+          }
+        })
+      }
+      else if (`${data.type_of_request}` === "approved_request" || "denied_request") {
+        Swal.fire({
+          toast: true,
+          title: `${data.title}!`,
+          html: `<p>The word is&nbsp;<span class="text-warning fw-bolder">${data.word}</span></p>`,
+          showClass: {
+            popup: `animate__animated animate__bounceInDown animate__slow`
+          },
+          hideClass: {
+            popup: `animate__animated animate__fadeOutDown animate__slow`
+          },
+          icon: 'info',
+          position: 'top-end',
+          showConfirmButton: true,
+          confirmButtonColor: "#0dcf17",
+          confirmButtonText: "Ok",
+        })
+      }
+      else {
+        console.log("Unban Request here\nType was - " + data.type_of_request);
+      };
+    }
+  </script>
+  {% endfor %}
 
   {% endif %}
 

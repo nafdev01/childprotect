@@ -91,7 +91,7 @@ def search(request):
             else:
                 search_status = SearchStatus.FLAGGED
                 try:
-                    group_name = f"banned_alert_{child.id}"
+                    group_name = f"search_alerts_{child.id}"
                     async_to_sync(channel_layer.group_send)(
                         group_name,
                         {
@@ -137,7 +137,7 @@ def search(request):
                     search_phrase.search_status = SearchStatus.SUSPICIOUS
                     search_phrase.save()
                     try:
-                        group_name = f"banned_alert_{child.id}"
+                        group_name = f"search_alerts_{child.id}"
                         async_to_sync(channel_layer.group_send)(
                             group_name,
                             {
@@ -507,13 +507,30 @@ def create_unban_request(request, banned_word_id):
         existing_unban_request = UnbanRequest.objects.filter(
             requested_by=child.childprofile,
             banned_word=banned_word,
-        )
+        ).first()
 
         if existing_unban_request:
             messages.warning(
                 request,
                 f"You have already submitted an unban request for this word ({banned_word}).",
             )
+            try:
+                group_name = f"unban_requests_{child.id}"
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                    {
+                        "type": "sendUnbanRequest",
+                        "type_of_request": "unban_request",
+                        "title": f"Your child {child.get_full_name()} has submitted an unban request!",
+                        "child": child.get_username(),
+                        "word": f"{banned_word.word}",
+                        "banned_word_id": banned_word_id,
+                        "unban_request_id": existing_unban_request.id,
+                    },
+                )
+            except Exception as e:
+                print(e)
+                logger.warning(f"Error on banned: {e}")
             return redirect("search_history")
     except BannedWord.DoesNotExist:
         messages.error(request, f"Banned word does not exist")
@@ -523,11 +540,29 @@ def create_unban_request(request, banned_word_id):
         banned_word=banned_word, requested_by=child.childprofile
     )
     unban_request.save()
+    try:
+        group_name = f"unban_requests_{child.id}"
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "sendUnbanRequest",
+                "type_of_request": "unban_request",
+                "title": f"Your child {child.get_full_name()} has submitted an unban request!",
+                "child": child.get_username(),
+                "word": f"{banned_word.word}",
+                "banned_word_id": banned_word_id,
+                "unban_request_id": unban_request.id,
+            },
+        )
+    except Exception as e:
+        print(e)
+        logger.warning(f"Error on banned: {e}")
+
     messages.success(
         request,
-        f"You have submitted an unban request for the word {banned_word.word} successfully",
+        f"You have submitted an unban request for the word {banned_word.word}",
     )
-    return redirect("home")
+    return redirect("search_history")
 
 
 # deny unban request
