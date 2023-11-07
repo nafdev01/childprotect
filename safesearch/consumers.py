@@ -290,7 +290,7 @@ class SiteVisitConsumer(AsyncWebsocketConsumer):
             logger.warning(f"Error: {e}")
 
 
-class BannedSearchConsumer(AsyncWebsocketConsumer):
+class SearchAlertsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["child_id"]
         self.room_group_name = f"search_alerts_{self.room_name}"
