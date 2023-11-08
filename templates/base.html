@@ -23,11 +23,11 @@
     content="Child Safe Search uses advanced filters to protect kids from harmful online content. Parents receive notifications for concerning searches and can ban or unban keywords, fostering communication.">
   <script
     type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","name":"Child Protect","url":"https://childprotect.tech"}</script>
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}"
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'logo.jpeg' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'logo.jpeg' %}"
     media="(prefers-color-scheme: dark)">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}"
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'logo.jpeg' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'logo.jpeg' %}"
     media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="{% static 'assets1/bootstrap/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'assets1/css/Nunito.css' %}">
@@ -45,7 +45,9 @@
     <nav class="navbar align-items-start sidebar sidebar-dark accordion p-0" style="background-color: #009E60;">
       <div class="container-fluid d-flex flex-column p-0"><a
           class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
-          <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+          <div class="sidebar-brand-icon">
+            <img src="{% static 'logo.jpeg' %}" alt="" height="45px">
+          </div>
           <div class="sidebar-brand-text mx-3"><span>ChildProtect</span></div>
         </a>
         <hr class="sidebar-divider my-0">
