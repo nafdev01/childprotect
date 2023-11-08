@@ -161,6 +161,8 @@
         margin-top: 50px;
         letter-spacing: 1px;
         border-radius: 10px;
+        display: flex;
+        justify-self: center;
     }
 </style>
 {% endblock custom_css %}
@@ -177,7 +179,7 @@
         <span class="zero"><span class="screen-reader-text">0</span></span>
         <span class="four"><span class="screen-reader-text">4</span></span>
     </section>
-    <h3>The page ypur looking for does not exist</h3>
+    <h3>The page your looking for does not exist</h3>
     <div class="link-container">
         <a href="{% url 'home' %}" target="_blank" href="https://www.silocreativo.com/en/creative-examples-404-error-css/"
         class="more-link">Back to the home page</a>
