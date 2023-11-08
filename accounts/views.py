@@ -659,7 +659,11 @@ def update_avatar(request, child_id):
 
 # custom 404 view
 def custom_404(request, exception):
-    return render(request, "404.html", status=404)
+    if request.user.is_authenticated:
+        return render(request, "404.html", status=404)
+    else:
+        return render(request, "unauth_404.html", status=404)
+
 
 
 @parent_required
