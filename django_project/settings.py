@@ -50,12 +50,14 @@ INSTALLED_APPS = [
     "accounts",
     "safesearch",
     "forum",
+    "toto_api",
     # 3rd party
     "django_user_agents",
     "django_bootstrap5",
     "django_extensions",
     "whitenoise.runserver_nostatic",
     "django.contrib.postgres",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [

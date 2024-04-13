@@ -13,6 +13,7 @@ urlpatterns = [
     path("forum/", include("forum.urls")),
     path("", include("safesearch.urls")),
     path("awareness/", include("awareness.urls")),
+    path("api/v1/", include("toto_api.urls")),
 ]
 
 if settings.DEBUG:

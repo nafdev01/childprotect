@@ -290,7 +290,7 @@ def add_banned_csv(request):
                             banned_word = BannedWord(
                                 banned_by=request.user.parentprofile,
                                 word=word.strip(),
-                                reason=BanReason.INAPPROPRIATE_CONTENT,
+                                reason=BanReason.VIOLENT_AND_DISTURBING_CONTENT,
                             )
                             banned_word.save()
             messages.success(
