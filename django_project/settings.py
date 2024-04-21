@@ -35,6 +35,13 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    # 3rd party
+    "django_user_agents",
+    "django_bootstrap5",
+    "django_extensions",
+    "whitenoise.runserver_nostatic",
+    "django.contrib.postgres",
+    "rest_framework",
     "daphne",
     "channels",
     # default apps
@@ -49,13 +56,6 @@ INSTALLED_APPS = [
     "safesearch",
     "forum",
     "toto_api",
-    # 3rd party
-    "django_user_agents",
-    "django_bootstrap5",
-    "django_extensions",
-    "whitenoise.runserver_nostatic",
-    "django.contrib.postgres",
-    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -91,12 +91,10 @@ TEMPLATES = [
 ]
 
 
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-
-
 # WSGI_APPLICATION = "django_project.wsgi.application"
 ASGI_APPLICATION = "django_project.asgi.application"
 
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 # Database settings
 if DEVELOPMENT_MODE:
@@ -157,8 +155,8 @@ if not DEVELOPMENT_MODE:
     from .cdn.conf import *
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
 
 # media files
 MEDIA_URL = "/media/"
