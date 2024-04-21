@@ -31,8 +31,6 @@ else:
         "DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,0.0.0.0"
     ).split(",")
 
-LOCAL_SERVER = os.getenv("LOCAL_SERVER", "False") == "True"
-
 
 # Application definition
 
@@ -156,7 +154,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-if not LOCAL_SERVER:
+if not DEVELOPMENT_MODE:
     from .cdn.conf import *
 
 STATIC_URL = "static/"
@@ -186,7 +184,7 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS").lower() == "true"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
-if DEVELOPMENT_MODE and LOCAL_SERVER:
+if DEVELOPMENT_MODE:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGGING = {
@@ -221,4 +219,9 @@ CHANNEL_LAYERS = {
     "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
 }
 
-CSRF_TRUSTED_ORIGINS = ["https://childprotect.tech"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.naftalmatoya.me",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+    "http://0.0.0.0:8001",
+]
