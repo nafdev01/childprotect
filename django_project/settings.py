@@ -92,7 +92,6 @@ TEMPLATES = [
 
 
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # WSGI_APPLICATION = "django_project.wsgi.application"
@@ -159,7 +158,6 @@ if not DEVELOPMENT_MODE:
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
 # media files
