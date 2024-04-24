@@ -5,7 +5,8 @@ from accounts.notifications import (
     send_email_succesful_contact,
 )
 from .models import Post, Comment, TypeOfComment, Subscriber, Contact
-from accounts.decorators import parent_required, child_required
+from accounts.decorators import parent_required
+from django.views.decorators.csrf import csrf_protect
 
 
 @parent_required
@@ -24,7 +25,7 @@ def post_list(request):
 
     return render(request, template_name=template_name, context=context)
 
-
+@csrf_protect
 @parent_required
 def post_detail(request, post_slug, parent_id):
     parent = request.user
@@ -44,6 +45,7 @@ def post_detail(request, post_slug, parent_id):
     return render(request, template_name=template_name, context=context)
 
 
+@csrf_protect
 @parent_required
 def create_comment(request, post_id=None, comment_id=None):
     if request.method == "POST":
@@ -77,7 +79,7 @@ def create_comment(request, post_id=None, comment_id=None):
 
     return redirect(post)
 
-
+@csrf_protect
 def add_subscriber(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -96,7 +98,7 @@ def add_subscriber(request):
 
     return redirect("home")
 
-
+@csrf_protect
 def contact_message(request):
     if request.method == "POST":
         name = request.POST["name"]
