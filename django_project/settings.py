@@ -231,4 +231,3 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 3600
     SECURE_REFERRER_POLICY = "same-origin"
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_HOST = "childprotect.naftalmatoya.me"
