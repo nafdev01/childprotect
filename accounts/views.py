@@ -9,12 +9,13 @@ from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.core.files import File
+from django.db import IntegrityError
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.csrf import csrf_protect
 
 from accounts.decorators import child_required, guest_required, parent_required
 from accounts.forms import *
@@ -39,6 +40,7 @@ def logout_view(request):
 
 # login view
 @guest_required
+@csrf_protect
 def login_user(request):
     if request.method == "POST":
         # Retrieve username and password  and user_type from POST data
@@ -114,6 +116,7 @@ def login_user(request):
 
 
 # View for parent user registration with profile information
+@csrf_protect
 @guest_required
 def register_parent(request):
     if request.method == "POST":
@@ -208,6 +211,7 @@ def verification_expired(request, parent_id):
 
 
 @guest_required
+@csrf_protect
 def regenerate_token(request):
     if request.method == "POST":
         try:
@@ -247,6 +251,7 @@ def regenerate_token(request):
 
 # child registration view
 @parent_required
+@csrf_protect
 def register_child(request):
     parent = request.user
 
@@ -383,6 +388,7 @@ def profile(request):
 
 
 # update parent details
+@csrf_protect
 @parent_required
 def update_parent_info(request):
     if request.method == "POST":
@@ -414,6 +420,7 @@ def update_parent_info(request):
 
 
 # update parent contact info details
+@csrf_protect
 @parent_required
 def update_parent_contacts(request):
     if request.method == "POST":
@@ -443,6 +450,7 @@ def update_parent_contacts(request):
 
 
 # update parent profile photo view
+@csrf_protect
 @parent_required
 def update_profile_photo(request):
     if request.method == "POST":
@@ -468,6 +476,7 @@ def update_profile_photo(request):
 
 
 # update child details
+@csrf_protect
 @child_required
 def update_child_profile(request):
     if request.method == "POST":
@@ -529,6 +538,7 @@ def children_details(request):
 
 
 # update child details
+@csrf_protect
 @parent_required
 def update_child_info(request, child_id):
     if request.method == "POST":
@@ -579,6 +589,7 @@ def update_child_info(request, child_id):
 
 # parent change password
 @parent_required
+@csrf_protect
 def update_child_password(request, child_id):
     parent = request.user
     child = User.children.get(id=child_id)
@@ -613,6 +624,7 @@ def update_child_password(request, child_id):
 
 # update child avatar view
 @login_required
+@csrf_protect
 def update_avatar(request, child_id):
     if request.method == "POST":
         # Retrieve the childs profile
@@ -665,7 +677,6 @@ def custom_404(request, exception):
         return render(request, "unauth_404.html", status=404)
 
 
-
 @parent_required
 def parent_settings(request):
     parent = request.user
@@ -687,6 +698,7 @@ def parent_settings(request):
 
 
 @parent_required
+@csrf_protect
 def update_search_settings(request):
     # Get the logged-in parent user
     parent = request.user
