@@ -221,5 +221,3 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8001",
     "http://0.0.0.0:8001",
 ]
-
-SECURE_SSL_REDIRECT=False
